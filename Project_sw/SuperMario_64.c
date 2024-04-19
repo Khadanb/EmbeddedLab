@@ -253,12 +253,14 @@ void flush_ping_pong_frame(const mario_game *game_0, int ping_pong){
 
 //Keyboard
 // input from device
-  	libusb_context *ctx = NULL; // a libusb session
-  	libusb_device **devs;       // pointer to pointer of device, used to retrieve a list of devices
-  	int r;                      // for return values
-  	ssize_t cnt;                // holding number of devices in list
-	struct libusb_device_handle *mouse;   // a mouse device handle
+  	// libusb_context *ctx = NULL; // a libusb session
+  	// libusb_device **devs;       // pointer to pointer of device, used to retrieve a list of devices
+  	// int r;                      // for return values
+  	// ssize_t cnt;                // holding number of devices in list
+	// struct libusb_device_handle *mouse;   // a mouse device handle
+	struct libusb_device_handle *keyboard;
 
+	uint8_t endpoint_address;               // USB endpoint address for keyboard
 
 // Threads================
 pthread_t input_thread;
@@ -296,49 +298,49 @@ int main(){
 	// Game OBJ
 	mario_game game_0;
 
-	/* Open the keyboard */
-	// if ( (keyboard = openkeyboard(&endpoint_address)) == NULL ) {
-	// 	fprintf(stderr, "Did not find a keyboard\n");
-	// 	exit(1);
+  	// r = libusb_init(&ctx);      // initialize a library session
+  	// if (r < 0)
+  	// {
+    // 	printf("%s  %d\n", "Init Error", r); // there was an error
+    // 	return 1;
+  	// }
+  	// libusb_set_debug(ctx, 3);                 // set verbosity level to 3, as suggested in the documentation
+  	// cnt = libusb_get_device_list(ctx, &devs); // get the list of devices
+  	// if (cnt < 0)
+  	// {
+    // 	printf("%s\n", "Get Device Error"); // there was an error
+  	// }
+  	// mouse = libusb_open_device_with_vid_pid(ctx, 0x0079, 0x0011);
+	// if (mouse == NULL)
+	// {
+	// 	printf("%s\n", "Cannot open device");
+	// 	libusb_free_device_list(devs, 1); // free the list, unref the devices in it
+	// 	libusb_exit(ctx);                 // close the session
+	// 	return 0;
+	// }
+	// else
+	// {
+	// 	printf("%s\n", "Device opened");
+	// 	libusb_free_device_list(devs, 1); // free the list, unref the devices in it
+	// 	if (libusb_kernel_driver_active(mouse, 0) == 1)
+	// 	{ // find out if kernel driver is attached
+	// 		printf("%s\n", "Kernel Driver Active");
+	// 	  	if (libusb_detach_kernel_driver(mouse, 0) == 0) // detach it
+	// 	    printf("%s\n", "Kernel Driver Detached!");
+	// 	}
+	// 	r = libusb_claim_interface(mouse, 0); // claim interface 0 (the first) of device (mine had just 1)
+	// 	if (r < 0)
+	// 	{
+	// 	  	printf("%s\n", "Cannot Claim Interface");
+	// 	  	return 1;
+	// 	}
 	// }
 
-  	r = libusb_init(&ctx);      // initialize a library session
-  	if (r < 0)
-  	{
-    	printf("%s  %d\n", "Init Error", r); // there was an error
-    	return 1;
-  	}
-  	libusb_set_debug(ctx, 3);                 // set verbosity level to 3, as suggested in the documentation
-  	cnt = libusb_get_device_list(ctx, &devs); // get the list of devices
-  	if (cnt < 0)
-  	{
-    	printf("%s\n", "Get Device Error"); // there was an error
-  	}
-  	mouse = libusb_open_device_with_vid_pid(ctx, 0x0079, 0x0011);
-	if (mouse == NULL)
-	{
-		printf("%s\n", "Cannot open device");
-		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
-		libusb_exit(ctx);                 // close the session
-		return 0;
-	}
-	else
-	{
-		printf("%s\n", "Device opened");
-		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
-		if (libusb_kernel_driver_active(mouse, 0) == 1)
-		{ // find out if kernel driver is attached
-			printf("%s\n", "Kernel Driver Active");
-		  	if (libusb_detach_kernel_driver(mouse, 0) == 0) // detach it
-		    printf("%s\n", "Kernel Driver Detached!");
-		}
-		r = libusb_claim_interface(mouse, 0); // claim interface 0 (the first) of device (mine had just 1)
-		if (r < 0)
-		{
-		  	printf("%s\n", "Cannot Claim Interface");
-		  	return 1;
-		}
-	}
+	// Open the USB keyboard
+    if ((keyboard = openkeyboard(&endpoint_address)) == NULL) {
+        fprintf(stderr, "Did not find a keyboard\n");
+        exit(EXIT_FAILURE);
+    }
 	printf("%s\n", "Claimed Interface");
 
 	// Open Avalon bus
@@ -850,52 +852,45 @@ int main(){
 
 void *input_thread_f(void *ignored)
 {
-	unsigned char buff[64];
-    int size = 8;
-    libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
-  	for (;;) {
-		// libusb_interrupt_transfer(keyboard, endpoint_address,
-		//	 		(unsigned char *) &packet, sizeof(packet),
-		//			&transferred, 0);
-		// if (transferred == sizeof(packet)) {
-		// 	if (packet.keycode[0] == 0x0){current_key = KEY_NONE; printf("NONE\n");}
-		// 	else
-		// 		for(int i = 0; i < 3; i++){
-		// 			if (packet.keycode[i] == 0x2c) {current_key = KEY_JUMP; printf("JUMP\n");}
-		// 			else if (packet.keycode[i] == 0x50) {current_key = KEY_LEFT; printf("LEFT\n");}
-		// 			else if (packet.keycode[i] == 0x4F) {current_key = KEY_RIGHT; printf("RIGHT\n");}
-		// 		}
-		// 	if (packet.keycode[0] == 0x29) { /* ESC pressed? */
-		// 		break;
-		// 	}
-		// }
-		size = 8;
-		libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
-		if (size == 0x0008){
-			
-			if (buff[5] == 47) {
-				// A:     127 127 0 128 128 47 
-				current_key = KEY_JUMP; // printf("JUMP\n");			
-			}
-			else if (buff[3] == 0) {
-		  		// 127 127 0 128 128 15
-		  		// left
-				current_key = KEY_LEFT; // printf("LEFT\n");		
-			}
-			else if (buff[3] == 255) {
-				// right
-				// 127 127 255 128 128 15 
-				current_key = KEY_RIGHT; // printf("RIGHT\n");			
-			}
-			else if (buff[6] == 32) {
-				// restart
-				// 127 127 127 127 127 15 32
-				current_key = KEY_NEWGAME; // printf("KEY_NEWGAME\n");			
-			}
-			else{
-				current_key = KEY_NONE; // printf("NONE\n");
-			}
-		}
-	}
-	return NULL;
+    struct usb_keyboard_packet packet;
+    int transferred;
+    int r;
+    struct timeval timeout = { 0, 500000 }; // 500 ms timeout
+
+    for (;;) {
+        r = libusb_interrupt_transfer(keyboard, endpoint_address, (unsigned char *)&packet, sizeof(packet), &transferred, 0);
+        if (r == 0 && transferred == sizeof(packet)) {
+            switch(packet.keycode[0]) {  // Check the first keycode in the array
+                case 0x2C: // Space bar
+                    current_key = KEY_JUMP;
+                    break;
+                case 0x04: // 'a' key
+                    current_key = KEY_LEFT;
+                    break;
+                case 0x07: // 'd' key
+                    current_key = KEY_RIGHT;
+                    break;
+                case 0x0A: // 'g' key
+                    current_key = KEY_NEWGAME;
+                    break;
+                default:
+                    current_key = KEY_NONE;
+                    break;
+            }
+        } else {
+            if (r == LIBUSB_ERROR_NO_DEVICE) {
+                // Handle device disconnection
+                fprintf(stderr, "Keyboard disconnected.\n");
+                break; // Exit or attempt to reconnect
+            }
+            // Handle other errors or no data transferred
+            fprintf(stderr, "Transfer error: %s\n", libusb_error_name(r));
+            current_key = KEY_NONE;
+            libusb_handle_events_timeout(NULL, &timeout);
+        }
+    }
+    return NULL;
 }
+
+
+
