@@ -139,7 +139,7 @@ module Coin_display (input logic        clk,
 	end
 		
 initial begin
-	$readmemh("/user/stud/fall22/hy2759/4840/pro_test/lab3-hw/on_chip_mem/Coin.txt", mem);
+	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Coin.txt", mem);
 end
 
    
