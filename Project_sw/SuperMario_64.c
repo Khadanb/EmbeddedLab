@@ -105,7 +105,7 @@ void flush_block(const block *block_0, int ind, int ping_pong){
 	write_2_hw(0, (int)((2 << 26) + ((ind&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (ping_pong << 13) + (x & 0x3FF)));
 	write_2_hw(0, (int)((2 << 26) + ((ind&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (ping_pong << 13) + (y & 0x3FF)));
 }
-// Flush the ground info into PPU
+// Flush the ground info into PPU (These are the hole locations left and right)
 void flush_ground(int camera_pos, int ping_pong){
 	int ground_r[3] = {GROUND_0_R, GROUND_1_R, GROUND_2_R};
 	int ground_l[3] = {GROUND_0_L, GROUND_1_L, GROUND_2_L};
@@ -253,14 +253,14 @@ void flush_ping_pong_frame(const mario_game *game_0, int ping_pong){
 
 //Keyboard
 // input from device
-  	// libusb_context *ctx = NULL; // a libusb session
-  	// libusb_device **devs;       // pointer to pointer of device, used to retrieve a list of devices
-  	// int r;                      // for return values
-  	// ssize_t cnt;                // holding number of devices in list
-	// struct libusb_device_handle *mouse;   // a mouse device handle
-	struct libusb_device_handle *keyboard;
+// libusb_context *ctx = NULL; // a libusb session
+// libusb_device **devs;       // pointer to pointer of device, used to retrieve a list of devices
+// int r;                      // for return values
+// ssize_t cnt;                // holding number of devices in list
+// struct libusb_device_handle *mouse;   // a mouse device handle
+struct libusb_device_handle *keyboard;
 
-	uint8_t endpoint_address;               // USB endpoint address for keyboard
+uint8_t endpoint_address;               // USB endpoint address for keyboard
 
 // Threads================
 pthread_t input_thread;
