@@ -856,11 +856,30 @@ void *input_thread_f(void *ignored)
     int transferred;
     int r;
     struct timeval timeout = { 0, 500000 }; // 500 ms timeout
+	uint8_t first, second, chosen; 
 
     for (;;) {
         r = libusb_interrupt_transfer(keyboard, endpoint_address, (unsigned char *)&packet, sizeof(packet), &transferred, 0);
         if (r == 0 && transferred == sizeof(packet)) {
-            switch(packet.keycode[0]) {  // Check the first keycode in the array
+
+			first = packet.keycode[0]; 
+			second = packet.keycode[1];
+			chosen = 0;
+
+			if (first != 0 && second != 0) {
+
+				if (first == second) {
+					usleep(5000);
+					continue; 
+				} else {
+					chosen = second; 
+				}
+
+			} else {
+				chosen = first; 
+			}
+
+            switch(chosen) {  // Check the first keycode in the array
                 case 0x2C: // Space bar
                     current_key = KEY_JUMP;
                     break;
