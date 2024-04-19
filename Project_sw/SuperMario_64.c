@@ -841,7 +841,7 @@ int main(){
 		//test=======================
 		flush_ping_pong_frame(&game_0, ping_pong);
 		ping_pong = (ping_pong == 0)? 1 : 0;
-		usleep(25000);
+		usleep(16667);
 	}
 
 	pthread_cancel(input_thread);
