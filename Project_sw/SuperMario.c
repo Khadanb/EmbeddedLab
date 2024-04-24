@@ -89,8 +89,6 @@ void flush_frame(Game *game, int frame_select) {
 
 		if (entity->state.active && entity->render.visible) {
 
-			animate_entity(game, entity, frame_counter);
-
 			if (entity->position.x >= game->camera_pos &&
 				entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
 
@@ -102,12 +100,12 @@ void flush_frame(Game *game, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (0xf << 17) + (frame_select << 13)));
 
 	frame_counter = (frame_counter >= FRAME_LIMIT) ? 0 : frame_counter + 1;
-	if (sound_new == 1) {
-		write_to_hardware(vga_ball_fd, 4, (int)(SOUND_NONE));
-		sound_new = 0;
-	} else {
-		write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
-	}
+	// if (sound_new == 1) {
+	// 	write_to_hardware(vga_ball_fd, 4, (int)(SOUND_NONE));
+	// 	sound_new = 0;
+	// } else {
+	// 	write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
+	// }
 }
 
 
@@ -437,10 +435,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 }
 
 void process_block_logic(Entity *block, Game *game) {
-	if (!block->state.active || (block->state.type < TYPE_BLOCK_A || block->state.type > TYPE_BLOCK_OBJ_M)) {
-		return;
-	}
-
 	for (int i = 0; i < MAX_ENTITIES; i++) {
 		Entity *entity = &game->entities[i];
 		if (entity == block || !entity->state.active) continue;
@@ -511,10 +505,10 @@ int main() {
 			game.camera_pos = (game.camera_pos > 0) ? game.camera_pos : 0;
 		}
 
-		if (mario->state.state == STATE_DEAD) {
-			new_game(&game);
-			continue;
-		}
+		// if (mario->state.state == STATE_DEAD) {
+		// 	new_game(&game);
+		// 	continue;
+		// }
 
 		entity_activation_update(&game, game.camera_pos);
 
