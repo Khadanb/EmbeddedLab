@@ -1,6 +1,7 @@
 #include "game_struct.h"
 #include "game_animation.h"
 #include <stdlib.h>
+#include <math.h>
 
 enum contact hitbox_contact(const Entity *A, const Entity *B) {
     float leftA = A->position.x;
