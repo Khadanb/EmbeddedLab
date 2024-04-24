@@ -541,20 +541,20 @@ int main() {
 					case TYPE_BLOCK_A_H_8:
 					case TYPE_BLOCK_OBJ_C:
 					case TYPE_BLOCK_OBJ_M:
-						printf("BLOCK");
+						printf("BLOCK\n");
 						process_block_logic(entity, &game);
 						break;
 					case TYPE_COIN:
-						printf("COIN");
+						printf("COIN\n");
 						break;
 					case TYPE_TUBE:
-						printf("TUBE");
+						printf("TUBE\n");
 						break;
 					case TYPE_CLOUD:
-						printf("CLOUD");
+						printf("CLOUD\n");
 						break;
 					case TYPE_GROUND:
-						printf("GROUND");
+						printf("GROUND\n");
 						break;
 					default:
 						break;
