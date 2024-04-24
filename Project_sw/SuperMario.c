@@ -65,8 +65,9 @@ void flush_entity(const Entity *entity, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 
-	if (pattern_code > 17 || pattern_code < 0) return; 
-	
+	if (pattern_code > 6 || pattern_code < 0 ) return; 
+	if (entity->state.type > 17 || entity->state.type < 0) return; 
+
 	// Print entity type, position, and pattern code
 	printf("Entity Type: %d, Position: (%d, %d), Pattern Code: %u\n",
 		   entity->state.type, x, y, pattern_code);
