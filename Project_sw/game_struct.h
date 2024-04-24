@@ -1,6 +1,18 @@
 #ifndef _MARIO_GAME_STRUCT
 #define _MARIO_GAME_STRUCT
 
+#include <stdint.h>
+
+#define MAX_ENTITIES 128
+
+
+#define GRAVITY 0.23f
+#define MAX_SPEED_H 1.85f
+#define MAX_SPEED_V 4.6f
+#define LOAD_LIMIT (5*16)
+#define CAMERA_SIZE (30*16)
+#define GROUND_LEVEL 368
+
 
 #define BLOCK_NUM 45
 #define MUSH_NUM 3
@@ -10,21 +22,32 @@
 #define TUBE_NUM 5
 #define COIN_NUM 25
 
-#define GRAVITY (0.23)
-#define MAX_SPEED_H (1.85)
-#define MAX_SPEED_V (4.6)
 
-// Mario data
+#define GROUND_0_L 0
+#define GROUND_0_W 448
+#define GROUND_1_L 528
+#define GROUND_1_W 976
+#define GROUND_2_L 1504
+#define GROUND_2_W 640
+#define GROUND_3_L 2176
+#define GROUND_3_W 800
+
+
+#define HOLE_0_R 527 
+#define HOLE_1_L 1504 
+#define HOLE_2_R 2175 
+
+
 #define WALK_ACC (0.09)
 #define SHUT_ACC (0.12)
 #define JUMP_INIT_V_SMALL (4.6)
 #define JUMP_INIT_V_LARGE (5.6)
 #define MAX_SPEED_V_JUMP (8.1)
 
-// Mush DATA
 
 
-// PPU CHILD LIMIT
+
+
 #define BLOCK_VIS_LIMIT 9
 #define COIN_VIS_LIMIT 4
 #define GOOMBA_VIS_LIMIT 2
@@ -32,134 +55,90 @@
 #define TUBE_VIS_LIMIT 1
 #define CLOUD_VIS_LIMIT 1
 
-enum contact{NONE, LEFT, RIGHT, UP, DOWN};
 
-typedef struct{
-    float x, y, vx, vy; // location $ speed
-    int sx, sy;         // size of the box
-} hit_box;
+enum EntityState {
+	STATE_NORMAL,
+	STATE_ANIMATE,
+	STATE_HIT,
+	STATE_ENLARGE,
+	STATE_DEAD,
+	BLOCK_NORMAL,
+	BLOCK_ANIMATE
+};
 
-typedef struct{
-    unsigned int pattern_code;
-    int visible, flip;
-    int x, y;
-    int extra_info;
-} ppu_obj_info;
+enum contact {
+    NONE, LEFT, RIGHT, UP, DOWN
+};
 
-enum mario_control_state{MARIO_NORMAL, MARIO_ANIMATE};
-enum mario_animate_state{HIT, ENLARGE, ANI_DEAD};
-enum mario_game_state{MARIO_GAME_NORMAL, MARIO_GMAE_HIT};
-enum mario_state{SMALL, LARGE, DEAD};
+enum EntityType {
+	TYPE_MARIO_SMALL,
+	TYPE_MARIO_LARGE,
+	TYPE_MUSHROOM,
+	TYPE_GOOMBA,
+	TYPE_BLOCK_A,
+	TYPE_BLOCK_B_1,
+	TYPE_BLOCK_B_2,
+	TYPE_BLOCK_B_3,
+	TYPE_BLOCK_B_4,
+	TYPE_BLOCK_B_16,
+	TYPE_BLOCK_A_H_8,
+	TYPE_BLOCK_OBJ_C,
+	TYPE_BLOCK_OBJ_M,
+	TYPE_COIN,
+	TYPE_TUBE,
+	TYPE_CLOUD,
+	TYPE_GROUND,
+	TYPE_EMP  
+};
 
-typedef struct {
-    int enable;
-	int x_block;
-	int y_block;
-    hit_box hit;
-    ppu_obj_info vis;
-    enum mario_control_state control_s;
-    enum mario_game_state game_s;
-    enum mario_state mario_s;
-    enum mario_animate_state animate_s;
-    float acc_x, acc_y; // Accelerate
-    int animate_frame_counter;
-} mario;
-
-enum mush_state{MUSH_NORMAL, MUSH_ANIMATE};
-
-typedef struct {
-    int enable;
-	int loaded;
-	int x_block;
-	int y_block;
-    hit_box hit;
-    ppu_obj_info vis;
-    enum mush_state mush_s;
-    float acc_x, acc_y; // Accelerate
-    int animate_frame_counter;
-} mush;
-
-enum coin_state{COIN_NORMAL, COIN_ANIMATE};
 
 typedef struct {
-    int enable;
-	int loaded;
-    hit_box hit;
-    ppu_obj_info vis;
-    enum coin_state coin_s;
-    int animate_frame_counter;
-} coin;
-
-enum goomba_state{GOOMBA_NORMAL, GOOMBA_ANIMATE};
+	float x, y;
+	int width, height;
+} PositionComponent;
 
 typedef struct {
-    int enable;
-	int loaded;
-	int x_block;
-	int y_block;
-    hit_box hit;
-    ppu_obj_info vis;
-    enum goomba_state goomba_s;
-    float acc_x, acc_y; // Accelerate
-    int r_limit, l_limit;
-    int animate_frame_counter;
-} goomba;
-
-enum block_type{TYPE_A, TYPE_B_1, TYPE_B_2, TYPE_B_3, TYPE_B_4, TYPE_B_16, TYPE_A_H_8, OBJ_C, OBJ_M, EMP};
-enum block_state{BLOCK_NORMAL, BLOCK_ANIMATE};
+	float vx, vy;
+	float ax, ay; 
+} MotionComponent;
 
 typedef struct {
-    int enable;
-	int loaded;
-	int extra_info;
-	int L;
-	int R;
-	int U;
-	int D;
-    hit_box hit;
-    ppu_obj_info vis;
-    enum block_type block_t;
-    enum block_state block_s;
-    int animate_frame_counter;
-} block;
+	uint32_t pattern_code;
+	int visible;
+	int flip;
+} RenderComponent;
 
 typedef struct {
-    hit_box hit;
-} ground;
+	int active; 
+	int state;
+	int animate_frame_counter;
+	int type;  
+} StateComponent;
 
 typedef struct {
-	int enable;
-	int loaded;
-    hit_box hit;
-    ppu_obj_info vis;
-} tube;
+	PositionComponent position;
+	MotionComponent motion;
+	RenderComponent render;
+	StateComponent state;
+} Entity;
+
 
 typedef struct {
-    int enable;
-	int loaded;
-	hit_box hit;
-    ppu_obj_info vis;
-} cloud;
-
-#define LOAD_LIMIT (5*16)
-#define CAMERA_SIZE (30*16)
-enum game_state{GAME_START, GAME_NORMAL, GAME_END};
-typedef struct {
-	enum game_state game_s;
 	int camera_pos;
-	mario mario_0;
-	ground ground_list[GROUND_NUM];
-	block block_list[BLOCK_NUM];
-	coin coin_list[COIN_NUM];
-    mush mush_list[MUSH_NUM];
-    goomba goomba_list[GOOMBA_NUM];
-    tube tube_list[TUBE_NUM];
-    cloud cloud_list[CLOUD_NUM];
-} mario_game;
+	int game_state;
+	Entity entities[MAX_ENTITIES];
+} Game;
 
 
+enum {
+	GAME_START,
+	GAME_NORMAL,
+	GAME_END
+};
 
-enum contact hitbox_contact(const hit_box *A, const hit_box *B);
-void new_game(mario_game *game);
 
-#endif
+void new_game(Game *game); 
+int compare_entity_position(const void *a, const void *b);
+enum contact hitbox_contact(const Entity *A, const Entity *B);
+
+#endif 

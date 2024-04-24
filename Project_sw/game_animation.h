@@ -1,5 +1,5 @@
-#ifndef _MARIO_GAME_ANIMATION
-#define _MARIO_GAME_ANIMATION
+#ifndef _GAME_ANIMATION_H
+#define _GAME_ANIMATION_H
 
 #include "game_struct.h"
 
@@ -65,11 +65,19 @@
 #define ANI_COIN_3 2
 #define ANI_COIN_4 3
 
-void mario_animation(mario_game *game_0, mario* mario_0, int f_counter);
-void mush_animation(mario_game *game_0, mush* mush_0, int f_counter);
-void goomba_animation(mario_game *game_0, goomba* goomba_0, int f_counter);
-void tube_animation(mario_game *game_0, tube* tube_0, int f_counter);
-void block_animation(mario_game *game_0, block* block_0, int f_counter);
-void cloud_animation(mario_game *game_0, cloud* cloud_0, int f_counter);
-void coin_animation(mario_game *game_0, coin* coin_0, int f_counter);
-#endif
+// Function pointer type for entity animation functions
+typedef void (*AnimateFunc)(Game *game, Entity *entity, int f_counter);
+
+// Animation function declarations
+void animate_mario(Game *game, Entity *entity, int f_counter);
+void animate_mushroom(Game *game, Entity *entity, int f_counter);
+void animate_goomba(Game *game, Entity *entity, int f_counter);
+void animate_block(Game *game, Entity *entity, int f_counter);
+void animate_coin(Game *game, Entity *entity, int f_counter);
+void animate_tube(Game *game, Entity *entity, int f_counter);
+void animate_cloud(Game *game, Entity *entity, int f_counter);
+
+// Generic function to animate any entity
+void animate_entity(Game *game, Entity *entity, int f_counter);
+
+#endif // _GAME_ANIMATION_H

@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
 	unsigned char xl, xh, yl, yh;
-} vga_ball_coordinate_t;  
+} vga_ball_coordinate_t;
 
 typedef struct {
   vga_ball_color_t background;

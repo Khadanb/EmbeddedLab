@@ -1,246 +1,262 @@
 #include "game_animation.h"
-#include "game_struct.h"
 
-
-void mario_animation(mario_game *game_0, mario* mario_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	float dead_acc, dead_v;
-	dead_v = -4.7; dead_acc = 0.16;
-	counter = (f_counter >= mario_0->animate_frame_counter)? f_counter : f_counter + FRAME_LIMIT;
-	rel_counter = counter - mario_0->animate_frame_counter;
-	if (mario_0->control_s == MARIO_NORMAL) {
-		if (mario_0->y_block == 1){
-			if (mario_0->acc_x == 0) mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_NORMAL : ANI_MARIO_L_NORMAL;
-			else if ((mario_0->acc_x) * (mario_0->hit.vx) < 0) 
-				mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_SHUT : ANI_MARIO_L_SHUT;
-			else {
-				ani_div = (counter/6)%3;
-				switch (ani_div){
-					case 0:
-						mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_WALK1 : ANI_MARIO_L_WALK1;
-						break;
-					case 1:
-						mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_WALK2 : ANI_MARIO_L_WALK2;
-						break;
-					case 2:
-						mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_WALK3 : ANI_MARIO_L_WALK3;
-						break;
-					default:
-						mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_NORMAL : ANI_MARIO_L_NORMAL;
-				}	
-			}
-		}
-		else 
-			mario_0->vis.pattern_code = (mario_0->mario_s == SMALL)? ANI_MARIO_S_JUMP : ANI_MARIO_L_JUMP;
-	}
-	else{
-		switch (mario_0->animate_s){
-			case HIT:
-				ani_div = (rel_counter/3)%2;
-				if(rel_counter == 0) mario_0->hit.y += 3;
-				else if (rel_counter <= 20) mario_0->vis.pattern_code = (ani_div == 0)? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
-				else {mario_0->control_s = MARIO_NORMAL; mario_0->mario_s = SMALL; mario_0->hit.sy = 16; mario_0->game_s = MARIO_GMAE_HIT;}
+void animate_entity(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active && entity->render.visible) {
+		switch (entity->state.type) {
+			case TYPE_MARIO_SMALL:
+			case TYPE_MARIO_LARGE:
+				animate_mario(game, entity, f_counter);
 				break;
-			case ENLARGE:
-				ani_div = (rel_counter/3)%2;
-				if(rel_counter == 0) mario_0->hit.y -= 20;
-				else if (rel_counter <= 15) mario_0->vis.pattern_code = (ani_div == 0)? ANI_MARIO_S_NORMAL : ANI_MARIO_M_NORMAL;
-				else if (rel_counter <= 30) mario_0->vis.pattern_code = (ani_div == 0)? ANI_MARIO_L_NORMAL : ANI_MARIO_M_NORMAL;
-				else {mario_0->control_s = MARIO_NORMAL; mario_0->mario_s = LARGE; mario_0->hit.sy = 32;}
+			case TYPE_MUSHROOM:
+				animate_mushroom(game, entity, f_counter);
 				break;
-			case ANI_DEAD:
-				mario_0->vis.pattern_code =ANI_MARIO_S_DEAD;
-				if(rel_counter == 0) {mario_0->hit.vy = dead_v;}
-				else if(rel_counter >= 30){
-					mario_0->hit.y += mario_0->hit.vy; mario_0->hit.vy += dead_acc;
-					if (mario_0->hit.y > 500) mario_0->mario_s = DEAD;
-				}
+			case TYPE_GOOMBA:
+				animate_goomba(game, entity, f_counter);
+				break;
+			case TYPE_BLOCK_A:
+			case TYPE_BLOCK_B_1:
+			case TYPE_BLOCK_B_2:
+			case TYPE_BLOCK_B_3:
+			case TYPE_BLOCK_B_4:
+			case TYPE_BLOCK_B_16:
+			case TYPE_BLOCK_A_H_8:
+			case TYPE_BLOCK_OBJ_C:
+			case TYPE_BLOCK_OBJ_M:
+				animate_block(game, entity, f_counter);
+				break;
+			case TYPE_COIN:
+				animate_coin(game, entity, f_counter);
+				break;
+			case TYPE_TUBE:
+				animate_tube(game, entity, f_counter);
+				break;
+			case TYPE_CLOUD:
+				animate_cloud(game, entity, f_counter);
+				break;
+			case TYPE_GROUND:
 				break;
 			default:
 				break;
-				
 		}
 	}
+}
 
-	if (rel_counter > 120 && mario_0->game_s == MARIO_GMAE_HIT) {mario_0->game_s = MARIO_GAME_NORMAL;}
-	
-	mario_0->vis.visible = (mario_0->game_s == MARIO_GAME_NORMAL)? 1 : ((counter/8)%2 == 0)? 1 : 0;
-	// game_0.mario_0.vis.flip = 0;
-	// game_0.mario_0.vis.pattern_code = 0;
-	mario_0->vis.x = mario_0->hit.x - game_0->camera_pos;
-	mario_0->vis.y = mario_0->hit.y;
-	return;
-}
-void mush_animation(mario_game *game_0, mush* mush_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	counter = (f_counter >= mush_0->animate_frame_counter)? f_counter : f_counter + FRAME_LIMIT;
-	rel_counter = counter - mush_0->animate_frame_counter;
-	if (mush_0->mush_s == MUSH_NORMAL) {
-		mush_0->vis.pattern_code = ANI_MUSH_NORMAL;
-	}
-	else{
-		mush_0->vis.pattern_code = ANI_MUSH_NORMAL;
-		if (rel_counter < 40) mush_0->hit.y -= 0.5;
-		else mush_0->mush_s = MUSH_NORMAL;
-	}
-	
-	// mush_0->vis.visible = 1;
-	mush_0->vis.x = mush_0->hit.x - game_0->camera_pos;
-	mush_0->vis.y = mush_0->hit.y;
-	return;
-}
-void goomba_animation(mario_game *game_0, goomba* goomba_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	counter = (f_counter >= goomba_0->animate_frame_counter)? f_counter : f_counter + FRAME_LIMIT;
-	rel_counter = counter - goomba_0->animate_frame_counter;
-	
-	if (goomba_0->goomba_s == GOOMBA_NORMAL){
-		ani_div = (counter/7)%2;
-		goomba_0->vis.pattern_code = ANI_GOOMBA_NORMAL;
-		goomba_0->vis.flip = ani_div;
-	} 
-	
-	else{
-		if (rel_counter == 0){ goomba_0->hit.y += 8;}
-		else if (rel_counter >= 25){ goomba_0->enable = 0;}
-		goomba_0->vis.pattern_code = ANI_GOOMBA_HIT;
-	}
+void animate_mario(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active && entity->render.visible) {
+		int frame_count = FRAME_LIMIT;
+		int counter = f_counter % frame_count;
+		int rel_counter = counter - entity->state.animate_frame_counter;
+		entity->state.animate_frame_counter = counter;
 
-	goomba_0->vis.x = goomba_0->hit.x - game_0->camera_pos;
-	goomba_0->vis.y = goomba_0->hit.y;
+		float dead_v = -4.7f;
+		float dead_acc = 0.16f;
+
+		switch (entity->state.state) {
+			case STATE_NORMAL:
+				if (entity->motion.ax == 0) {
+					entity->render.pattern_code = ANI_MARIO_S_NORMAL;
+				} else if (entity->motion.ax * entity->motion.vx < 0) {
+					entity->render.pattern_code = ANI_MARIO_S_SHUT;
+				} else {
+					int ani_div = (counter / 6) % 3;
+					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
+												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
+												  ANI_MARIO_S_WALK3;
+				}
+				break;
+			case STATE_HIT:
+				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
+				if (rel_counter == 0) entity->position.y += 3;
+				if (rel_counter > 20) entity->state.state = STATE_NORMAL;
+				break;
+			case STATE_ENLARGE:
+				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_M_NORMAL : ANI_MARIO_L_NORMAL;
+				if (rel_counter == 0) entity->position.y -= 20;
+				if (rel_counter > 30) entity->state.state = STATE_NORMAL;
+				break;
+			case STATE_DEAD:
+				entity->render.pattern_code = ANI_MARIO_S_DEAD;
+				if (rel_counter == 0) entity->motion.vy = dead_v;
+				else if (rel_counter > 30) {
+					entity->position.y += entity->motion.vy;
+					entity->motion.vy += dead_acc;
+					if (entity->position.y > 500) entity->state.state = STATE_DEAD;
+				}
+				break;
+		}
+
+		entity->render.visible = entity->state.state == STATE_NORMAL ? 1 : (counter / 8) % 2;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+	}
 }
-void tube_animation(mario_game *game_0, tube* tube_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	tube_0->vis.visible = 1;
-	tube_0->vis.x = tube_0->hit.x - game_0->camera_pos;
-	tube_0->vis.y = tube_0->hit.y;
-}
-void block_animation(mario_game *game_0, block* block_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	counter = (f_counter >= block_0->animate_frame_counter)? f_counter : f_counter + FRAME_LIMIT;
-	rel_counter = counter - block_0->animate_frame_counter;
-	switch (block_0->block_t){
-		case TYPE_A:
-			if (block_0->block_s == BLOCK_NORMAL) {
-				block_0->vis.pattern_code = ANI_BLOCK_A1;
+
+void animate_mushroom(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		int frame_count = FRAME_LIMIT;
+
+		int rel_counter = (f_counter - entity->state.animate_frame_counter + frame_count) % frame_count;
+
+		if (entity->state.state == STATE_NORMAL) {
+			entity->render.pattern_code = ANI_MUSH_NORMAL;
+		} else if (entity->state.state == STATE_ANIMATE) {
+			entity->render.pattern_code = ANI_MUSH_NORMAL;
+			if (rel_counter < 40) {
+				entity->position.y -= 0.5;
+			} else {
+				entity->state.state = STATE_NORMAL;
 			}
-			else{
-				if (rel_counter <= 8) block_0->hit.y += (rel_counter - 8) * 0.3;
-				else if (rel_counter <= 12) block_0->vis.pattern_code = ANI_BLOCK_A_HIT;
-				else block_0->enable = 0;
-			}
-			break;
-		case TYPE_B_1:
-			block_0->vis.pattern_code = ANI_BLOCK_B;
-			break;		
-		case TYPE_B_2:
-			block_0->vis.pattern_code = ANI_BLOCK_B_V2;
-			break;
-		case TYPE_B_3:
-			block_0->vis.pattern_code = ANI_BLOCK_B_V3;
-			break;
-		case TYPE_B_4:
-			block_0->vis.pattern_code = ANI_BLOCK_B_V4;
-			break;
-		case TYPE_B_16:
-			block_0->vis.pattern_code = ANI_BLOCK_B_16;
-			break;
-		case TYPE_A_H_8:
-			block_0->vis.pattern_code = ANI_BLOCK_A_H8;
-			break;
+		}
 
-		case OBJ_C:
-			ani_div = (counter/8)%4;
-			if (block_0->block_s == BLOCK_NORMAL) {
-				switch (ani_div){
-					case 0:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM1;
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+	}
+}
+
+void animate_goomba(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		int frame_count = FRAME_LIMIT;
+
+		int rel_counter = (f_counter - entity->state.animate_frame_counter + frame_count) % frame_count;
+
+		if (entity->state.state == STATE_NORMAL) {
+			int ani_div = (f_counter / 7) % 2;
+			entity->render.pattern_code = ANI_GOOMBA_NORMAL;
+			entity->render.flip = ani_div;
+		} else if (entity->state.state == STATE_ANIMATE) {
+			if (rel_counter == 0) {
+				entity->position.y += 8;
+			} else if (rel_counter >= 25) {
+				entity->state.active = 0;
+			}
+			entity->render.pattern_code = ANI_GOOMBA_HIT;
+		}
+
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+	}
+}
+
+void animate_tube(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+	}
+}
+
+void animate_block(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		int frame_count = FRAME_LIMIT;
+		int counter = (f_counter >= entity->state.animate_frame_counter) ?
+					  f_counter : f_counter + frame_count;
+		int rel_counter = counter - entity->state.animate_frame_counter;
+
+		switch (entity->state.state) {
+			case STATE_NORMAL:
+				switch (entity->state.type) {
+					case TYPE_BLOCK_A:
+						entity->render.pattern_code = ANI_BLOCK_A1;
 						break;
-					case 1:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM2;
+					case TYPE_BLOCK_B_1:
+						entity->render.pattern_code = ANI_BLOCK_B;
 						break;
-					case 2:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM3;
+					case TYPE_BLOCK_B_2:
+						entity->render.pattern_code = ANI_BLOCK_B_V2;
+						break;
+					case TYPE_BLOCK_B_3:
+						entity->render.pattern_code = ANI_BLOCK_B_V3;
+						break;
+					case TYPE_BLOCK_B_4:
+						entity->render.pattern_code = ANI_BLOCK_B_V4;
+						break;
+					case TYPE_BLOCK_B_16:
+						entity->render.pattern_code = ANI_BLOCK_B_16;
+						break;
+					case TYPE_BLOCK_A_H_8:
+						entity->render.pattern_code = ANI_BLOCK_A_H8;
+						break;
+					case TYPE_BLOCK_OBJ_C:
+					case TYPE_BLOCK_OBJ_M:
+						entity->render.pattern_code = ANI_BLOCK_ITEM1;
 						break;
 					default:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM2;
+						entity->render.pattern_code = ANI_BLOCK_ITEM_EMP;
+						break;
 				}
-			}
-			else{
-				if (rel_counter < 4) {block_0->hit.y -= 1; block_0->vis.pattern_code = ANI_BLOCK_ITEM_HIT;}
-				else if (rel_counter < 8) {block_0->hit.y += 1; block_0->vis.pattern_code = ANI_BLOCK_ITEM_HIT;}
-				else {block_0->block_t = EMP;}
-			}
-			break;
+				break;
+			case STATE_ANIMATE:
 
-		case OBJ_M:
-			ani_div = (counter/8)%4;
-			if (block_0->block_s == BLOCK_NORMAL) {
-				switch (ani_div){
-					case 0:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM1;
-						break;
-					case 1:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM2;
-						break;
-					case 2:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM3;
-						break;
-					default:
-						block_0->vis.pattern_code = ANI_BLOCK_ITEM2;
+				if (rel_counter < 4) {
+					entity->position.y -= 1;
+					entity->render.pattern_code = ANI_BLOCK_ITEM_HIT;
+				} else if (rel_counter < 8) {
+					entity->position.y += 1;
+					entity->render.pattern_code = ANI_BLOCK_ITEM_HIT;
+				} else {
+					entity->state.state = STATE_NORMAL;
 				}
-			}
-			else{
-				if (rel_counter < 4) {block_0->hit.y -= 1; block_0->vis.pattern_code = ANI_BLOCK_ITEM_HIT;}
-				else if (rel_counter < 8) {block_0->hit.y += 1; block_0->vis.pattern_code = ANI_BLOCK_ITEM_HIT;}
-				else {block_0->block_t = EMP;}
-			}
-			break;
+				break;
+			default:
+				entity->render.pattern_code = ANI_BLOCK_ITEM_EMP;
+				break;
+		}
 
-		default:
-			block_0->vis.pattern_code = ANI_BLOCK_ITEM_EMP;
-			break;
-	}	
-	// block_0->vis.visible = 1;
-	block_0->vis.x = block_0->hit.x - game_0->camera_pos;
-	block_0->vis.y = block_0->hit.y;
-	return;
-}
-void cloud_animation(mario_game *game_0, cloud* cloud_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	cloud_0->vis.visible = 1;
-	cloud_0->vis.x = cloud_0->hit.x - game_0->camera_pos;
-	cloud_0->vis.y = cloud_0->hit.y;
-}
-void coin_animation(mario_game *game_0, coin* coin_0, int f_counter){
-	int counter, ani_div, rel_counter;
-	counter = (f_counter >= coin_0->animate_frame_counter)? f_counter : f_counter + FRAME_LIMIT;
-	rel_counter = counter - coin_0->animate_frame_counter;
-	if (coin_0->coin_s == COIN_NORMAL) {
-		ani_div = (counter/6)%4;
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
 	}
-	else{
-		ani_div = (counter/2)%4;
-		if (rel_counter <= 20) coin_0->hit.y += (rel_counter - 20) * 0.17;
-		else if (rel_counter > 35) coin_0->enable = 0;
-	}
+}
 
-	switch (ani_div){
-		case 0:
-			coin_0->vis.pattern_code = ANI_COIN_1;
-			break;
-		case 1:
-			coin_0->vis.pattern_code = ANI_COIN_2;
-			break;
-		case 2:
-			coin_0->vis.pattern_code = ANI_COIN_3;
-			break;
-		default:
-			coin_0->vis.pattern_code = ANI_COIN_4;
-	}	
-	
-	// coin_0->vis.visible = 1;
-	coin_0->vis.x = coin_0->hit.x - game_0->camera_pos;
-	coin_0->vis.y = coin_0->hit.y;
-	return;
+void animate_cloud(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+
+
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+		entity->render.pattern_code = ANI_CLOUD_NORMAL;
+	}
 }
+
+void animate_coin(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		int frame_count = FRAME_LIMIT;
+		int counter = (f_counter >= entity->state.animate_frame_counter) ?
+					  f_counter : entity->state.animate_frame_counter + frame_count;
+		int rel_counter = counter - entity->state.animate_frame_counter;
+		int ani_div;
+
+		if (entity->state.state == STATE_NORMAL) {
+			ani_div = (counter / 6) % 4;
+		} else {
+			ani_div = (counter / 2) % 4;
+			if (rel_counter <= 20) {
+				entity->position.y += (rel_counter - 20) * 0.17;
+			} else if (rel_counter > 35) {
+				entity->state.active = 0;
+			}
+		}
+
+		switch (ani_div) {
+			case 0:
+				entity->render.pattern_code = ANI_COIN_1;
+				break;
+			case 1:
+				entity->render.pattern_code = ANI_COIN_2;
+				break;
+			case 2:
+				entity->render.pattern_code = ANI_COIN_3;
+				break;
+			default:
+				entity->render.pattern_code = ANI_COIN_4;
+		}
+
+		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+	}
+}
+
