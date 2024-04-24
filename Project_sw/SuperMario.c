@@ -84,7 +84,7 @@ void flush_entity(const Entity *entity, int frame_select) {
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
 
-	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
+	for (entity_index = 0; entity_index < MAX_ENTITIES - 1; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
 
 		if (entity->state.active && entity->render.visible) {
@@ -111,7 +111,7 @@ void flush_frame(Game *game, int frame_select) {
 
 void entity_activation_update(Game *game, int camera_pos){
 	int entity_index;
-	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
+	for (entity_index = 0; entity_index < MAX_ENTITIES - 1; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
 
 
@@ -262,7 +262,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->position.y += mario->motion.vy;
 
 
-	for (int i = 1; i < MAX_ENTITIES; i++) {
+	for (int i = 1; i < MAX_ENTITIES - 1; i++) {
 		Entity *other = &game->entities[i];
 
 		if (other == NULL || !other->state.active) continue;
@@ -321,7 +321,7 @@ void process_mushroom_logic(Entity *mushroom, Game *game) {
 	mushroom->motion.ay = GRAVITY;
 	mushroom->motion.vx = (mushroom->render.flip == 0) ? MAX_SPEED_H * 0.5 : -MAX_SPEED_H * 0.5;
 
-	for (int i = 0; i < MAX_ENTITIES; i++) {
+	for (int i = 0; i < MAX_ENTITIES - 1; i++) {
 		Entity *other = &game->entities[i];
 		if (other == NULL || !other->state.active) continue;
 
@@ -376,7 +376,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 
 	goomba->motion.vx = (goomba->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
 
-	for (int i = 0; i < MAX_ENTITIES; i++) {
+	for (int i = 0; i < MAX_ENTITIES - 1; i++) {
 		Entity *other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == goomba) continue;
 
@@ -435,7 +435,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 }
 
 void process_block_logic(Entity *block, Game *game) {
-	for (int i = 0; i < MAX_ENTITIES; i++) {
+	for (int i = 0; i < MAX_ENTITIES - 1; i++) {
 		Entity *entity = &game->entities[i];
 		if (entity == block || !entity->state.active) continue;
 
@@ -450,7 +450,7 @@ void process_block_logic(Entity *block, Game *game) {
 
 				if (block->state.type == TYPE_BLOCK_OBJ_C || block->state.type == TYPE_BLOCK_OBJ_M) {
 					int entityAdded = 0;
-					for (int j = 0; j < MAX_ENTITIES && !entityAdded; j++) {
+					for (int j = 0; j < MAX_ENTITIES - 1 && !entityAdded; j++) {
 						if (!game->entities[j].state.active) {
 							Entity *newItem = &game->entities[j];
 							newItem->position.x = block->position.x;
@@ -513,7 +513,7 @@ int main() {
 
 		entity_activation_update(&game, game.camera_pos);
 
-		for (int i = 0; i < MAX_ENTITIES; i++) {
+		for (int i = 0; i < MAX_ENTITIES - 1; i++) {
 			Entity *entity = &game.entities[i];
 
 			if (!entity) continue;
