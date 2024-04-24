@@ -505,10 +505,11 @@ int main() {
 			game.camera_pos = (game.camera_pos > 0) ? game.camera_pos : 0;
 		}
 
-		// if (mario->state.state == STATE_DEAD) {
-		// 	new_game(&game);
-		// 	continue;
-		// }
+		if (mario->state.state == STATE_DEAD) {
+			printf("Mario Died!\n");
+			new_game(&game);
+			continue;
+		}
 
 		entity_activation_update(&game, game.camera_pos);
 
