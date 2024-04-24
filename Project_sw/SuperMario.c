@@ -522,16 +522,16 @@ int main() {
 				switch (entity->state.type) {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
-						printf("MARIO\n");
-						process_mario_logic(entity, &game);
+						// printf("MARIO\n");
+						// process_mario_logic(entity, &game);
 						break;
 					case TYPE_MUSHROOM:
-						printf("MUSH\n");
-						process_mushroom_logic(entity, &game);
+						// printf("MUSH\n");
+						// process_mushroom_logic(entity, &game);
 						break;
 					case TYPE_GOOMBA:
-						printf("GOOMBA\n");
-						process_goomba_logic(entity, &game);
+						// printf("GOOMBA\n");
+						// process_goomba_logic(entity, &game);
 						break;
 					case TYPE_BLOCK_A:
 					case TYPE_BLOCK_B_1:
@@ -546,16 +546,16 @@ int main() {
 						process_block_logic(entity, &game);
 						break;
 					case TYPE_COIN:
-						printf("COIN\n");
+						// printf("COIN\n");
 						break;
 					case TYPE_TUBE:
-						printf("TUBE\n");
+						// printf("TUBE\n");
 						break;
 					case TYPE_CLOUD:
-						printf("CLOUD\n");
+						// printf("CLOUD\n");
 						break;
 					case TYPE_GROUND:
-						printf("GROUND\n");
+						// printf("GROUND\n");
 						break;
 					default:
 						break;
