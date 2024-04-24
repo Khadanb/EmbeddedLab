@@ -33,9 +33,9 @@
 #define GROUND_3_W 800
 
 
-#define HOLE_0_R 527 
-#define HOLE_1_L 1504 
-#define HOLE_2_R 2175 
+#define HOLE_0_R 527
+#define HOLE_1_L 1504
+#define HOLE_2_R 2175
 
 
 #define WALK_ACC (0.09)
@@ -67,7 +67,7 @@ enum EntityState {
 };
 
 enum contact {
-    NONE, LEFT, RIGHT, UP, DOWN
+	NONE, LEFT, RIGHT, UP, DOWN
 };
 
 enum EntityType {
@@ -88,7 +88,7 @@ enum EntityType {
 	TYPE_TUBE,
 	TYPE_CLOUD,
 	TYPE_GROUND,
-	TYPE_EMP  
+	TYPE_EMP
 };
 
 
@@ -99,7 +99,7 @@ typedef struct {
 
 typedef struct {
 	float vx, vy;
-	float ax, ay; 
+	float ax, ay;
 } MotionComponent;
 
 typedef struct {
@@ -109,10 +109,10 @@ typedef struct {
 } RenderComponent;
 
 typedef struct {
-	int active; 
+	int active;
 	int state;
 	int animate_frame_counter;
-	int type;  
+	int type;
 } StateComponent;
 
 typedef struct {
@@ -137,8 +137,8 @@ enum {
 };
 
 
-void new_game(Game *game); 
+void new_game(Game *game);
 int compare_entity_position(const void *a, const void *b);
 enum contact hitbox_contact(const Entity *A, const Entity *B);
 
-#endif 
+#endif

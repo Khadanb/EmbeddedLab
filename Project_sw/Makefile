@@ -1,16 +1,16 @@
 ifneq (${KERNELRELEASE},)
 
 # KERNELRELEASE defined: we are being compiled as part of the Kernel
-        obj-m := vga_ball.o
+		obj-m := vga_ball.o
 
-	
+
 
 else
 
 # We are being compiled as a module: use the Kernel build system
 
 	KERNEL_SOURCE := /usr/src/linux-headers-$(shell uname -r)
-        PWD := $(shell pwd)
+		PWD := $(shell pwd)
 
 default: module SuperMario
 
@@ -30,4 +30,4 @@ clean:
 	${MAKE} -C ${KERNEL_SOURCE} SUBDIRS=${PWD} clean
 	${RM} SuperMario
 
-endif 
+endif

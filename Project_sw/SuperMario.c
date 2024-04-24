@@ -215,10 +215,10 @@ void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type)
 }
 
 void handle_collision_with_block(Entity *mario, Entity *other, enum contact type) {
-    if (type == UP) {
-        other->state.state = BLOCK_ANIMATE; 
-        mario->motion.vy = 0; 
-    }
+	if (type == UP) {
+		other->state.state = BLOCK_ANIMATE;
+		mario->motion.vy = 0;
+	}
 }
 
 void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type) {

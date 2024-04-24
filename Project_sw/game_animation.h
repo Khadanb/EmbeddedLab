@@ -6,7 +6,7 @@
 // Frame Limit
 #define FRAME_LIMIT 6000
 
-// Mario Animation 
+// Mario Animation
 #define ANI_MARIO_S_NORMAL 0
 #define ANI_MARIO_S_WALK1 1
 #define ANI_MARIO_S_WALK2 2
@@ -29,7 +29,7 @@
 
 // Mush Animation
 #define ANI_MUSH_NORMAL 0
- 
+
 // Goomba Animation
 #define ANI_GOOMBA_NORMAL 0
 #define ANI_GOOMBA_HIT 1
@@ -37,7 +37,7 @@
 // Tube Animation
 #define ANI_TUBE_H 0
 #define ANI_TUBE_B 1
- 
+
 // Block Animation
 #define ANI_BLOCK_ITEM1 0
 #define ANI_BLOCK_ITEM2 1
@@ -55,11 +55,11 @@
 #define ANI_BLOCK_B_V3 13
 #define ANI_BLOCK_B_V4 14
 #define ANI_BLOCK_B_16 15
- 
+
 // Cloud Animation
 #define ANI_CLOUD_NORMAL 0
 
-// Coin Animation  
+// Coin Animation
 #define ANI_COIN_1 0
 #define ANI_COIN_2 1
 #define ANI_COIN_3 2
