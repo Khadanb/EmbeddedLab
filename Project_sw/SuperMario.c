@@ -467,7 +467,6 @@ void process_block_logic(Entity *block, Game *game) {
 							newItem->state.active = 1;
 							newItem->state.state = STATE_NORMAL;
 							newItem->state.type = (block->state.type == TYPE_BLOCK_OBJ_C) ? TYPE_COIN : TYPE_MUSHROOM;
-							animate_entity(game, newItem, game->game_state);
 							entityAdded = 1;
 						}
 					}

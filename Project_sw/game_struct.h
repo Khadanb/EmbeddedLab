@@ -13,7 +13,6 @@
 #define CAMERA_SIZE (30*16)
 #define GROUND_LEVEL 368
 
-
 #define BLOCK_NUM 45
 #define MUSH_NUM 3
 #define GOOMBA_NUM 10
@@ -21,7 +20,6 @@
 #define GROUND_NUM 4
 #define TUBE_NUM 5
 #define COIN_NUM 25
-
 
 #define GROUND_0_L 0
 #define GROUND_0_W 448
@@ -32,21 +30,15 @@
 #define GROUND_3_L 2176
 #define GROUND_3_W 800
 
-
 #define HOLE_0_R 527
 #define HOLE_1_L 1504
 #define HOLE_2_R 2175
-
 
 #define WALK_ACC (0.09)
 #define SHUT_ACC (0.12)
 #define JUMP_INIT_V_SMALL (4.6)
 #define JUMP_INIT_V_LARGE (5.6)
 #define MAX_SPEED_V_JUMP (8.1)
-
-
-
-
 
 #define BLOCK_VIS_LIMIT 9
 #define COIN_VIS_LIMIT 4
