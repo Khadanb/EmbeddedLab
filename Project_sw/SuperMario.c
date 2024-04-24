@@ -87,13 +87,13 @@ void flush_frame(Game *game, int frame_select) {
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
 
-		if (entity && entity->state.active && entity->render.visible) {
+		if (entity->state.active && entity->render.visible) {
 
-			// if (entity->position.x >= game->camera_pos &&
-			// 	entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
+			if (entity->position.x >= game->camera_pos &&
+				entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
 
 				flush_entity(entity, frame_select);
-			
+			}
 		}
 	}
 
@@ -521,12 +521,15 @@ int main() {
 				switch (entity->state.type) {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
+						printf("MARIO\n");
 						process_mario_logic(entity, &game);
 						break;
 					case TYPE_MUSHROOM:
+						printf("MUSH\n");
 						process_mushroom_logic(entity, &game);
 						break;
 					case TYPE_GOOMBA:
+						printf("GOOMBA\n");
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_BLOCK_A:
@@ -538,15 +541,20 @@ int main() {
 					case TYPE_BLOCK_A_H_8:
 					case TYPE_BLOCK_OBJ_C:
 					case TYPE_BLOCK_OBJ_M:
+						printf("BLOCK");
 						process_block_logic(entity, &game);
 						break;
 					case TYPE_COIN:
+						printf("COIN");
 						break;
 					case TYPE_TUBE:
+						printf("TUBE");
 						break;
 					case TYPE_CLOUD:
+						printf("CLOUD");
 						break;
 					case TYPE_GROUND:
+						printf("GROUND");
 						break;
 					default:
 						break;
