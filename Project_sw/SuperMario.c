@@ -323,7 +323,7 @@ void process_mushroom_logic(Entity *mushroom, Game *game) {
 
 	for (int i = 0; i < MAX_ENTITIES; i++) {
 		Entity *other = &game->entities[i];
-		if (other == NULL || !other->state.active || other == mushroom) continue;
+		if (other == NULL || !other->state.active) continue;
 
 		enum contact contactType = hitbox_contact(mushroom, other);
 		if (contactType != NONE) {
@@ -566,7 +566,7 @@ int main() {
 		flush_frame(&game, frame_select);
 		frame_select = !frame_select;
 
-		usleep(50000);
+		sleep(1);
 	}
 
 	pthread_cancel(input_thread);
