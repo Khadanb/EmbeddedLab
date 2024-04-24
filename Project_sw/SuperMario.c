@@ -65,11 +65,9 @@ void flush_entity(const Entity *entity, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 
-
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
-
 
 	if (entity->state.type == TYPE_TUBE && pattern_code == ANI_TUBE_H) {
 
@@ -82,15 +80,12 @@ void flush_entity(const Entity *entity, int frame_select) {
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
 
-
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
-
 
 		if (entity->state.active && entity->render.visible) {
 
 			animate_entity(game, entity, frame_counter);
-
 
 			if (entity->position.x >= game->camera_pos &&
 				entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
@@ -100,9 +95,7 @@ void flush_frame(Game *game, int frame_select) {
 		}
 	}
 
-
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (0xf << 17) + (frame_select << 13)));
-
 
 	frame_counter = (frame_counter >= FRAME_LIMIT) ? 0 : frame_counter + 1;
 	if (sound_new == 1) {
@@ -486,7 +479,6 @@ void process_block_logic(Entity *block, Game *game) {
 
 int main() {
 	pthread_t input_thread;
-	int vga_ball_fd;
 	Game game;
 	const char *device_path = "/dev/vga_ball";
 	int frame_select = 0;
@@ -561,8 +553,6 @@ int main() {
 					default:
 						break;
 				}
-
-				animate_entity(&game, entity, game.game_state);
 			}
 		}
 
