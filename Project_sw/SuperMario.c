@@ -87,13 +87,13 @@ void flush_frame(Game *game, int frame_select) {
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
 
-		if (entity->state.active && entity->render.visible) {
+		if (entity && entity->state.active && entity->render.visible) {
 
-			if (entity->position.x >= game->camera_pos &&
-				entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
+			// if (entity->position.x >= game->camera_pos &&
+			// 	entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
 
 				flush_entity(entity, frame_select);
-			}
+			
 		}
 	}
 
