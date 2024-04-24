@@ -65,17 +65,21 @@ void flush_entity(const Entity *entity, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 
+	// Print entity type, position, and pattern code
+	printf("Entity Type: %d, Position: (%d, %d), Pattern Code: %u\n",
+		   entity->state.type, x, y, pattern_code);
+
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 
 	if (entity->state.type == TYPE_TUBE && pattern_code == ANI_TUBE_H) {
-
 		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (ANI_TUBE_B & 0x1F)));
 		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
 		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 	}
 }
+
 
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
