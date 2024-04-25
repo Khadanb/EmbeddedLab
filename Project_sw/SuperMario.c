@@ -411,7 +411,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->render.flip = 0;
     } else {
         if (mario->motion.vx != 0) {
-            mario->motion.ax = -SIGN(mario->motion.vx) * FRICTION; 
+            mario->motion.ax = -1*((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION; 
         }
     }
 
