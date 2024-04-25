@@ -33,9 +33,9 @@ enum contact hitbox_contact(const Entity *A, const Entity *B) {
 	} else if (minPenetration == rightPenetration) {
 		return LEFT;
 	} else if (minPenetration == topPenetration) {
-		return DOWN;
-	} else if (minPenetration == bottomPenetration) {
 		return UP;
+	} else if (minPenetration == bottomPenetration) {
+		return DOWN;
 	}
 
 	return NONE;
