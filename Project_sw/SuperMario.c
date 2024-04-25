@@ -410,7 +410,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     } 
 	else {
  		if (fabs(mario->motion.vx) > 0.05f) {
-            mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
+            mario->motion.ax = -1 * mario->motion.vx  * FRICTION;
         } else {
             mario->motion.vx = 0; // Stop Mario if his speed is below the threshold
         }
