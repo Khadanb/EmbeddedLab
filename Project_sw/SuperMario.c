@@ -396,13 +396,10 @@ void process_mario_logic(Entity *mario, Game *game) {
 		return;
 	}
 
-    // Apply gravity
-    mario->motion.ay = -GRAVITY;
+    // Always apply gravity
+    mario->motion.ay = GRAVITY;
 
-    // Reset horizontal acceleration
-    mario->motion.ax = 0;
-
-    // Horizontal movement control
+    // Horizontal movement based on key press
     if (current_key == KEY_LEFT) {
         mario->motion.ax = -WALK_ACC;
         mario->render.flip = 1;
@@ -410,12 +407,11 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->motion.ax = WALK_ACC;
         mario->render.flip = 0;
     } else {
-        if (mario->motion.vx != 0) {
-            mario->motion.ax = -1*((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION; 
-        }
+        // Apply friction to slow down Mario when no key is pressed
+        mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
     }
 
-    // Handle jump
+    // Jumping only if on the ground
     if (current_key == KEY_JUMP && mario->motion.vy == 0) {
         mario->motion.vy = -JUMP_INIT_V_SMALL;
     }
@@ -424,9 +420,13 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->motion.vx += mario->motion.ax;
     mario->motion.vy += mario->motion.ay;
 
-    // Clamp velocities to maximums
+    // Limit speeds
     mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+
+    // Update position
+    mario->position.x += mario->motion.vx;
+    mario->position.y += mario->motion.vy;
 
 
 
@@ -471,10 +471,6 @@ void process_mario_logic(Entity *mario, Game *game) {
 					break;
 			}
 		}
-	}
-
-	if (mario->motion.vx != 0) {
-		mario->motion.vx -= 0.01;
 	}
 
 	if (mario->position.y > GROUND_LEVEL) {
