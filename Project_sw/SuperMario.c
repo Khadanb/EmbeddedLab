@@ -396,28 +396,38 @@ void process_mario_logic(Entity *mario, Game *game) {
 		return;
 	}
 
-	mario->motion.ay = GRAVITY;
+    // Apply gravity
+    mario->motion.ay = GRAVITY;
 
-	if (current_key == KEY_LEFT) {
-		mario->motion.ax = -WALK_ACC;
-		mario->render.flip = 1;
-	} else if (current_key == KEY_RIGHT) {
-		mario->motion.ax = WALK_ACC;
-		mario->render.flip = 0;
-	}
+    // Reset horizontal acceleration
+    mario->motion.ax = 0;
 
-	if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-		mario->motion.vy = -JUMP_INIT_V_SMALL;
-	}
+    // Horizontal movement control
+    if (current_key == KEY_LEFT) {
+        mario->motion.ax = -WALK_ACC;
+        mario->render.flip = 1;
+    } else if (current_key == KEY_RIGHT) {
+        mario->motion.ax = WALK_ACC;
+        mario->render.flip = 0;
+    } else {
+        if (mario->motion.vx != 0) {
+            mario->motion.ax = -SIGN(mario->motion.vx) * FRICTION; 
+        }
+    }
 
-	mario->motion.vx += mario->motion.ax;
-	mario->motion.vy += mario->motion.ay;
+    // Handle jump
+    if (current_key == KEY_JUMP && mario->motion.vy == 0) {
+        mario->motion.vy = -JUMP_INIT_V_SMALL;
+    }
 
-	mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
-	mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+    // Update velocities
+    mario->motion.vx += mario->motion.ax;
+    mario->motion.vy += mario->motion.ay;
 
-	mario->position.x += mario->motion.vx;
-	mario->position.y += mario->motion.vy;
+    // Clamp velocities to maximums
+    mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
+    mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+
 
 
 	for (int i = 1; i < MAX_ENTITIES; i++) {
