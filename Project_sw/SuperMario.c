@@ -353,7 +353,7 @@ void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact t
 }
 
 void handle_collision_with_goomba(Entity *mario, Entity *other, enum contact type) {
-	if (type == UP) {
+	if (type == DOWN) {
 		other->state.state = STATE_DEAD;
 		mario->motion.vy = -JUMP_INIT_V_SMALL;
 	} else {
@@ -377,7 +377,7 @@ void handle_collision_with_block(Entity *mario, Entity *other, enum contact type
 void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type) {
 	if (type == LEFT || type == RIGHT) {
 		mario->motion.vx = 0;
-	} else if (type == UP) {
+	} else if (type == DOWN) {
 		mario->motion.vy = 0;
 	}
 }
@@ -399,7 +399,9 @@ void process_mario_logic(Entity *mario, Game *game) {
     // Always apply gravity
     mario->motion.ay = GRAVITY;
 	mario->motion.ax = 0;
-
+	mario->motion.vx = 0; 
+	mario->motion.vy = 0; 
+	
     // Horizontal movement based on key press
     if (current_key == KEY_LEFT) {
         mario->motion.ax = -WALK_ACC;
@@ -555,7 +557,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
 				
-					if (contactType == DOWN) {
+					if (contactType == UP) {
 
 						goomba->state.state = STATE_DEAD;
 						goomba->state.active = 0;
@@ -566,7 +568,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 					}
 					break;
 				case TYPE_MARIO_LARGE:
-					if (contactType == DOWN) {
+					if (contactType == UP) {
 						goomba->state.state = STATE_DEAD;
 						goomba->state.active = 0;
 						other->motion.vy = -JUMP_INIT_V_SMALL;
