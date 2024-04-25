@@ -398,6 +398,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 
     // Always apply gravity
     mario->motion.ay = GRAVITY;
+	mario->motion.ax = 0;
 
     // Horizontal movement based on key press
     if (current_key == KEY_LEFT) {
@@ -408,7 +409,9 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->render.flip = 0;
     } else {
         // Apply friction to slow down Mario when no key is pressed
-        mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
+		if (mario->motion.vx != 0) {
+        	mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
+		}
     }
 
     // Jumping only if on the ground
