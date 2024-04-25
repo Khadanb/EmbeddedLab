@@ -672,7 +672,6 @@ int main() {
 		}
 
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
-			//printf("Mario Died!\n");
 			new_game(&game);
 			continue;
 		}
