@@ -39,7 +39,7 @@
 #define JUMP_INIT_V_SMALL (4.6)
 #define JUMP_INIT_V_LARGE (5.6)
 #define MAX_SPEED_V_JUMP (8.1)
-#define FRICTION (0.2)
+#define FRICTION (0.01)
 
 #define BLOCK_VIS_LIMIT 9
 #define COIN_VIS_LIMIT 4
