@@ -4,82 +4,41 @@
 #include <math.h>
 
 enum contact hitbox_contact(const Entity *A, const Entity *B) {
-    float AL, AR, AU, AD, BL, BR, BU, BD;
-    float ALP, ARP, AUP, ADP;
-    float xv_r, yv_r;
-    float t_h, t_v;
-    int v_c, h_c; // v_c pos: DOWN, neg: UP, h_c pos: RIGHT, neg: LEFT
+	float leftA = A->position.x;
+	float rightA = A->position.x + A->position.width;
+	float topA = A->position.y;
+	float bottomA = A->position.y + A->position.height;
 
-    // Calculate B's hit box relative to (0,0)
-    BL = 0; 
-    BR = B->position.width;
-    BU = 0; 
-    BD = B->position.height;
+	float leftB = B->position.x;
+	float rightB = B->position.x + B->position.width;
+	float topB = B->position.y;
+	float bottomB = B->position.y + B->position.height;
 
-    // Calculate A's hit box relative to B
-    AL = A->position.x - B->position.x;
-    AR = AL + A->position.width;
-    AU = A->position.y - B->position.y;
-    AD = AU + A->position.height;
+	// Check for no collision
+	if (rightA <= leftB || leftA >= rightB || topA >= bottomB || bottomA <= topB) {
+		return NONE;
+	}
 
-    // Early return if A is initially touching B
-    if ((AU > BU && AU < BD && AL > BL && AL < BR) ||
-        (AU > BU && AU < BD && AR > BL && AR < BR) ||
-        (AD > BU && AD < BD && AL > BL && AL < BR) ||
-        (AD > BU && AD < BD && AR > BL && AR < BR)) {
-        return NONE; // Assume no contact if already overlapping
-    }
+	// Calculate penetration depths
+	float leftPenetration = rightA - leftB;
+	float rightPenetration = rightB - leftA;
+	float topPenetration = bottomA - topB;
+	float bottomPenetration = bottomB - topA;
 
-    // Calculate relative velocities and projected new positions
-    xv_r = A->motion.vx - B->motion.vx;
-    yv_r = A->motion.vy - B->motion.vy;
-    ALP = AL + xv_r;
-    ARP = AR + xv_r;
-    AUP = AU + yv_r;
-    ADP = AD + yv_r;
+	// Determine the minimal penetration direction
+	float minPenetration = fmin(fmin(leftPenetration, rightPenetration), fmin(topPenetration, bottomPenetration));
 
-    // Check for overlap after movement
-    t_h = t_v = 0;
-    if ((AUP >= BU && AUP <= BD && ALP >= BL && ALP <= BR) ||
-        (AUP >= BU && AUP <= BD && ARP >= BL && ARP <= BR) ||
-        (ADP >= BU && ADP <= BD && ALP >= BL && ALP <= BR) ||
-        (ADP >= BU && ADP <= BD && ARP >= BL && ARP <= BR)) {
-        if (AR <= BL && xv_r != 0) {
-            h_c = 1; // Right
-            t_h = (BL - AR) / xv_r;
-        } else if (AL >= BR && xv_r != 0) {
-            h_c = -1; // Left
-            t_h = (BR - AL) / xv_r;
-        } else {
-            h_c = 0;
-        }
+	if (minPenetration == leftPenetration) {
+		return RIGHT;
+	} else if (minPenetration == rightPenetration) {
+		return LEFT;
+	} else if (minPenetration == topPenetration) {
+		return DOWN;
+	} else if (minPenetration == bottomPenetration) {
+		return UP;
+	}
 
-        if (AD <= BU && yv_r != 0) {
-            v_c = 1; // Down
-            t_v = (BU - AD) / yv_r;
-        } else if (AU >= BD && yv_r != 0) {
-            v_c = -1; // Up
-            t_v = (BD - AU) / yv_r;
-        } else {
-            v_c = 0;
-        }
-
-        if (t_v >= 0 && v_c != 0) {
-            if (t_h < 0 || h_c == 0) {
-                return (v_c == 1) ? DOWN : UP;
-            } else if (t_h >= 0 && h_c != 0) {
-                if (t_v >= t_h) {
-                    return (v_c == 1) ? DOWN : UP;
-                }
-                return (h_c == 1) ? RIGHT : LEFT;
-            }
-            return (v_c == 1) ? DOWN : UP;
-        } else if (t_h >= 0 && h_c != 0) {
-            return (h_c == 1) ? RIGHT : LEFT;
-        }
-        return NONE;
-    }
-    return NONE;
+	return NONE;
 }
 
 void new_game(Game *game) {
