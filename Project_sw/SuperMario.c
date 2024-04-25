@@ -406,7 +406,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->render.flip = 0;
 	}
 
-	if (current_key == KEY_JUMP) {
+	if (current_key == KEY_JUMP && mario->position.y == GROUND_LEVEL) {
 		mario->motion.vy = -JUMP_INIT_V_SMALL;
 	}
 
@@ -463,7 +463,9 @@ void process_mario_logic(Entity *mario, Game *game) {
 		}
 	}
 
-	// mario->motion.ax = -0.1;
+	if (mario->motion.vx != 0 && mario->position.y == GROUND_LEVEL) {
+		mario->motion.vx -= 0.01;
+	}
 
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->position.y = GROUND_LEVEL;
