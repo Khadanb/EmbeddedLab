@@ -719,7 +719,7 @@ int main() {
 		flush_frame(&game, frame_select);
 		frame_select = !frame_select;
 
-		usleep(16667);
+		usleep(1000);
 	}
 
 	pthread_cancel(input_thread);
