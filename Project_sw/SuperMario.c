@@ -429,7 +429,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 					handle_collision_with_mushroom(mario, other, contactType);
 					break;
 				case TYPE_GOOMBA:
-					print("HIT GOOMBA %d\n",contactType);
+					printf("HIT GOOMBA %d\n",contactType);
 					handle_collision_with_goomba(mario, other, contactType);
 					break;
 				case TYPE_COIN:
