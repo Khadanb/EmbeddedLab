@@ -352,15 +352,15 @@ void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact t
 	other->state.active = 0;
 }
 
-// void handle_collision_with_goomba(Entity *mario, Entity *other, enum contact type) {
-// 	if (type == UP) {
-// 		other->state.state = STATE_DEAD;
-// 		mario->motion.vy = -JUMP_INIT_V_SMALL;
-// 	} else {
+void handle_collision_with_goomba(Entity *mario, Entity *other, enum contact type) {
+	if (type == UP) {
+		other->state.state = STATE_DEAD;
+		mario->motion.vy = -JUMP_INIT_V_SMALL;
+	} else {
 
-// 		mario->state.state = (mario->state.type == TYPE_MARIO_SMALL) ? STATE_DEAD : STATE_HIT;
-// 	}
-// }
+		mario->state.state = (mario->state.type == TYPE_MARIO_SMALL) ? STATE_DEAD : STATE_HIT;
+	}
+}
 
 void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type) {
 
