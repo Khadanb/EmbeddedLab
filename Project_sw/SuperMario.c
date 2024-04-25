@@ -407,19 +407,17 @@ void process_mario_logic(Entity *mario, Game *game) {
     } else if (current_key == KEY_RIGHT) {
         mario->motion.ax = WALK_ACC;
         mario->render.flip = 0;
-    } 
-	else {
- 		if (fabs(mario->motion.vx) > 0.01f) {
+    } else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
+        mario->motion.vy = -JUMP_INIT_V_SMALL;
+    } else {
+ 		if (fabs(mario->motion.vx) > 0.01f && mario->motion.vy == 0) {
             mario->motion.ax = -1 * mario->motion.vx  * (1 - FRICTION);
         } else {
             mario->motion.vx = 0; // Stop Mario if his speed is below the threshold
         }
     }
 
-    // Jumping only if on the ground
-    if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-        mario->motion.vy = -JUMP_INIT_V_SMALL;
-    }
+
 
     // Update velocities
     mario->motion.vx += mario->motion.ax;
