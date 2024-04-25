@@ -211,7 +211,7 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
             flush_cloud(entity, frame_select);
             break;
         default:
-			printf("ERROR: Unkown Entity Found!\n");
+			// printf("ERROR: Unkown Entity Found!\n");
             break;
     }
 }
@@ -429,7 +429,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 					handle_collision_with_mushroom(mario, other, contactType);
 					break;
 				case TYPE_GOOMBA:
-					print("%d\n",contactType);
+					print("HIT GOOMBA %d\n",contactType);
 					handle_collision_with_goomba(mario, other, contactType);
 					break;
 				case TYPE_COIN:
