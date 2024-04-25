@@ -399,8 +399,6 @@ void process_mario_logic(Entity *mario, Game *game) {
     // Always apply gravity
     mario->motion.ay = GRAVITY;
 	mario->motion.ax = 0;
-	mario->motion.vx = 0; 
-	mario->motion.vy = 0; 
 
     // Horizontal movement based on key press
     if (current_key == KEY_LEFT) {
@@ -434,8 +432,6 @@ void process_mario_logic(Entity *mario, Game *game) {
     // Update position
     mario->position.x += mario->motion.vx;
     mario->position.y += mario->motion.vy;
-
-
 
 	for (int i = 1; i < MAX_ENTITIES; i++) {
 		Entity *other = &game->entities[i];
