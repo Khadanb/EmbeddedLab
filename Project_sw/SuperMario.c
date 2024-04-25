@@ -29,6 +29,9 @@
 
 int vga_ball_fd;
 
+int block_index;
+int coin_index;
+
 int info_001 = 1;
 int info_010 = 2;
 int info_011 = 3;
@@ -58,34 +61,190 @@ void write_to_hardware(int vga_fd, int register_address, int data) {
 	}
 }
 
-void flush_entity(const Entity *entity, int frame_select) {
-	int visible = entity->render.visible;
-	int flip = entity->render.flip;
-	int x = entity->position.x;
-	int y = entity->position.y;
-	int pattern_code = entity->render.pattern_code;
+void flush_mario(const Entity *entity, int frame_select) {
 
-	if (pattern_code > 6 || pattern_code < 0 ) return; 
-	if (entity->state.type > 17 || entity->state.type < 0) return; 
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
 
-	// Print entity type, position, and pattern code
-	printf("Entity Type: %d, Position: (%d, %d), Pattern Code: %u\n",
-		   entity->state.type, x, y, pattern_code);
+	printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
-	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
 
-	if (entity->state.type == TYPE_TUBE && pattern_code == ANI_TUBE_H) {
-		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (ANI_TUBE_B & 0x1F)));
-		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-		write_to_hardware(vga_ball_fd, 0, (int)((pattern_code << 26) + ((1 & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
-	}
+void flush_mush(const Entity *entity, int frame_select) {
+
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+
+    printf("Flushing MUSHROOM - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
+
+void flush_goomba(const Entity *entity, int frame_select) {
+
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+
+    printf("Flushing GOOMBA - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
+
+void flush_coin(const Entity *entity, int frame_select) {
+
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+    int entityTypeCode = entity->state.type; 
+
+    printf("Flushing COIN - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	coin_index += 1; 
+}
+
+
+void flush_block(const Entity *entity, int frame_select) {
+
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+    int entityTypeCode = entity->state.type; 
+
+    printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	block_index += 1;
+}
+
+void flush_tube(const Entity *entity, int frame_select) {
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+
+    printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_B & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
+
+void flush_cloud(const Entity *entity, int frame_select) {
+
+    int visible = entity->render.visible;
+    int flip = entity->render.flip;
+    int x = entity->position.x;
+    int y = entity->position.y;
+    int pattern_code = entity->render.pattern_code;
+
+    printf("Flushing CLOUD - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+
+}
+
+void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
+    if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return; 
+    if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
+
+    switch (entity->state.type) {
+        case TYPE_MARIO_SMALL:
+        case TYPE_MARIO_LARGE:
+            flush_mario(entity, frame_select);
+            break;
+        case TYPE_MUSHROOM:
+            flush_mush(entity, frame_select);
+            break;
+        case TYPE_GOOMBA:
+            flush_goomba(entity, frame_select);
+            break;
+        case TYPE_BLOCK_A:
+        case TYPE_BLOCK_B_1:
+        case TYPE_BLOCK_B_2:
+        case TYPE_BLOCK_B_3:
+        case TYPE_BLOCK_B_4:
+        case TYPE_BLOCK_B_16:
+        case TYPE_BLOCK_A_H_8:
+        case TYPE_BLOCK_OBJ_C:
+        case TYPE_BLOCK_OBJ_M:
+            flush_block(entity, frame_select);
+            break;
+        case TYPE_COIN:
+            flush_coin(entity, frame_select);
+            break;
+        case TYPE_TUBE:
+            flush_tube(entity, frame_select);
+            break;
+        case TYPE_CLOUD:
+            flush_cloud(entity, frame_select);
+            break;
+        default:
+			printf("ERROR: Unkown Entity Found!\n");
+            break;
+    }
+}
+
+void flush_ground(int camera_pos, int frame_select) {
+    // Arrays for left side and width of ground segments
+    int ground_l[] = {GROUND_0_L, GROUND_1_L, GROUND_2_L, GROUND_3_L};
+    int ground_w[] = {GROUND_0_W, GROUND_1_W, GROUND_2_W, GROUND_3_W};
+
+    for (int i = 0; i < sizeof(ground_l)/sizeof(ground_l[0]); i++) {
+        // Calculate the right side of the ground segment
+        int ground_r = ground_l[i] + ground_w[i];
+
+        // Determine the visible segment based on the camera position and screen size
+        int visible_left = (ground_l[i] >= camera_pos) ? ground_l[i] - camera_pos : 0;
+        int visible_right = (ground_r - camera_pos <= CAMERA_SIZE + LOAD_LIMIT) ? ground_r - camera_pos : CAMERA_SIZE + LOAD_LIMIT;
+
+        // Check if there is a visible section
+        if (visible_right > visible_left) {
+            // Write left side of the ground segment
+            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
+            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
+            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (visible_left & 0x3FF)));
+			write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (visible_right & 0x3FF)));
+        }
+    }
 }
 
 
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
+	block_index = 0;
+	coin_index = 0;
 
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
@@ -95,7 +254,7 @@ void flush_frame(Game *game, int frame_select) {
 			if (entity->position.x >= game->camera_pos &&
 				entity->position.x <= game->camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
 
-				flush_entity(entity, frame_select);
+				flush_entity(entity, frame_select, game->camera_pos);
 			}
 		}
 	}
@@ -103,12 +262,13 @@ void flush_frame(Game *game, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (0xf << 17) + (frame_select << 13)));
 
 	frame_counter = (frame_counter >= FRAME_LIMIT) ? 0 : frame_counter + 1;
-	// if (sound_new == 1) {
-	// 	write_to_hardware(vga_ball_fd, 4, (int)(SOUND_NONE));
-	// 	sound_new = 0;
-	// } else {
-	// 	write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
-	// }
+
+	if (sound_new == 1) {
+		write_to_hardware(vga_ball_fd, 4, (int)(SOUND_NONE));
+		sound_new = 0;
+	} else {
+		write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
+	}
 }
 
 
@@ -116,7 +276,6 @@ void entity_activation_update(Game *game, int camera_pos){
 	int entity_index;
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
-
 
 		if (entity->position.x > camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
 
@@ -307,14 +466,12 @@ void process_mario_logic(Entity *mario, Game *game) {
 		}
 	}
 
-	mario->motion.ax = -0.1;
+	// mario->motion.ax = -0.1;
 
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->position.y = GROUND_LEVEL;
 		mario->motion.vy = 0;
 	}
-
-	animate_entity(game, mario, game->game_state);
 }
 
 void process_mushroom_logic(Entity *mushroom, Game *game) {
@@ -525,16 +682,13 @@ int main() {
 				switch (entity->state.type) {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
-						// printf("MARIO\n");
-						// process_mario_logic(entity, &game);
+						process_mario_logic(entity, &game);
 						break;
 					case TYPE_MUSHROOM:
-						// printf("MUSH\n");
-						// process_mushroom_logic(entity, &game);
+						process_mushroom_logic(entity, &game);
 						break;
 					case TYPE_GOOMBA:
-						// printf("GOOMBA\n");
-						// process_goomba_logic(entity, &game);
+						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_BLOCK_A:
 					case TYPE_BLOCK_B_1:
@@ -545,31 +699,27 @@ int main() {
 					case TYPE_BLOCK_A_H_8:
 					case TYPE_BLOCK_OBJ_C:
 					case TYPE_BLOCK_OBJ_M:
-						printf("BLOCK\n");
 						process_block_logic(entity, &game);
 						break;
 					case TYPE_COIN:
-						// printf("COIN\n");
 						break;
 					case TYPE_TUBE:
-						// printf("TUBE\n");
 						break;
 					case TYPE_CLOUD:
-						// printf("CLOUD\n");
 						break;
 					case TYPE_GROUND:
-						// printf("GROUND\n");
 						break;
 					default:
 						break;
 				}
 			}
-		}
 
+			animate_entity(&game, entity, frame_counter);
+		}
 		flush_frame(&game, frame_select);
 		frame_select = !frame_select;
 
-		sleep(1);
+		usleep(16667);
 	}
 
 	pthread_cancel(input_thread);

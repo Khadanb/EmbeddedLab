@@ -69,7 +69,7 @@ void new_game(Game *game) {
 		*ground = (Entity){
 			.position = {ground_positions[i], GROUND_LEVEL, ground_widths[i], 32},
 			.motion = {0, 0, 0, 0},
-			.render = {TYPE_GROUND, 1, 0},
+			.render = {0, 1, 0},
 			.state = {1, BLOCK_NORMAL, 0, TYPE_GROUND}
 		};
 	}
