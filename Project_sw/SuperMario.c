@@ -408,10 +408,11 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->motion.ax = WALK_ACC;
         mario->render.flip = 0;
     } else {
-        // Apply friction to slow down Mario when no key is pressed
-		if (mario->motion.vx != 0) {
-        	mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
-		}
+ 		if (fabs(mario->motion.vx) > 0.05f) {
+            mario->motion.ax = -1 * ((mario->motion.vx > 0) - (mario->motion.vx < 0)) * FRICTION;
+        } else {
+            mario->motion.vx = 0; // Stop Mario if his speed is below the threshold
+        }
     }
 
     // Jumping only if on the ground
