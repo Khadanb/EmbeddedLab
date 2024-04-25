@@ -130,7 +130,6 @@ enum {
 
 
 void new_game(Game *game);
-int compare_entity_position(const void *a, const void *b);
 enum contact hitbox_contact(const Entity *A, const Entity *B);
 
 #endif

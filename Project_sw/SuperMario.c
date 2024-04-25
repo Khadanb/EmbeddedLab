@@ -211,35 +211,29 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
             flush_cloud(entity, frame_select);
             break;
         default:
-			//printf("ERROR: Unkown Entity Found!\n");
+			printf("ERROR: Unkown Entity Found!\n");
             break;
     }
 }
 
 void flush_ground(int camera_pos, int frame_select) {
-    // Arrays for left side and width of ground segments
+
     int ground_l[] = {GROUND_0_L, GROUND_1_L, GROUND_2_L, GROUND_3_L};
     int ground_w[] = {GROUND_0_W, GROUND_1_W, GROUND_2_W, GROUND_3_W};
 
     for (int i = 0; i < sizeof(ground_l)/sizeof(ground_l[0]); i++) {
-        // Calculate the right side of the ground segment
-        int ground_r = ground_l[i] + ground_w[i];
 
-        // Determine the visible segment based on the camera position and screen size
+        int ground_r = ground_l[i] + ground_w[i];
         int visible_left = (ground_l[i] >= camera_pos) ? ground_l[i] - camera_pos : 0;
         int visible_right = (ground_r - camera_pos <= CAMERA_SIZE + LOAD_LIMIT) ? ground_r - camera_pos : CAMERA_SIZE + LOAD_LIMIT;
 
-        // Check if there is a visible section
-        if (visible_right > visible_left) {
-            // Write left side of the ground segment
-            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
-            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
-            write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (visible_left & 0x3FF)));
-			write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (visible_right & 0x3FF)));
-        }
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+        
     }
 }
-
 
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
@@ -270,7 +264,6 @@ void flush_frame(Game *game, int frame_select) {
 		write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
 	}
 }
-
 
 void entity_activation_update(Game *game, int camera_pos){
 	int entity_index;
@@ -544,7 +537,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		if (contactType != NONE) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
-				case TYPE_MARIO_LARGE:
+				
 					if (contactType == UP) {
 
 						goomba->state.state = STATE_DEAD;
@@ -552,9 +545,16 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 						other->motion.vy = -JUMP_INIT_V_SMALL;
 					} else {
 
-						if (other->state.state != STATE_ENLARGE) {
-							other->state.state = (other->state.type == TYPE_MARIO_SMALL) ? STATE_DEAD : STATE_HIT;
-						}
+						other->state.state = STATE_DEAD;
+					}
+					break;
+				case TYPE_MARIO_LARGE:
+					if (contactType == UP) {
+						goomba->state.state = STATE_DEAD;
+						goomba->state.active = 0;
+						other->motion.vy = -JUMP_INIT_V_SMALL;
+					} else {
+						other->state.type = TYPE_MARIO_SMALL;
 					}
 					break;
 				case TYPE_GROUND:
