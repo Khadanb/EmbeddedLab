@@ -397,7 +397,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 
     // Apply gravity
-    mario->motion.ay = GRAVITY;
+    mario->motion.ay = -GRAVITY;
 
     // Reset horizontal acceleration
     mario->motion.ax = 0;
