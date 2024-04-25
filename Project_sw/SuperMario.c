@@ -550,7 +550,8 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		if (contactType != NONE) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
-				
+					printf("Goomba collided with entity type Mario at contact type %d\n", contactType);
+
 					if (contactType == UP) {
 
 						goomba->state.state = STATE_DEAD;
@@ -562,6 +563,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 					}
 					break;
 				case TYPE_MARIO_LARGE:
+					printf("Goomba collided with entity type Mario at contact type %d\n", contactType);
 					if (contactType == UP) {
 						goomba->state.state = STATE_DEAD;
 						goomba->state.active = 0;
@@ -571,6 +573,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 					}
 					break;
 				case TYPE_GROUND:
+					printf("Goomba collided with entity type Ground at contact type %d\n", contactType);
 					if (contactType == DOWN) {
 						goomba->motion.vy = 0;
 						goomba->position.y = other->position.y - goomba->position.height;
@@ -586,7 +589,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 				case TYPE_BLOCK_A_H_8:
 				case TYPE_BLOCK_OBJ_C:
 				case TYPE_BLOCK_OBJ_M:
-
+					printf("Goomba collided with entity type Block or Tube at contact type %d\n", contactType);
 					if (contactType == LEFT || contactType == RIGHT) {
 						goomba->render.flip = (goomba->render.flip == 0) ? 1 : 0;
 						goomba->motion.vx = -goomba->motion.vx;
