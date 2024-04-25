@@ -682,7 +682,7 @@ int main() {
 			continue;
 		}
 
-		entity_activation_update(&game, game.camera_pos);
+		// entity_activation_update(&game, game.camera_pos);
 
 		for (int i = 0; i < MAX_ENTITIES; i++) {
 			Entity *entity = &game.entities[i];
