@@ -406,7 +406,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->render.flip = 0;
 	}
 
-	if (current_key == KEY_JUMP) {
+	if (current_key == KEY_JUMP && mario->motion.vy == 0) {
 		mario->motion.vy = -JUMP_INIT_V_SMALL;
 	}
 
