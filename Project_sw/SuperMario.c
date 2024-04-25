@@ -409,11 +409,11 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->render.flip = 0;
     } else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
         mario->motion.vy = -JUMP_INIT_V_SMALL;
-    } else {
- 		if (fabs(mario->motion.vx) > 0.01f && mario->motion.vy == 0) {
+    } else if (mario->motion.vy == 0){
+ 		if (fabs(mario->motion.vx) > 0.01f ) {
             mario->motion.ax = -1 * mario->motion.vx  * (1 - FRICTION);
         } else {
-            mario->motion.vx = 0; // Stop Mario if his speed is below the threshold
+            mario->motion.vx = 0;
         }
     }
 
