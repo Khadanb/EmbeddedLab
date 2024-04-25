@@ -240,6 +240,8 @@ void flush_frame(Game *game, int frame_select) {
 	block_index = 0;
 	coin_index = 0;
 
+	flush_ground(game->camera_pos, frame_select);
+
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		Entity *entity = &game->entities[entity_index];
 
