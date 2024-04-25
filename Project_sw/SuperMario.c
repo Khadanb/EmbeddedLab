@@ -411,7 +411,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->motion.vy = -JUMP_INIT_V_SMALL;
     } else if (mario->motion.vy == 0){
  		if (fabs(mario->motion.vx) > 0.01f ) {
-            mario->motion.ax = -1 * mario->motion.vx  * (1 - FRICTION);
+            mario->motion.ax = -1 * mario->motion.vx * FRICTION;
         } else {
             mario->motion.vx = 0;
         }
