@@ -641,6 +641,25 @@ void process_block_logic(Entity *block, Game *game) {
 	}
 }
 
+void update_camera_position(Game *game) {
+    Entity *mario = &game->entities[0];
+    int midPoint = game->camera_pos + CAMERA_SIZE / 2;
+
+    // Move camera right if Mario passes the midpoint on the right
+    if (mario->position.x > midPoint) {
+        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
+    }
+    
+    // Move camera left if Mario approaches the left edge of the camera view
+    if (mario->position.x < midPoint) {
+        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
+    }
+
+    // Ensure the camera position is within the level boundaries
+    game->camera_pos = fmax(0, fmin(game->camera_pos, LEVEL_WIDTH - CAMERA_SIZE));
+}
+
+
 int main() {
 	pthread_t input_thread;
 	Game game;
@@ -665,18 +684,15 @@ int main() {
 	new_game(&game);
 
 	while (1) {
-		Entity *mario = &game.entities[0];
-		if (mario->position.x > game.camera_pos + CAMERA_SIZE / 2 + LOAD_LIMIT) {
-			game.camera_pos = mario->position.x - CAMERA_SIZE / 2 - LOAD_LIMIT;
-			game.camera_pos = (game.camera_pos > 0) ? game.camera_pos : 0;
-		}
-
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
 			continue;
 		}
 
-		// entity_activation_update(&game, game.camera_pos);
+
+		update_camera_position(&game);
+
+		entity_activation_update(&game, game.camera_pos);
 
 		for (int i = 0; i < MAX_ENTITIES; i++) {
 			Entity *entity = &game.entities[i];
