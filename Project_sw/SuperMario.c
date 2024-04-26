@@ -684,6 +684,8 @@ int main() {
 	new_game(&game);
 
 	while (1) {
+
+		Entity *mario = &game.entities[0];
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
 			continue;
