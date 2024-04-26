@@ -656,7 +656,7 @@ void update_camera_position(Game *game) {
     }
 
     // Ensure the camera position is within the level boundaries
-    game->camera_pos = fmax(0, fmin(game->camera_pos, LEVEL_WIDTH - CAMERA_SIZE));
+    game->camera_pos = fmax(0, fmin(game->camera_pos, CAMERA_SIZE));
 }
 
 
