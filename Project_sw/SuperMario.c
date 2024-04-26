@@ -666,10 +666,10 @@ int main() {
 
 	while (1) {
 		Entity *mario = &game.entities[0];
-		// if (mario->position.x > game.camera_pos + CAMERA_SIZE / 2 + LOAD_LIMIT) {
-		// 	game.camera_pos = mario->position.x - CAMERA_SIZE / 2 - LOAD_LIMIT;
-		// 	game.camera_pos = (game.camera_pos > 0) ? game.camera_pos : 0;
-		// }
+		if (mario->position.x > game.camera_pos + CAMERA_SIZE / 2 + LOAD_LIMIT) {
+			game.camera_pos = mario->position.x - CAMERA_SIZE / 2 - LOAD_LIMIT;
+			game.camera_pos = (game.camera_pos > 0) ? game.camera_pos : 0;
+		}
 
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
