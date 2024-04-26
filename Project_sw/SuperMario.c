@@ -541,7 +541,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	goomba->motion.ay = GRAVITY;
 
 	goomba->motion.vx = (goomba->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
-	printf("%d\n", goomba->render.flip);
 	for (int i = 0; i < MAX_ENTITIES; i++) {
 		Entity *other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == goomba) continue;
@@ -550,8 +549,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		if (contactType != NONE) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
-					// printf("Goomba collided with entity type Mario at contact type %d\n", contactType);
-
 					if (contactType == UP) {
 
 						goomba->state.state = STATE_DEAD;
@@ -588,7 +585,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 				case TYPE_BLOCK_OBJ_C:
 				case TYPE_BLOCK_OBJ_M:
 					if (contactType == LEFT || contactType == RIGHT) {
-
 						goomba->render.flip = (goomba->render.flip == 0) ? 1 : 0;
 						goomba->motion.vx = -goomba->motion.vx;
 					}
