@@ -121,9 +121,9 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 		int rel_counter = (f_counter - entity->state.animate_frame_counter + frame_count) % frame_count;
 
 		if (entity->state.state == STATE_NORMAL) {
-			int ani_div = (f_counter / 7) % 2;
+			// int ani_div = (f_counter / 7) % 2;
 			entity->render.pattern_code = ANI_GOOMBA_NORMAL;
-			entity->render.flip = ani_div;
+			// entity->render.flip = ani_div;
 		} else if (entity->state.state == STATE_ANIMATE) {
 			if (rel_counter == 0) {
 				entity->position.y += 8;
