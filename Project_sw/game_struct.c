@@ -80,7 +80,15 @@ void new_game(Game *game) {
     // Initialize Ground
     Entity *ground = &game->entities[3];
     *ground = (Entity){
-        .position = {0, GROUND_LEVEL, 640, 32},  // Assuming full width of a simple level for demonstration
+        .position = {0, GROUND_LEVEL, 640, 32},  
+        .motion = {0, 0, 0, 0},
+        .render = {0, 1, 0},
+        .state = {1, STATE_NORMAL, 0, TYPE_GROUND}
+    };
+
+    Entity *ground = &game->entities[4];
+    *ground = (Entity){
+        .position = {0, 32, 640, 32},  
         .motion = {0, 0, 0, 0},
         .render = {0, 1, 0},
         .state = {1, STATE_NORMAL, 0, TYPE_GROUND}
