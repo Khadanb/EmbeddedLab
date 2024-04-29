@@ -218,22 +218,13 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 
 void flush_ground(int camera_pos, int frame_select) {
 
-    int ground_l[] = {GROUND_0_L, GROUND_1_L, GROUND_2_L, GROUND_3_L};
-    int ground_w[] = {GROUND_0_W, GROUND_1_W, GROUND_2_W, GROUND_3_W};
-
-    for (int i = 0; i < sizeof(ground_l)/sizeof(ground_l[0]); i++) {
-
-        int ground_r = ground_l[i] + ground_w[i];
-        int visible_left = (ground_l[i] >= camera_pos) ? ground_l[i] - camera_pos : 0;
-        int visible_right = (ground_r - camera_pos <= CAMERA_SIZE + LOAD_LIMIT) ? ground_r - camera_pos : CAMERA_SIZE + LOAD_LIMIT;
-
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-        
-    }
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+	
 }
+
 
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
