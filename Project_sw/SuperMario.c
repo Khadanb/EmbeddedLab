@@ -338,9 +338,10 @@ void *input_thread_function(void *ignored)
 }
 
 void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
-	mario->state.state = STATE_ENLARGE;
+	// mario->state.state = STATE_ENLARGE;
 	mario->state.type = TYPE_MARIO_LARGE;
-	other->state.active = 0;
+	printf("Hit Mushroom\n");
+	// other->state.active = 0;
 }
 
 void handle_collision_with_goomba(Entity *mario, Entity *other, enum contact type) {
