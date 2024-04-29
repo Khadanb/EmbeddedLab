@@ -338,10 +338,9 @@ void *input_thread_function(void *ignored)
 }
 
 void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
-	// mario->state.state = STATE_ENLARGE;
+	mario->state.state = STATE_ENLARGE;
 	mario->state.type = TYPE_MARIO_LARGE;
 	printf("Hit Mushroom\n");
-	// other->state.active = 0;
 }
 
 void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type) {
@@ -407,10 +406,6 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
-    // Update position
-    mario->position.x += mario->motion.vx;
-    mario->position.y += mario->motion.vy;
-
 	for (int i = 1; i < MAX_ENTITIES; i++) {
 		Entity *other = &game->entities[i];
 
@@ -423,8 +418,6 @@ void process_mario_logic(Entity *mario, Game *game) {
 					handle_collision_with_mushroom(mario, other, contactType);
 					break;
 				case TYPE_GOOMBA:
-					// printf("HIT GOOMBA %d\n",contactType);
-					// handle_collision_with_goomba(mario, other, contactType);
 					break;
 				case TYPE_COIN:
 					handle_collision_with_coin(mario, other, contactType);
@@ -453,6 +446,10 @@ void process_mario_logic(Entity *mario, Game *game) {
 			}
 		}
 	}
+
+	// Update position
+    mario->position.x += mario->motion.vx;
+    mario->position.y += mario->motion.vy;
 
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->position.y = GROUND_LEVEL;
