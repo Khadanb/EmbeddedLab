@@ -25,7 +25,7 @@ module Goomba_display (input logic        clk,
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
     assign pattern_table[1] = {16'd_256, 16'd_16, 16'd_8, 16'd_16, 16'd_8};
 
-	assign color_plate[0] = 24'h000000;
+	assign color_plate[0] = 24'h9290ff;
 	assign color_plate[1] = 24'h9c4a00;
 	assign color_plate[2] = 24'h000000;
 	assign color_plate[3] = 24'hffcec5;
@@ -133,9 +133,9 @@ module Goomba_display (input logic        clk,
 			color_plate[mem[0]];
 		end
 		
-		RGB_output = 24'h000000;
+		RGB_output = 24'h9290ff;
 		for (k = 0; k < child_limit; k = k + 1) begin
-			if ((ping_pong_RGB_output[ping_pong][k] != 24'h000000) && ping_pong_addr_out_valid[ping_pong][k]) begin
+			if ((ping_pong_RGB_output[ping_pong][k] != 24'h9290ff) && ping_pong_addr_out_valid[ping_pong][k]) begin
 				RGB_output = ping_pong_RGB_output[ping_pong][k];
 				break;
 			end

@@ -23,11 +23,10 @@ module Ground_display (input logic        clk,
 
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_650, 16'd_32};
 
-	// Updated color palette to grayscale
-	assign color_plate[0] = 24'hffffff;  // white
-	assign color_plate[1] = 24'h808080;  // medium grey
-	assign color_plate[2] = 24'h404040;  // darker grey
-	assign color_plate[3] = 24'h000000;  // black
+	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[1] = 24'hb53120;
+	assign color_plate[2] = 24'h6b6d00;
+	assign color_plate[3] = 24'hea9e22;
 	
 	parameter [9:0] ground_height = 10'd_368;	// The 24&25 blocks on the floor. Total height is 25 block 
     //=============================================

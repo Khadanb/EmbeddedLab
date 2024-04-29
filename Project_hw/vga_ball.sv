@@ -160,15 +160,22 @@ module vga_ball(input logic        clk,
  		.vcount(vcount), .RGB_output(PPU_out));
    //==============
 	
-	always_comb begin
-		// Set default color to black
-		{VGA_R, VGA_G, VGA_B} = {8'h00, 8'h00, 8'h00};
+   always_comb begin
+      {VGA_R, VGA_G, VGA_B} = {8'h0, 8'h0, 8'h0};
+      if (VGA_BLANK_n ) begin
 
-		// Update the RGB values only within the active video region and when VGA_BLANK_n is asserted
-		if (VGA_BLANK_n && (hcount < 11'd_1120 && hcount >= 11'd_160 && vcount < 10'd_400)) begin
-			{VGA_R, VGA_G, VGA_B} = PPU_out;
-		end
-	end
+
+      end
+
+	if (hcount < 11'd_1120 && hcount >= 11'd_160 && vcount < 10'd_400)
+	 		{VGA_R, VGA_G, VGA_B} = PPU_out;
+	else
+			{VGA_R, VGA_G, VGA_B} =
+             			{8'h00, 8'h00, 8'h00};
+
+   end
+
+endmodule
 
 	       
 endmodule
