@@ -62,14 +62,23 @@ void new_game(Game *game) {
     // Initialize Goomba
     Entity *goomba = &game->entities[1];
     *goomba = (Entity){
-        .position = {300, 300, 16, 16},  // Example position, adjust as needed
+        .position = {300, 300, 16, 16},  
         .motion = {0, 0, 0, 0},
         .render = {ANI_GOOMBA_NORMAL, 1, 0},
         .state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
     };
 
+    // Initialize Mushroom
+    Entity *mushroom = &game->entities[2]; 
+    *mushroom = (Entity){
+        .position = {200, 300, 16, 16},
+        .motion = {0, 0, 0, 0},
+        .render = {},
+        .state = {1,STATE_NORMAL, 0, TYPE_MUSHROOM}
+    };
+
     // Initialize Ground
-    Entity *ground = &game->entities[2];
+    Entity *ground = &game->entities[3];
     *ground = (Entity){
         .position = {0, GROUND_LEVEL, 640, 32},  // Assuming full width of a simple level for demonstration
         .motion = {0, 0, 0, 0},
