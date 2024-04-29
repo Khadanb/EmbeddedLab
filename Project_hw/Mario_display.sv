@@ -41,7 +41,7 @@ module Mario_display (input logic        clk,
     assign pattern_table[17] = {16'd_6400, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
     assign pattern_table[18] = {16'd_6656, 16'd_16, 16'd_32, 16'd_16, 16'd_32};
 
-	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[0] = 24'h000000;
 	assign color_plate[1] = 24'hb53120;
 	assign color_plate[2] = 24'h6b6d00;
 	assign color_plate[3] = 24'hea9e22;
@@ -138,7 +138,7 @@ module Mario_display (input logic        clk,
                                     
 	// assign ping_pong_RGB_output[1] =  (ping_pong_addr_output[1] < addr_limit)? color_plate[mem[ping_pong_addr_output[1]]] : color_plate[mem[0]];
                                     
-		RGB_output = ping_pong_addr_out_valid[ping_pong]? ping_pong_RGB_output[ping_pong] : 24'h9290ff;
+		RGB_output = ping_pong_addr_out_valid[ping_pong]? ping_pong_RGB_output[ping_pong] : 24'h000000;
 	end
 
 	
