@@ -40,16 +40,17 @@ module Block_display (input logic        clk,
     assign pattern_table[15] = {16'd_2048, 16'd_16, 16'd_16, 16'd_64, 16'd_64};
 	assign pattern_table[16] = {16'd_2048, 16'd_16, 16'd_16, 16'd_16, 16'd_64};
 
-	assign color_plate[0] = 24'h9290ff;
-	assign color_plate[1] = 24'h908fff;
-	assign color_plate[2] = 24'h9a4b00;
-	assign color_plate[3] = 24'he69a25;
-	assign color_plate[4] = 24'h000000;
-	assign color_plate[5] = 24'h974f00;
-	assign color_plate[6] = 24'h572200;
-	assign color_plate[7] = 24'h1a9300;
-	assign color_plate[8] = 24'hfce1ce;
-	assign color_plate[9] = 24'hffcdc4;
+	assign color_plate[0] = 24'hffffff;  // white
+	assign color_plate[1] = 24'hd3d3d3;  // light grey
+	assign color_plate[2] = 24'ha9a9a9;  // dark grey
+	assign color_plate[3] = 24'h808080;  // medium grey
+	assign color_plate[4] = 24'h696969;  // dim grey
+	assign color_plate[5] = 24'h505050;  // darker grey
+	assign color_plate[6] = 24'h383838;  // even darker grey
+	assign color_plate[7] = 24'h202020;  // nearly black
+	assign color_plate[8] = 24'h101010;  // darker than nearly black
+	assign color_plate[9] = 24'h000000;  // black
+
 
     //=============================================
     
