@@ -692,7 +692,7 @@ int main() {
 		}
 
 
-		update_camera_position(&game);
+		// update_camera_position(&game);
 
 		// entity_activation_update(&game, game.camera_pos);
 
