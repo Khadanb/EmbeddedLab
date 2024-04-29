@@ -73,7 +73,7 @@ void new_game(Game *game) {
     *mushroom = (Entity){
         .position = {200, 300, 16, 16},
         .motion = {0, 0, 0, 0},
-        .render = {},
+        .render = {ANI_MUSH_NORMAL, 1, 0},
         .state = {1,STATE_NORMAL, 0, TYPE_MUSHROOM}
     };
 
