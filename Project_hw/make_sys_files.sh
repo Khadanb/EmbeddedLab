@@ -1,7 +1,5 @@
 #!/bin/bash
 
-embedded_command_shell.sh
-
 make rbf
 
 make dtb
