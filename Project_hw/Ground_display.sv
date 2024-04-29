@@ -23,7 +23,7 @@ module Ground_display (input logic        clk,
 
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_650, 16'd_32};
 
-	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[0] = 24'h202020;
 	assign color_plate[1] = 24'hb53120;
 	assign color_plate[2] = 24'h6b6d00;
 	assign color_plate[3] = 24'hea9e22;
@@ -123,8 +123,8 @@ module Ground_display (input logic        clk,
 			color_plate[mem[0]];
                                     
 	assign RGB_output = ping_pong_addr_out_valid[ping_pong]? 
-						(((hcount < l_edge)||(hcount > r_edge))? ping_pong_RGB_output[ping_pong] : 24'h9290ff)
-						: 24'h9290ff;
+						(((hcount < l_edge)||(hcount > r_edge))? ping_pong_RGB_output[ping_pong] : 24'h202020)
+						: 24'h202020;
 
 	
 

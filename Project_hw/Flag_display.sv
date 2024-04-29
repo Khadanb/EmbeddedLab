@@ -24,7 +24,7 @@ module Flag_display (input logic        clk,
 
     assign pattern_table[0] = {16'd_0, 16'd_32, 16'd_24, 16'd_32, 16'd_24};
 
-	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[0] = 24'h202020;
 	assign color_plate[1] = 24'h000000;
 	assign color_plate[2] = 24'h8cd600;
 	assign color_plate[3] = 24'h109400;
@@ -132,9 +132,9 @@ module Flag_display (input logic        clk,
 			color_plate[mem[0]];
 		end
 		
-		RGB_output = 24'h9290ff;
+		RGB_output = 24'h202020;
 		for (k = 0; k < child_limit; k = k + 1) begin
-			if ((ping_pong_RGB_output[ping_pong][k] != 24'h9290ff) && ping_pong_addr_out_valid[ping_pong][k]) begin
+			if ((ping_pong_RGB_output[ping_pong][k] != 24'h202020) && ping_pong_addr_out_valid[ping_pong][k]) begin
 				RGB_output = ping_pong_RGB_output[ping_pong][k];
 				break;
 			end

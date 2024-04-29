@@ -27,7 +27,7 @@ module Coin_display (input logic        clk,
     assign pattern_table[2] = {16'd_256, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
     assign pattern_table[3] = {16'd_384, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
 
-	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[0] = 24'h202020;
 	assign color_plate[1] = 24'h908fff;
 	assign color_plate[2] = 24'he59a25;
 	assign color_plate[3] = 24'hfffeff;
@@ -129,9 +129,9 @@ module Coin_display (input logic        clk,
 			ping_pong_RGB_output[1][j] =  (ping_pong_addr_output[1][j] < addr_limit)? color_plate[mem[ping_pong_addr_output[1][j]]] : color_plate[mem[0]];
 		end
 		
-		RGB_output = 24'h9290ff;
+		RGB_output = 24'h202020;
 		for (k = 0; k < child_limit; k = k + 1) begin
-			if ((ping_pong_RGB_output[ping_pong][k] != 24'h9290ff) && ping_pong_addr_out_valid[ping_pong][k]) begin
+			if ((ping_pong_RGB_output[ping_pong][k] != 24'h202020) && ping_pong_addr_out_valid[ping_pong][k]) begin
 				RGB_output = ping_pong_RGB_output[ping_pong][k];
 				break;
 			end

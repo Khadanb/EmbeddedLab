@@ -31,30 +31,30 @@ module ppu (input logic        clk,
 	Goomba_display Goomba_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[5]));
 	always_comb begin
 
-		RGB_list[0] = 24'h9290ff;
-		RGB_list[1] = 24'h9290ff;
-		RGB_list[2] = 24'h9290ff;
-		// RGB_list[3] = 24'h9290ff;	//Mario
-		RGB_list[4] = 24'h9290ff;
-		// RGB_list[5] = 24'h9290ff;	//Goomba
-		RGB_list[6] = 24'h9290ff;
-		// RGB_list[7] = 24'h9290ff;	//Block
-		RGB_list[8] = 24'h9290ff;	
-		// RGB_list[9] = 24'h9290ff;	//Coin
-		RGB_list[10] = 24'h9290ff;
-		RGB_list[11] = 24'h9290ff;
-		// RGB_list[12] = 24'h9290ff;	//Mush
-		RGB_list[13] = 24'h9290ff;
-		// RGB_list[14] = 24'h9290ff;	//Ground
-		// RGB_list[15] = 24'h9290ff;	//Tube
-		// RGB_list[16] = 24'h9290ff;	//Cloud
-		RGB_list[17] = 24'h9290ff;
-		RGB_list[18] = 24'h9290ff;
-		RGB_list[19] = 24'h9290ff;
-		RGB_output = 24'h9290ff;
-		RGB_output = 24'h9290ff;
+		RGB_list[0] = 24'h202020;
+		RGB_list[1] = 24'h202020;
+		RGB_list[2] = 24'h202020;
+		// RGB_list[3] = 24'h202020;	//Mario
+		RGB_list[4] = 24'h202020;
+		// RGB_list[5] = 24'h202020;	//Goomba
+		RGB_list[6] = 24'h202020;
+		// RGB_list[7] = 24'h202020;	//Block
+		RGB_list[8] = 24'h202020;	
+		// RGB_list[9] = 24'h202020;	//Coin
+		RGB_list[10] = 24'h202020;
+		RGB_list[11] = 24'h202020;
+		// RGB_list[12] = 24'h202020;	//Mush
+		RGB_list[13] = 24'h202020;
+		// RGB_list[14] = 24'h202020;	//Ground
+		// RGB_list[15] = 24'h202020;	//Tube
+		// RGB_list[16] = 24'h202020;	//Cloud
+		RGB_list[17] = 24'h202020;
+		RGB_list[18] = 24'h202020;
+		RGB_list[19] = 24'h202020;
+		RGB_output = 24'h202020;
+		RGB_output = 24'h202020;
 		for (i = 0; i < 20; i = i + 1) begin
-			if (RGB_list[i] != 24'h9290ff) begin
+			if (RGB_list[i] != 24'h202020) begin
 				RGB_output = RGB_list[i];
 				break;		
 			end

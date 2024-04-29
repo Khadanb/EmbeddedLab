@@ -24,7 +24,7 @@ module Cloud_display (input logic        clk,
 
     assign pattern_table[0] = {16'd_0, 16'd_32, 16'd_24, 16'd_32, 16'd_24};
 
-	assign color_plate[0] = 24'h9290ff;
+	assign color_plate[0] = 24'h202020;
 	assign color_plate[1] = 24'h000000;
 	assign color_plate[2] = 24'hffffff;
 	assign color_plate[3] = 24'h63adff;
@@ -125,7 +125,7 @@ module Cloud_display (input logic        clk,
                                     
 	// assign ping_pong_RGB_output[1] =  (ping_pong_addr_output[1] < addr_limit)? color_plate[mem[ping_pong_addr_output[1]]] : color_plate[mem[0]];
                                     
-		RGB_output = ping_pong_addr_out_valid[ping_pong]? ping_pong_RGB_output[ping_pong] : 24'h9290ff;
+		RGB_output = ping_pong_addr_out_valid[ping_pong]? ping_pong_RGB_output[ping_pong] : 24'h202020;
 	end
 		
 initial begin
