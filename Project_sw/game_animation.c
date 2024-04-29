@@ -80,7 +80,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				else if (rel_counter > 30) {
 					entity->position.y += entity->motion.vy;
 					entity->motion.vy += dead_acc;
-					if (entity->position.y > 500) entity->state.state = STATE_DEAD;
+					if (entity->position.y > 1.01*GROUND_LEVEL) entity->state.state = STATE_DEAD;
 				}
 				break;
 		}
