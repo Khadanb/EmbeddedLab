@@ -13,13 +13,13 @@
 #define CAMERA_SIZE (30*16)
 #define GROUND_LEVEL 368
 
-#define BLOCK_NUM 45
-#define MUSH_NUM 3
-#define GOOMBA_NUM 10
-#define CLOUD_NUM 7
-#define GROUND_NUM 4
-#define TUBE_NUM 5
-#define COIN_NUM 25
+// #define BLOCK_NUM 45
+// #define MUSH_NUM 3
+// #define GOOMBA_NUM 10
+// #define CLOUD_NUM 7
+// #define GROUND_NUM 4
+// #define TUBE_NUM 5
+// #define COIN_NUM 25
 
 #define GROUND_0_L 0
 #define GROUND_0_W 448

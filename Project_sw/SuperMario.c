@@ -55,7 +55,6 @@ void write_to_hardware(int vga_fd, int register_address, int data) {
 	vla.addr = register_address;
 	vla.info = data;
 
-
 	if (ioctl(vga_fd, VGA_BALL_WRITE_BACKGROUND, &vla) < 0) {
 		fprintf(stderr, "Failed to write data to hardware\n");
 	}
@@ -69,7 +68,7 @@ void flush_mario(const Entity *entity, int frame_select) {
     int y = entity->position.y;
     int pattern_code = entity->render.pattern_code;
 
-	printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	// printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
     write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
     write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -276,71 +275,124 @@ void entity_activation_update(Game *game, int camera_pos){
 	}
 }
 
-void *input_thread_function(void *ignored)
+libusb_context *ctx = NULL; 
+libusb_device **devs;       
+int r;                   
+ssize_t cnt;                
+struct libusb_device_handle *mouse;  
+
+void *input_thread_function(void *ignored) 
 {
-	struct usb_keyboard_packet packet;
-	int transferred;
-	int r;
-	struct timeval timeout = { 0, 500000 };
-	uint8_t first, second, chosen;
+	unsigned char buff[64];
+	int size; 
+	libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
 
-	for (;;) {
-		r = libusb_interrupt_transfer(keyboard, endpoint_address, (unsigned char *)&packet, sizeof(packet), &transferred, 0);
-		if (r == 0 && transferred == sizeof(packet)) {
+	while(1) {
+		size = 8; 
+		if (size == 0x0008) {
+			
+			libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
 
-			first = packet.keycode[0];
-			second = packet.keycode[1];
-			chosen = 0;
-
-			if (first != 0 && second != 0) {
-
-				if (first == second) {
-					usleep(5000);
-					continue;
-				} else {
-					chosen = second;
-				}
-
-			} else {
-				chosen = first;
+			if (buff[5] == 47) {
+				// A:     127 127 0 128 128 47 
+				current_key = KEY_JUMP; 
+				// printf("JUMP\n");			
 			}
-
-			switch(chosen) {
-				case 0x2C:
-					current_key = KEY_JUMP;
-					break;
-				case 0x04:
-					current_key = KEY_LEFT;
-					break;
-				case 0x07:
-					current_key = KEY_RIGHT;
-					break;
-				case 0x0A:
-					current_key = KEY_NEWGAME;
-					break;
-				default:
-					current_key = KEY_NONE;
-					break;
+			else if (buff[3] == 0) {
+		  		// 127 127 0 128 128 15
+		  		// left
+				current_key = KEY_LEFT; 
+				// printf("LEFT\n");		
 			}
-		} else {
-			if (r == LIBUSB_ERROR_NO_DEVICE) {
-
-				fprintf(stderr, "Keyboard disconnected.\n");
-				break;
+			else if (buff[3] == 255) {
+				// right
+				// 127 127 255 128 128 15 
+				current_key = KEY_RIGHT; 
+				// printf("RIGHT\n");			
 			}
-
-			fprintf(stderr, "Transfer error: %s\n", libusb_error_name(r));
-			current_key = KEY_NONE;
-			libusb_handle_events_timeout(NULL, &timeout);
+			else if (buff[6] == 32) {
+				// restart
+				// 127 127 127 127 127 15 32
+				current_key = KEY_NEWGAME; 
+				// printf("KEY_NEWGAME\n");			
+			}
+			else{
+				current_key = KEY_NONE; 
+				// printf("NONE\n");
+			}
 		}
+
+		usleep(5000);
 	}
 	return NULL;
 }
 
+
+// void *input_thread_function(void *ignored)
+// {
+// 	struct usb_keyboard_packet packet;
+// 	int transferred;
+// 	int r;
+// 	struct timeval timeout = { 0, 500000 };
+// 	uint8_t first, second, chosen;
+
+// 	for (;;) {
+// 		r = libusb_interrupt_transfer(keyboard, endpoint_address, (unsigned char *)&packet, sizeof(packet), &transferred, 0);
+// 		if (r == 0 && transferred == sizeof(packet)) {
+
+// 			first = packet.keycode[0];
+// 			second = packet.keycode[1];
+// 			chosen = 0;
+
+// 			if (first != 0 && second != 0) {
+
+// 				if (first == second) {
+// 					usleep(5000);
+// 					continue;
+// 				} else {
+// 					chosen = second;
+// 				}
+
+// 			} else {
+// 				chosen = first;
+// 			}
+
+// 			switch(chosen) {
+// 				case 0x2C:
+// 					current_key = KEY_JUMP;
+// 					break;
+// 				case 0x04:
+// 					current_key = KEY_LEFT;
+// 					break;
+// 				case 0x07:
+// 					current_key = KEY_RIGHT;
+// 					break;
+// 				case 0x0A:
+// 					current_key = KEY_NEWGAME;
+// 					break;
+// 				default:
+// 					current_key = KEY_NONE;
+// 					break;
+// 			}
+// 		} else {
+// 			if (r == LIBUSB_ERROR_NO_DEVICE) {
+
+// 				fprintf(stderr, "Keyboard disconnected.\n");
+// 				break;
+// 			}
+
+// 			fprintf(stderr, "Transfer error: %s\n", libusb_error_name(r));
+// 			current_key = KEY_NONE;
+// 			libusb_handle_events_timeout(NULL, &timeout);
+// 		}
+// 	}
+// 	return NULL;
+// }
+
 void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
 	mario->state.state = STATE_ENLARGE;
 	mario->state.type = TYPE_MARIO_LARGE;
-	printf("Hit Mushroom\n");
+	// printf("Hit Mushroom\n");
 }
 
 void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type) {
@@ -377,11 +429,9 @@ void process_mario_logic(Entity *mario, Game *game) {
 		return;
 	}
 
-    // Always apply gravity
     mario->motion.ay = GRAVITY;
 	mario->motion.ax = 0;
 
-    // Horizontal movement based on key press
     if (current_key == KEY_LEFT) {
         mario->motion.ax = -WALK_ACC;
         mario->render.flip = 1;
@@ -398,11 +448,9 @@ void process_mario_logic(Entity *mario, Game *game) {
         }
     }
 
-    // Update velocities
     mario->motion.vx += mario->motion.ax;
     mario->motion.vy += mario->motion.ay;
 
-    // Limit speeds
     mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
@@ -451,10 +499,11 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->position.x += mario->motion.vx;
     mario->position.y += mario->motion.vy;
 
-	if (mario->position.y > GROUND_LEVEL) {
-		mario->position.y = GROUND_LEVEL;
-		mario->motion.vy = 0;
-	}
+	// Should not be needed if collision logic is solid
+	// if (mario->position.y > GROUND_LEVEL) {
+	// 	mario->position.y = GROUND_LEVEL;
+	// 	mario->motion.vy = 0;
+	// }
 }
 
 void process_mushroom_logic(Entity *mushroom, Game *game) {
@@ -623,20 +672,12 @@ void update_camera_position(Game *game) {
     Entity *mario = &game->entities[0];
     int midPoint = game->camera_pos + CAMERA_SIZE / 2;
 
-    // Move camera right if Mario passes the midpoint on the right
     if (mario->position.x > midPoint) {
-        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
-    }
-    
-    // Move camera left if Mario approaches the left edge of the camera view
-    if (mario->position.x < midPoint) {
-        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
+        game->camera_pos += mario->motion.ax; 
     }
 
-    // Ensure the camera position is within the level boundaries
     game->camera_pos = fmax(0, fmin(game->camera_pos, CAMERA_SIZE));
 }
-
 
 int main() {
 	pthread_t input_thread;
@@ -649,10 +690,49 @@ int main() {
 		return EXIT_FAILURE;
 	}
 
-	if ((keyboard = openkeyboard(&endpoint_address)) == NULL) {
-		fprintf(stderr, "Did not find a keyboard\n");
-		exit(EXIT_FAILURE);
+	// if ((keyboard = openkeyboard(&endpoint_address)) == NULL) {
+	// 	fprintf(stderr, "Did not find a keyboard\n");
+	// 	exit(EXIT_FAILURE);
+	// }
+
+	r = libusb_init(&ctx);      // initialize a library session
+  	if (r < 0)
+  	{
+    	printf("%s  %d\n", "Init Error", r); // there was an error
+    	return 1;
+  	}
+  	libusb_set_debug(ctx, 3);                 // set verbosity level to 3, as suggested in the documentation
+  	cnt = libusb_get_device_list(ctx, &devs); // get the list of devices
+  	if (cnt < 0)
+  	{
+    	printf("%s\n", "Get Device Error"); // there was an error
+  	}
+  	mouse = libusb_open_device_with_vid_pid(ctx, 0x0079, 0x0011);
+	if (mouse == NULL)
+	{
+		printf("%s\n", "Cannot open device");
+		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
+		libusb_exit(ctx);                 // close the session
+		return 0;
 	}
+	else
+	{
+		printf("%s\n", "Device opened");
+		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
+		if (libusb_kernel_driver_active(mouse, 0) == 1)
+		{ // find out if kernel driver is attached
+			printf("%s\n", "Kernel Driver Active");
+		  	if (libusb_detach_kernel_driver(mouse, 0) == 0) // detach it
+		    printf("%s\n", "Kernel Driver Detached!");
+		}
+		r = libusb_claim_interface(mouse, 0); // claim interface 0 (the first) of device (mine had just 1)
+		if (r < 0)
+		{
+		  	printf("%s\n", "Cannot Claim Interface");
+		  	return 1;
+		}
+	}
+	printf("%s\n", "Claimed Interface");
 
 	if (pthread_create(&input_thread, NULL, input_thread_function, NULL) != 0) {
 		fprintf(stderr, "Failed to create input thread\n");
@@ -668,7 +748,6 @@ int main() {
 			new_game(&game);
 			continue;
 		}
-
 
 		// update_camera_position(&game);
 
@@ -717,6 +796,7 @@ int main() {
 
 			animate_entity(&game, entity, frame_counter);
 		}
+
 		flush_frame(&game, frame_select);
 		frame_select = !frame_select;
 
