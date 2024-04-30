@@ -67,7 +67,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 			case STATE_HIT:
 				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
 				if (rel_counter == 0) entity->position.y += 3;
-				if (rel_counter > 20) entity->state.state = STATE_LARGE;
+				if (rel_counter > 20) entity->state.state = STATE_NORMAL;
 				break;
 			case STATE_ENLARGE:
 				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_M_NORMAL : ANI_MARIO_L_NORMAL;
@@ -75,6 +75,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				if (rel_counter > 30) entity->state.state = STATE_LARGE;
 				break;
 			case STATE_DEAD:
+				/*Doesn't really animate the death as STATE_DEAD is caught by game loop*/
 				entity->render.pattern_code = ANI_MARIO_S_DEAD;
 				if (rel_counter == 0) entity->motion.vy = dead_v;
 				else if (rel_counter > 30) {

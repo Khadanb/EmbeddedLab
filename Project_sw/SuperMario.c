@@ -543,7 +543,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 						other->motion.vy = -JUMP_INIT_V_SMALL;
 					} else {
 						other->state.type = TYPE_MARIO_SMALL;
-						other->state.type = STATE_HIT;
+						other->state.state = STATE_HIT;
 					}
 					break;
 				case TYPE_GROUND:
