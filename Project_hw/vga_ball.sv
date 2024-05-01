@@ -5,176 +5,135 @@
  * Columbia University
  */
 
-module vga_ball(input logic        clk,
-	        input logic 	   reset,
-		input logic [31:0]  writedata,
-		input logic 	   write,
-		input 		   chipselect,
-		input logic [2:0]  address,
+module vga_ball(
+    input logic        clk,
+    input logic        reset,
+    input logic [31:0] writedata,
+    input logic        write,
+    input logic        chipselect,
+    input logic [2:0]  address,
 
-		input left_chan_ready,
-		input right_chan_ready,
+    input logic        left_chan_ready,
+    input logic        right_chan_ready,
 
-		output logic [15:0] sample_data_l,
-		output logic sample_valid_l,
-		output logic [15:0] sample_data_r,
-		output logic sample_valid_r,
+    output logic [15:0] sample_data_l,
+    output logic        sample_valid_l,
+    output logic [15:0] sample_data_r,
+    output logic        sample_valid_r,
 
-		output logic [7:0] VGA_R, VGA_G, VGA_B,
-		output logic 	   VGA_CLK, VGA_HS, VGA_VS,
-		                   VGA_BLANK_n,
-		output logic 	   VGA_SYNC_n);
+    output logic [7:0]  VGA_R, VGA_G, VGA_B,
+    output logic        VGA_CLK, VGA_HS, VGA_VS,
+    output logic        VGA_BLANK_n,
+    output logic        VGA_SYNC_n
+);
 
-   logic [10:0]	   hcount;
-   logic [9:0]     vcount;
-   logic [31:0] ppu_info,sound_buff;
-	
-   vga_counters counters(.clk50(clk), .*);
+    logic [10:0] hcount;
+    logic [9:0]  vcount;
+    logic [31:0] ppu_info, sound_buff;
+    vga_counters counters(.clk50(clk), .*);
 
-   always_ff @(posedge clk)
-     if (reset) begin
-	ppu_info <= 32'd_0;
-	sound_buff <= 32'd_0;
-     end else if (chipselect && write)
-       case (address)
-	 3'h0 : ppu_info <= writedata;
-	 3'h1 : sound_buff <= writedata;// sound
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            ppu_info <= 32'd_0;
+            sound_buff <= 32'd_0;
+        end else if (chipselect && write) begin
+            case (address)
+                3'h0: ppu_info <= writedata;
+                3'h1: sound_buff <= writedata;
+            endcase
+        end
+    end
 
-       endcase
+    // Sound processing logic
+    reg [13:0] counter;
+    logic flag1, flag2, flag3, flag4;
+    reg [9:0] address1, address2, address3, address4;
+    wire [15:0] sound_output1, sound_output2, sound_output3, sound_output4;
 
-//----------------Sound-----------------
-	reg [13:0] counter;
-	logic flag1;
-	logic flag2;
-	logic flag3;
-	logic flag4;
+    smb_breakblock_ROM breakblock_audio(.address(address1), .clock(clk), .q(sound_output1));
+    smb_jump_ROM jump_audio(.address(address2), .clock(clk), .q(sound_output2));
+    smb_gameover_ROM gameover_audio(.address(address3), .clock(clk), .q(sound_output3));
+    smb_coin_ROM coin_audio(.address(address4), .clock(clk), .q(sound_output4));
 
-	reg	[9:0]  address1;
-	wire [15:0]  q1;
-	smb_breakblock_ROM audio1(.address(address1), .clock(clk), .q(q1));//12877
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            counter <= 0;
+            sample_valid_l <= 0;
+            sample_valid_r <= 0;
+            address1 <= 0;
+            address2 <= 0;
+            address3 <= 0;
+            address4 <= 0;
+            flag1 <= 0;
+            flag2 <= 0;
+            flag3 <= 0;
+            flag4 <= 0;
+        end else if (left_chan_ready && right_chan_ready) begin
+            if (counter < 6250) begin
+                counter <= counter + 1;
+                sample_valid_l <= 0;
+                sample_valid_r <= 0;
+            end else begin
+                counter <= 0;
+                sample_valid_l <= 1;
+                sample_valid_r <= 1;
+                // Sound channel processing
+                if (sound_buff[2:0] == 3'd3 && !flag3 || flag3 == 1'b0) begin
+                    if (address3 < 10'd1000) begin
+                        address3 <= address3 + 1;
+                    end else begin
+                        address3 <= 0;
+                        flag3 <= 1'b1;
+                    end
+                    sample_data_l <= sound_output3;
+                    sample_data_r <= sound_output3;
+                end
+                if (sound_buff[2:0] == 3'd1 && !flag1 || flag1 == 1'b0) begin
+                    if (address1 < 10'd1000) begin
+                        address1 <= address1 + 1;
+                    end else begin
+                        address1 <= 0;
+                        flag1 <= 1'b1;
+                    end
+                    sample_data_l <= sound_output1;
+                    sample_data_r <= sound_output1;
+                end
+                if (sound_buff[2:0] == 3'd2 && !flag2 || flag2 == 1'b0) begin
+                    if (address2 < 10'd1000) begin
+                        address2 <= address2 + 1;
+                    end else begin
+                        address2 <= 0;
+                        flag2 <= 1'b1;
+                    end
+                    sample_data_l <= sound_output2;
+                    sample_data_r <= sound_output2;
+                end
+                if (sound_buff[2:0] == 3'd4 && !flag4 || flag4 == 1'b0) begin
+                    if (address4 < 10'd1000) begin
+                        address4 <= address4 + 1;
+                    end else begin
+                        address4 <= 0;
+                        flag4 <= 1'b1;
+                    end
+                    sample_data_l <= sound_output4;
+                    sample_data_r <= sound_output4;
+                end
+            end
+        end else begin
+            sample_valid_l <= 0;
+            sample_valid_r <= 0;
+        end
+    end
 
-	reg	[9:0]  address2;
-	wire [15:0]  q2;
-	smb_jump_ROM  audio2(.address(address2), .clock(clk), .q(q2));//12066
+    // PPU for video output logic
+    logic [23:0] PPU_out;
+    ppu game_ppu(.clk(clk), .reset(reset), .writedata(ppu_info), .address(3'd_0), .hcount(hcount[10:1]),
+                 .vcount(vcount), .RGB_output(PPU_out));
 
-	reg	[9:0]  address3;
-	wire [15:0]  q3;
-	//smb_gameover_ROM audio3(.address(address3), .clock(clk), .q(q3));//59806
-	smb_gameover_ROM audio3(.address(address3), .clock(clk), .q(q3));//59806
-	reg [9:0] address4;
-	wire [15:0] q4;
-	smb_coin_ROM audio4(.address(address4), .clock(clk), .q(q4));//20848
-	
-	always_ff @(posedge clk) begin
-		if(reset) begin
-			counter <= 0;
-			sample_valid_l <= 0; sample_valid_r <= 0;
-		end
-		else if(left_chan_ready == 1 && right_chan_ready == 1 && counter < 6250) begin
-			counter <= counter + 1;
-			sample_valid_l <= 0; sample_valid_r <= 0;
-		end
-		else if(left_chan_ready == 1 && right_chan_ready == 1 && counter == 6250) begin
-			counter <= 0;
-			sample_valid_l <= 1; sample_valid_r <= 1;
-			//------Game over------
-			if (sound_buff[2:0]==3'd3 || flag3 ==1'b0) begin
-				if (address3 < 10'd1000) begin   // 59806
-					address3 <= address3+1;
-					flag3 <= 1'b0;
-				end
-				else begin
-					address3 <=0;
-					flag3 <= 1'b1;
-				end
-				sample_data_l <= q3;
-				sample_data_r <= q3;
-			end
-			//------Break Block------
-			else if (sound_buff[2:0]==3'd1 || flag1 ==1'b0) begin
-				if (address1 < 10'd1000) begin //12066
-					address1 <= address1+1;
-					flag1 <= 1'b0;
-				end
-				else begin
-					address1 <=0;
-					flag1 <= 1'b1;
-				end
-				sample_data_l <= q1;
-				sample_data_r <= q1;
-			end
-			//------Jump Surper------
-			else if (sound_buff[2:0]==3'd2 || flag2 ==1'b0) begin
-				if (address2 < 10'd1000) begin //12877
-					address2 <= address2+1;
-					flag2 <= 1'b0;
-				end
-				else begin
-					address2 <=0;
-					flag2 <= 1'b1;
-				end
-				sample_data_l <= q2;
-				sample_data_r <= q2;
-			end
-			//------coin------
-			else if (sound_buff[2:0]==3'd4 || flag4 == 1'b0) begin
-				if (address4 < 10'd1000) begin   //20848
-					address4 <= address4 + 1;
-					flag4 <= 1'b0;
-				end else begin
-					address4 <= 0;
-					flag4 <= 1'b1;
-				end
-				sample_data_l <= q4;
-				sample_data_r <= q4;
-			end
-			else if (sound_buff[2:0]==3'd5 ) begin
-					address1 <= 0;
-					address2 <= 0;
-					address3 <= 0;
-					address4 <= 0;
-					flag1 <= 1'b0;
-					flag2 <= 1'b0;
-					flag3 <= 1'b0;
-					flag4 <= 1'b0;
-				
-				sample_data_l <= 0;
-				sample_data_r <= 0;
-			end
-
-
-			else begin
-				sample_data_l <= 0;
-				sample_data_r <= 0;
-			end
-		end
-		else begin
-		sample_valid_l <= 0; sample_valid_r <= 0;
-		end
-	end
-
-
-   //test =========
-   logic [23:0] PPU_out;
-   ppu game_ppu(.clk(clk), .reset(reset), .writedata(ppu_info), .address(3'd_0), .hcount(hcount[10:1]),
- 		.vcount(vcount), .RGB_output(PPU_out));
-   //==============
-	
-   always_comb begin
-      {VGA_R, VGA_G, VGA_B} = {8'h0, 8'h0, 8'h0};
-      if (VGA_BLANK_n ) begin
-
-
-      end
-
-	if (hcount < 11'd_1120 && hcount >= 11'd_160 && vcount < 10'd_400)
-	 		{VGA_R, VGA_G, VGA_B} = PPU_out;
-	else
-			{VGA_R, VGA_G, VGA_B} =
-             			{8'h00, 8'h00, 8'h00};
-
-   end
-
+    // VGA signal generation
+    always_comb begin
+        {VGA_R, VGA_G, VGA_B} = (VGA_BLANK_n && hcount >= 160 && hcount < 1120 && vcount < 400) ? PPU_out : 24'h000000;
+    end
 endmodule
 
 module vga_counters(

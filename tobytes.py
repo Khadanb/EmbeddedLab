@@ -1,46 +1,49 @@
 from PIL import Image
+import math
+
+def find_closest_color(rgb, palette):
+    min_distance = float('inf')
+    index_selected = 0
+    for index, color in enumerate(palette):
+        distance = math.sqrt(sum((c1 - c2) ** 2 for c1, c2 in zip(rgb, color)))
+        if distance < min_distance:
+            min_distance = distance
+            index_selected = index
+    return index_selected
 
 file_name = input("Enter File Name: ")
-
 im = Image.open(file_name)
-
 pix = im.load()
 
-print("Image Size: ")
-print(im.size)
+print("Image Size: ", im.size)
+print("Image Mode: ", im.mode)
 
-x,y = im.size
-print(im.mode)
+Color_Plate = [
+    (255, 204, 102),
+    (51, 204, 51),
+    (255, 255, 255),
+    (0, 0, 0),
+    (32, 32, 34)
+]
 
-pix_index_list = []
-
-Color_Plate = [('0x92', '0x90', '0xff')]
 byte_stream = []
-byte_write = 0x00
 
-for i in range(y):
-    for j in range(x):
-        R = hex(pix[j,i][0])
-        G = hex(pix[j,i][1])
-        B = hex(pix[j,i][2])
-        RGB = (R, G, B)
-        if RGB not in Color_Plate:
-            Color_Plate.append(RGB)
-        ind = Color_Plate.index(RGB)
-        pix_index_list.append(ind)
-        byte_write = ind
-        byte_stream.append(byte_write)
+for i in range(im.size[1]):  # y
+    for j in range(im.size[0]):  # x
+        rgb = pix[j, i][:3]  # Get RGB (ignore alpha if present)
+        if rgb not in Color_Plate:
+            index = find_closest_color(rgb, Color_Plate)
+        else:
+            index = Color_Plate.index(rgb)
+        byte_stream.append(index)
 
-print("Color Plate Info")
+print("Color Plate Info:")
+for i, color in enumerate(Color_Plate):
+    print(f"{i}: {color}")
 
-for i in range(len(Color_Plate)):
-    print(f"{i}: {Color_Plate[i]}")
+print("Coded File Length (Bytes): ", len(byte_stream))
 
-print("Coded File Length (Bytes): ")
-print(len(byte_stream))
 saved_file_name = input("Enter Saved Filename: ")
-s_f = open(saved_file_name, 'w')
-write_stream = '\n'.join(f'{a:01x}' for a in byte_stream)
-s_f.write(write_stream)
-s_f.close()
-
+with open(saved_file_name, 'w') as f:
+    write_stream = '\n'.join(f'{a:01x}' for a in byte_stream)
+    f.write(write_stream)

@@ -1,150 +1,122 @@
 /*
  * Avalon memory-mapped peripheral that generates VGA
- *
+ * 
  * Stephen A. Edwards
  * Columbia University
  */
 
-module Goomba_display (input logic        clk,
-	    input logic 	    reset,
-		input logic [31:0]  writedata,
-		input logic [9:0]   hcount,
-		input logic [9:0]   vcount,
+module Goomba_display (
+    input logic        clk,
+    input logic        reset,
+    input logic [31:0] writedata,
+    input logic [9:0]  hcount,
+    input logic [9:0]  vcount,
+    output logic [23:0] RGB_output
+);
 
-		output logic [23:0]	RGB_output);
+    // Constants for configuration
+    parameter [5:0] COMPONENT_ID = 6'b000101;  // ID for this component
+    parameter [4:0] MAX_PATTERN_COUNT = 5'd_2;  // Number of patterns supported
+    parameter [15:0] ADDRESS_LIMIT = 16'd_384;  // Memory address limit
+    parameter [4:0] CHILD_COMPONENT_LIMIT = 5'd_2;  // Limit for child components
+    logic [3:0] pixel_data [0:191];  // Pixel memory array
+    logic [23:0] color_palette [0:3];  // Palette of colors
+    logic [79:0] pattern_data [0:1];  // Pattern data
 
-    // Change for other type=========================
-    parameter [5:0] sub_comp_ID = 6'b000101; // #5
-    parameter [4:0] pattern_num = 5'd_2;
-    parameter [15:0] addr_limit = 16'd_384;  // 384
-	parameter [4:0] child_limit = 5'd_2;
-	logic [3:0] mem [0:191];
-	logic [23:0] color_plate [0:3];
-    logic [79:0] pattern_table [0:1]; 
+    // Define pattern and color data
+    assign pattern_data[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
+    assign pattern_data[1] = {16'd_256, 16'd_16, 16'd_8, 16'd_16, 16'd_8};
 
-    assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
-    assign pattern_table[1] = {16'd_256, 16'd_16, 16'd_8, 16'd_16, 16'd_8};
+    assign color_palette[0] = 24'h202020;  // Background color
+    assign color_palette[1] = 24'h9c4a00;  // Brown
+    assign color_palette[2] = 24'h000000;  // Black
+    assign color_palette[3] = 24'hffcec5;  // Peach
 
-	assign color_plate[0] = 24'h202020;
-	assign color_plate[1] = 24'h9c4a00;
-	assign color_plate[2] = 24'h000000;
-	assign color_plate[3] = 24'hffcec5;
+    // Buffers for rendering logic
+    logic [23:0] buffer_color_output[0:1][0:1];
+    logic [15:0] buffer_address_output[0:1][0:1];
+    logic        buffer_valid[0:1][0:1];
+    logic [111:0] buffer_state[0:1][0:1];
+    logic        buffer_select = 1'b0;
 
-    //=============================================
-    
-    // logic [79:0] ping_pong_pattern_input[0:1];
-    logic [23:0] ping_pong_RGB_output[0:1][0:1];
-    logic [15:0] ping_pong_addr_output[0:1][0:1];
-    logic        ping_pong_addr_out_valid[0:1][0:1];
-    logic [111:0] ping_pong_stateholder[0:1][0:1];
-    logic        ping_pong = 1'b0;
+    // Decode writedata fields
+    logic [5:0] component;
+    logic [4:0] child_component;
+    logic [3:0] action;
+    logic [2:0] action_type;
+    logic [12:0] action_data;
+    logic        buffer_toggle;
 
-	logic [5:0] sub_comp;
-	logic [4:0] child_comp;
-	logic [3:0] info;
-	logic [2:0] input_type;
-	logic [12:0] input_msg;
-	logic		pp_selc;
+    // Decode input writedata
+    assign component = writedata[31:26];
+    assign child_component = writedata[25:21];
+    assign action = writedata[20:17];
+    assign action_type = writedata[16:14];
+    assign buffer_toggle = writedata[13];
+    assign action_data = writedata[12:0];
 
-	assign sub_comp = writedata[31:26];
-	assign child_comp = writedata[25:21];
-	assign info = writedata[20:17];
-	assign input_type = writedata[16:14];
-	assign pp_selc = writedata[13];
-	assign input_msg = writedata[12:0];
+    // Address calculators for each child component in both buffer states
+    genvar i;
+    generate
+        for (i = 0; i < CHILD_COMPONENT_LIMIT; i = i + 1) begin : gen_addr_cal
+            addr_cal address_calculator_ping(
+                .pattern_info(buffer_state[0][i][111:32]),
+                .sprite_info(buffer_state[0][i][31:0]),
+                .hcount(hcount),
+                .vcount(vcount),
+                .addr_output(buffer_address_output[0][i]),
+                .valid(buffer_valid[0][i])
+            );
 
-	// loop ============================
-	integer i, j, k;
-	// ================================  
+            addr_cal address_calculator_pong(
+                .pattern_info(buffer_state[1][i][111:32]),
+                .sprite_info(buffer_state[1][i][31:0]),
+                .hcount(hcount),
+                .vcount(vcount),
+                .addr_output(buffer_address_output[1][i]),
+                .valid(buffer_valid[1][i])
+            );
+        end
+    endgenerate
 
-    //==========================================
-    // Address_calculater change to adapt different setting
-    //=============================================
-	addr_cal AC_ping_0(.pattern_info(ping_pong_stateholder[0][0][111:32]), .sprite_info(ping_pong_stateholder[0][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(ping_pong_addr_output[0][0]), .valid(ping_pong_addr_out_valid[0][0]));
-    addr_cal AC_ping_1(.pattern_info(ping_pong_stateholder[0][1][111:32]), .sprite_info(ping_pong_stateholder[0][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(ping_pong_addr_output[0][1]), .valid(ping_pong_addr_out_valid[0][1]));
-
-    addr_cal AC_pong_0(.pattern_info(ping_pong_stateholder[1][0][111:32]), .sprite_info(ping_pong_stateholder[1][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(ping_pong_addr_output[1][0]), .valid(ping_pong_addr_out_valid[1][0]));
-    addr_cal AC_pong_1(.pattern_info(ping_pong_stateholder[1][1][111:32]), .sprite_info(ping_pong_stateholder[1][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(ping_pong_addr_output[1][1]), .valid(ping_pong_addr_out_valid[1][1]));
-    // FF Input================================
-	always_ff @(posedge clk) begin
-        case (info)
-            // 4'b1111 to flush *PING(0)/PONG(1)* buffer and clear *THE OPPOSIT* buffer
-            4'b1111: begin
-                ping_pong = pp_selc;
-				for (i = 0; i < child_limit; i = i + 1) begin
-					ping_pong_stateholder[~pp_selc][i][31] = 1'b0;
-				end 
-
+    // Processing inputs and managing state
+    always_ff @(posedge clk) begin
+        case (action)
+            4'b1111: begin  // Reset buffers based on toggle
+                buffer_select = buffer_toggle;
+                foreach (buffer_state[~buffer_toggle][j])
+                    buffer_state[~buffer_toggle][j][31] = 1'b0;  // Clear visibility
             end
-
-            // 4;b0001 normal write to state holder **ping_pong(pp_selc)**
-	        4'h0001 : begin
-                // *****Change the sub_comp code to match the input
-            	if (sub_comp == sub_comp_ID) begin
-					if (child_comp < child_limit) begin
-		                case (input_type)
-		                    3'b001: begin
-		                        // visible
-		                        ping_pong_stateholder[pp_selc][child_comp][31] = input_msg[12];
-		                        // fliped
-		                        ping_pong_stateholder[pp_selc][child_comp][30] = input_msg[11];
-		                        // pattern code
-		                        if (input_msg[4:0] < pattern_num)
-		                            ping_pong_stateholder[pp_selc][child_comp][111:32] = pattern_table[input_msg[4:0]];
-		                    end
-		                    3'b010: begin
-		                        // x_coordinate
-		                        ping_pong_stateholder[pp_selc][child_comp][29:20] = input_msg[9:0];
-		                    end
-		                    3'b011: begin
-		                        // y_coordinate
-		                        ping_pong_stateholder[pp_selc][child_comp][19:10] = input_msg[9:0];
-		                    end
-		                    3'b100: begin
-		                        // shift_amount
-		                        ping_pong_stateholder[pp_selc][child_comp][9:0] = input_msg[9:0];
-		                    end
-		                endcase
-					end
-		        end
+            4'h0001: if (component == COMPONENT_ID && child_component < CHILD_COMPONENT_LIMIT) begin
+                // Update specific child component settings
+                case (action_type)
+                    3'b001: begin  // Visibility and pattern
+                        buffer_state[buffer_toggle][child_component][31] = action_data[12];
+                        buffer_state[buffer_toggle][child_component][30] = action_data[11];
+                        if (action_data[4:0] < MAX_PATTERN_COUNT)
+                            buffer_state[buffer_toggle][child_component][111:32] = pattern_data[action_data[4:0]];
+                    end
+                    3'b010: buffer_state[buffer_toggle][child_component][29:20] = action_data[9:0];  // X position
+                    3'b011: buffer_state[buffer_toggle][child_component][19:10] = action_data[9:0];  // Y position
+                    3'b100: buffer_state[buffer_toggle][child_component][9:0] = action_data[9:0];    // Additional attribute
+                endcase
             end
-       endcase
-	end
+        endcase
+    end
 
+    // Determine RGB output based on active buffer state and validity
+    always_comb begin
+        RGB_output = 24'h202020;  // Default to background color
+        foreach (buffer_color_output[buffer_select][k])
+            if (buffer_valid[buffer_select][k]) begin
+                RGB_output = buffer_color_output[buffer_select][k];
+                break;
+            end
+    end
 
-        // Output =====================================
+    // Initialize pixel data from memory
+    initial begin
+        $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Goomba_2bit.txt", pixel_data);
+    end
 
-	always_comb begin
-		for (j = 0; j < child_limit; j = j + 1) begin
-			ping_pong_RGB_output[0][j] =  (ping_pong_addr_output[0][j] < addr_limit)? 
-			(
-				(ping_pong_addr_output[0][j][0])? 
-					color_plate[mem[(ping_pong_addr_output[0][j][15:1])][3:2]] :
-					color_plate[mem[(ping_pong_addr_output[0][j][15:1])][1:0]]
-			) :
-			color_plate[mem[0]];
-			
-			ping_pong_RGB_output[1][j] =  (ping_pong_addr_output[1][j] < addr_limit)? 
-			(
-				(ping_pong_addr_output[1][j][0])? 
-					color_plate[mem[(ping_pong_addr_output[1][j][15:1])][3:2]] :
-					color_plate[mem[(ping_pong_addr_output[1][j][15:1])][1:0]]
-			) :
-			color_plate[mem[0]];
-		end
-		
-		RGB_output = 24'h202020;
-		for (k = 0; k < child_limit; k = k + 1) begin
-			if ((ping_pong_RGB_output[ping_pong][k] != 24'h202020) && ping_pong_addr_out_valid[ping_pong][k]) begin
-				RGB_output = ping_pong_RGB_output[ping_pong][k];
-				break;
-			end
-		end
-	end
-		
-initial begin
-	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Goomba_2bit.txt", mem);
-end
-
-   
 endmodule
