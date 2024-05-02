@@ -1,105 +1,100 @@
 module Mush_display (
     input logic        clk,
     input logic        reset,
-    input logic [31:0] writedata,
-    input logic [9:0]  hcount,
-    input logic [9:0]  vcount,
+    input logic [31:0]  writedata,
+    input logic [9:0]   hcount,
+    input logic [9:0]   vcount,
     output logic [23:0] RGB_output
 );
 
-    // Constants
-    parameter [5:0] COMPONENT_ID = 6'b001001;
-    parameter [4:0] NUM_PATTERNS = 5'd_2;
-    parameter [15:0] ADDR_LIMIT = 16'd_512;
-    parameter [4:0] MAX_CHILDREN = 5'd_2;
+    // Configuration parameters
+    parameter [5:0] DEVICE_ID = 6'b001001;
+    parameter [4:0] MAX_PATTERNS = 5'd_2;
+    parameter [15:0] ADDRESS_LIMIT = 16'd_512;
+    parameter [4:0] MAX_SPRITES = 5'd_2;
 
-    // Memory storage
-    logic [3:0] mem [0:255];
-    logic [23:0] color_plate [0:3];
-    logic [79:0] pattern_table [0:1];
+    // Memory and colors
+    logic [3:0] sprite_memory [0:255];
+    logic [23:0] color_palette [0:3] = {24'h9290ff, 24'he69c21, 24'h0c9300, 24'hfffeff};
+    logic [79:0] pattern_data [0:1] = {{16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16}, {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16}};
 
-    // Initialize color_plate and pattern_table
-    initial begin
-        color_plate[0] = 24'h202020;
-        color_plate[1] = 24'he69c21;
-        color_plate[2] = 24'h0c9300;
-        color_plate[3] = 24'hfffeff;
+    // Double buffering
+    logic [23:0] double_buffer_color[2][2];
+    logic [15:0] double_buffer_addr[2][2];
+    logic double_buffer_valid[2][2];
+    logic [111:0] sprite_state[2][2];
+    logic current_buffer = 1'b0;
 
-        pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
-        pattern_table[1] = {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
-    end
+    // Decode writedata fields
+    logic [5:0] component_id;
+    logic [4:0] sprite_id;
+    logic [3:0] command;
+    logic [2:0] input_type;
+    logic [12:0] input_data;
+    logic buffer_select;
 
-    // Ping-pong buffering for double-buffering technique
-    logic [23:0] buffered_color_output[2][2];
-    logic [15:0] buffered_address_output[2][2];
-    logic buffer_valid[2][2];
-    logic [111:0] buffered_state_data[2][2];
-    logic buffer_select = 1'b0;
-    logic [15:0] addr;
+    assign component_id = writedata[31:26];
+    assign sprite_id = writedata[25:21];
+    assign command = writedata[20:17];
+    assign input_type = writedata[16:14];
+    assign buffer_select = writedata[13];
+    assign input_data = writedata[12:0];
 
-    // Data extraction from writedata
-    logic [5:0] component;
-    logic [4:0] child_index;
-    logic [3:0] control_code;
-    logic [2:0] data_type;
-    logic [12:0] payload;
-    logic select_buffer;
-
-    assign component = writedata[31:26];
-    assign child_index = writedata[25:21];
-    assign control_code = writedata[20:17];
-    assign data_type = writedata[16:14];
-    assign select_buffer = writedata[13];
-    assign payload = writedata[12:0];
-
-    // Address calculators for rendering logic
+    // Address calculators for each buffer
     genvar gi, gj;
     generate
-        for (gi = 0; gi < 2; gi++) begin : buffer_generation
-            for (gj = 0; gj < 2; gj++) begin : child_generation
-                addr_cal addr_calc_inst(
-                    .pattern_info(buffered_state_data[gi][gj][111:32]),
-                    .sprite_info(buffered_state_data[gi][gj][31:0]),
+        for (gi = 0; gi < 2; gi++) begin : buffers
+            for (gj = 0; gj < 2; gj++) begin : sprites
+                addr_cal addr_cal_inst(
+                    .pattern_info(sprite_state[gi][gj][111:32]),
+                    .sprite_info(sprite_state[gi][gj][31:0]),
                     .hcount(hcount),
                     .vcount(vcount),
-                    .addr_output(buffered_address_output[gi][gj]),
-                    .valid(buffer_valid[gi][gj])
+                    .addr_output(double_buffer_addr[gi][gj]),
+                    .valid(double_buffer_valid[gi][gj])
                 );
             end
         end
     endgenerate
 
-    // Buffer control and data updating
+    // Manage input data and update sprite states
     always_ff @(posedge clk) begin
-        case (control_code)
-            4'b1111: begin // Flush and clear buffer
-                buffer_select = select_buffer;
-                for (int i = 0; i < MAX_CHILDREN; i++) begin
-                    buffered_state_data[~select_buffer][i][31] = 1'b0; // Clear visibility
+        if (reset) begin
+            // Reset logic can be added here if necessary
+        end else begin
+            case (command)
+                4'b1111: begin  // Flush and clear buffers
+                    current_buffer = buffer_select;
+                    for (int i = 0; i < MAX_SPRITES; i++) begin
+                        sprite_state[~current_buffer][i][31] = 1'b0;
+                    end
                 end
-            end
-            4'h1: if (component == COMPONENT_ID && child_index < MAX_CHILDREN) begin
-                // Update state based on data type
-                buffered_state_data[select_buffer][child_index][31:30] = payload[12:11]; // visibility and flip
-                if (data_type == 3'b001 && payload[4:0] < NUM_PATTERNS)
-                    buffered_state_data[select_buffer][child_index][111:32] = pattern_table[payload[4:0]]; // pattern
-                buffered_state_data[select_buffer][child_index][29:10] = payload[9:0]; // coordinates and shift
-            end
-        endcase
+                4'h1: if (component_id == DEVICE_ID && sprite_id < MAX_SPRITES) begin
+                    sprite_state[current_buffer][sprite_id][31] = input_data[12];  // Visibility
+                    sprite_state[current_buffer][sprite_id][30] = input_data[11];  // Flip
+                    if (input_type == 3'b001 && input_data[4:0] < MAX_PATTERNS) begin
+                        sprite_state[current_buffer][sprite_id][111:32] = pattern_data[input_data[4:0]];
+                    end
+                    sprite_state[current_buffer][sprite_id][29:20] = input_data[9:0];  // X position
+                    sprite_state[current_buffer][sprite_id][19:10] = input_data[9:0];  // Y position
+                    sprite_state[current_buffer][sprite_id][9:0] = input_data[9:0];    // Additional attributes
+                end
+            endcase
+        end
     end
 
-// Output computation
+    // Calculate the RGB output
     always_comb begin
-        RGB_output = 24'h202020; // Default to background color
-        for (int j = 0; j < MAX_CHILDREN; j++) begin
-            if (buffer_valid[buffer_select][j]) begin
-                addr = buffered_address_output[buffer_select][j]; // Calculate address once validated
-                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1]] : color_plate[0];
-                if (RGB_output != color_plate[0]) break; // Use first non-default color found
+        RGB_output = 24'h9290ff; // Default to background color
+        for (int j = 0; j < MAX_SPRITES; j++) begin
+            if (double_buffer_valid[current_buffer][j]) begin
+                logic [15:0] addr = double_buffer_addr[current_buffer][j];
+                RGB_output = (addr < ADDRESS_LIMIT) ? color_palette[sprite_memory[addr >> 1][1:0]] : color_palette[0];
+                if (RGB_output != 24'h9290ff) break;
             end
         end
     end
 
-    // Initialize memory from a file
-    initial $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Mush_2bit.txt", mem);
+    // Initialize sprite memory
+    initial $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Mush_2bit.txt", sprite_memory);
 endmodule
