@@ -1,9 +1,3 @@
-/*
- * Avalon memory-mapped peripheral that generates VGA
- * Stephen A. Edwards
- * Columbia University
- */
-
 module Coin_display (
     input logic        clk,
     input logic        reset,
@@ -21,15 +15,22 @@ module Coin_display (
     
     // Memory and color definitions
     logic [3:0] sprite_memory [0:511];
-    logic [23:0] color_palette [0:4] = {
-        24'h202020, 24'h908fff, 24'he59a25, 24'hfffeff, 24'hb33425
-    };
-    logic [79:0] pattern_definitions [0:3] = {
-        {16'd_0, 16'd_8, 16'd_16, 16'd_8, 16'd_16},
-        {16'd_128, 16'd_8, 16'd_16, 16'd_8, 16'd_16},
-        {16'd_256, 16'd_8, 16'd_16, 16'd_8, 16'd_16},
-        {16'd_384, 16'd_8, 16'd_16, 16'd_8, 16'd_16}
-    };
+    logic [23:0] color_plate [0:4];
+    logic [79:0] pattern_table [0:3];
+
+    // Initialize pattern and color data
+    initial begin
+        color_plate[0] = 24'h202020;
+        color_plate[1] = 24'h908fff;
+        color_plate[2] = 24'he59a25;
+        color_plate[3] = 24'hfffeff;
+        color_plate[4] = 24'hb33425;
+
+        pattern_table[0] = {16'd0, 16'd8, 16'd16, 16'd8, 16'd16};
+        pattern_table[1] = {16'd128, 16'd8, 16'd16, 16'd8, 16'd16};
+        pattern_table[2] = {16'd256, 16'd8, 16'd16, 16'd8, 16'd16};
+        pattern_table[3] = {16'd384, 16'd8, 16'd16, 16'd8, 16'd16};
+    end
 
     // Buffer definitions for double-buffering
     logic [23:0] buffer_color_output[2][MAX_CHILDREN];
@@ -46,6 +47,7 @@ module Coin_display (
     logic [12:0] message_data;
     logic selected_buffer;
 
+    // Decode input writedata
     assign component_id = writedata[31:26];
     assign child_index = writedata[25:21];
     assign control_code = writedata[20:17];
@@ -88,7 +90,7 @@ module Coin_display (
             4'h1: if (component_id == COMPONENT_ID && child_index < MAX_CHILDREN) begin
                 buffer_state_data[selected_buffer][child_index][31:30] = message_data[12:11]; // visibility and flip
                 if (data_type == 3'b001 && message_data[4:0] < MAX_PATTERN_INDEX) begin
-                    buffer_state_data[selected_buffer][child_index][111:32] = pattern_definitions[message_data[4:0]];
+                    buffer_state_data[selected_buffer][child_index][111:32] = pattern_table[message_data[4:0]];
                 end
                 buffer_state_data[selected_buffer][child_index][29:0] = message_data[9:0]; // coordinates and shift
             end
@@ -101,7 +103,7 @@ module Coin_display (
         for (int idx = 0; idx < MAX_CHILDREN; idx++) begin
             if (buffer_valid[active_buffer][idx]) begin
                 buffer_color_output[active_buffer][idx] = (buffer_address_output[active_buffer][idx] < ADDRESS_LIMIT) ? 
-                    color_palette[sprite_memory[buffer_address_output[active_buffer][idx]]] : color_palette[0];
+                    color_plate[sprite_memory[buffer_address_output[active_buffer][idx] >> 1][1:0]] : color_plate[0];
                 RGB_output = buffer_color_output[active_buffer][idx];
                 break; // Use the first valid output
             end
