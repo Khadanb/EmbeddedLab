@@ -19,8 +19,8 @@ module Block_display (
     parameter [15:0] ADDRESS_LIMIT = 16'd_2304;
     parameter [4:0] MAX_CHILD_COMPONENTS = 5'd_9;
     logic [3:0] pixel_memory [0:2303];
-    logic [23:0] color_palette [0:9];
-    logic [79:0] pattern_data [0:16]; 
+    logic [23:0] color_plate [0:9];
+    logic [79:0] pattern_table [0:16]; 
 
 
     // Define pattern and color data
@@ -115,7 +115,7 @@ module Block_display (
                         buffer_state[buffer_toggle][child_component][31] = action_data[12];
                         buffer_state[buffer_toggle][child_component][30] = action_data[11];
                         if (action_data[4:0] < MAX_PATTERN_COUNT) begin
-                            buffer_state[buffer_toggle][child_component][111:32] = pattern_data[action_data[4:0]];
+                            buffer_state[buffer_toggle][child_component][111:32] = pattern_table[action_data[4:0]];
                         end
                     end
                     3'b010: buffer_state[buffer_toggle][child_component][29:20] = action_data[9:0];  // X position
