@@ -1,9 +1,3 @@
-/*
- * Avalon memory-mapped peripheral that generates VGA
- * Stephen A. Edwards
- * Columbia University
- */
-
 module Cloud_display (
     input logic        clk,
     input logic        reset,
@@ -21,8 +15,19 @@ module Cloud_display (
 
     // Memory and color configuration
     logic [3:0] memory [0:383];
-    logic [23:0] color_palette [0:3] = {24'h202020, 24'h000000, 24'hffffff, 24'h63adff};
-    logic [79:0] pattern_table [0:2] = {{16'd_0, 16'd_32, 16'd_24, 16'd_32, 16'd_24}};
+    logic [23:0] color_plate [0:3];
+    logic [79:0] pattern_table [0:1]; 
+
+    // Initialize color_plate and pattern_table in initial block to conform to proper initialization for unpacked arrays
+    initial begin
+        color_plate[0] = 24'h202020;
+        color_plate[1] = 24'h000000;
+        color_plate[2] = 24'hffffff;
+        color_plate[3] = 24'h63adff;
+
+        pattern_table[0] = {16'd_0, 16'd_32, 16'd_24, 16'd_32, 16'd_24};
+        pattern_table[1] = {16'd_544, 16'd_32, 16'd_1, 16'd_32, 16'd_128};
+    end
 
     // Double buffering variables
     logic [23:0] buffer_rgb_output[2];
@@ -87,10 +92,11 @@ module Cloud_display (
 
     // Calculate RGB output based on buffer state and memory contents
     always_comb begin
+        RGB_output = 24'h202020; // Default color
         for (int i = 0; i < 2; i++) begin
             buffer_rgb_output[i] = (buffer_address_output[i] < ADDRESS_LIMIT) ? 
-                color_palette[memory[buffer_address_output[i] >> 1][1:0]] : 
-                color_palette[0];
+                color_plate[memory[buffer_address_output[i] >> 1][1:0]] : 
+                color_plate[0];
         end
         RGB_output = buffer_valid[buffer_select] ? buffer_rgb_output[buffer_select] : 24'h202020;
     end
