@@ -9,14 +9,24 @@ module Mush_display (
 
     // Configuration parameters
     parameter [5:0] DEVICE_ID = 6'b001001;
-    parameter [4:0] MAX_PATTERNS = 5'd_2;
-    parameter [15:0] ADDRESS_LIMIT = 16'd_512;
-    parameter [4:0] MAX_SPRITES = 5'd_2;
+    parameter [4:0] MAX_PATTERNS = 5'd2;
+    parameter [15:0] ADDRESS_LIMIT = 16'd512;
+    parameter [4:0] MAX_SPRITES = 5'd2;
 
     // Memory and colors
     logic [3:0] sprite_memory [0:255];
-    logic [23:0] color_palette [0:3] = {24'h202020, 24'he69c21, 24'h0c9300, 24'hfffeff};
-    logic [79:0] pattern_data [0:1] = {{16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16}, {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16}};
+    logic [23:0] color_palette [0:3];
+    logic [79:0] pattern_data [0:1];
+
+    // Initialize color palette and pattern data
+    initial begin
+        color_palette[0] = 24'h9290ff;
+        color_palette[1] = 24'he69c21;
+        color_palette[2] = 24'h0c9300;
+        color_palette[3] = 24'hfffeff;
+        pattern_data[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
+        pattern_data[1] = {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
+    end
 
     // Double buffering
     logic [23:0] double_buffer_color[2][2];
