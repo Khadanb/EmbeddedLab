@@ -35,6 +35,7 @@ module Mush_display (
     logic buffer_valid[2][2];
     logic [111:0] buffered_state_data[2][2];
     logic buffer_select = 1'b0;
+    logic [15:0] addr;
 
     // Data extraction from writedata
     logic [5:0] component;
@@ -80,22 +81,21 @@ module Mush_display (
             4'h1: if (component == COMPONENT_ID && child_index < MAX_CHILDREN) begin
                 // Update state based on data type
                 buffered_state_data[select_buffer][child_index][31:30] = payload[12:11]; // visibility and flip
-                if (data_type == 3'b001 && payload[4:0] < NUM_PATTERNS) begin
+                if (data_type == 3'b001 && payload[4:0] < NUM_PATTERNS)
                     buffered_state_data[select_buffer][child_index][111:32] = pattern_table[payload[4:0]]; // pattern
-                end
                 buffered_state_data[select_buffer][child_index][29:10] = payload[9:0]; // coordinates and shift
             end
         endcase
     end
 
-    // Output computation
+// Output computation
     always_comb begin
-        RGB_output = color_plate[0]; // default color
+        RGB_output = 24'h202020; // Default to background color
         for (int j = 0; j < MAX_CHILDREN; j++) begin
             if (buffer_valid[buffer_select][j]) begin
-                logic [15:0] addr = buffered_address_output[buffer_select][j];
-                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1][1:0]] : color_plate[0];
-                if (RGB_output != color_plate[0]) break; // Use first non-default color
+                addr = buffered_address_output[buffer_select][j]; // Calculate address once validated
+                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1]] : color_plate[0];
+                if (RGB_output != color_plate[0]) break; // Use first non-default color found
             end
         end
     end
