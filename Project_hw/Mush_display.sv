@@ -20,7 +20,7 @@ module Mush_display (
 
     // Initialize color palette and pattern data
     initial begin
-        color_palette[0] = 24'h9290ff;
+        color_palette[0] = 24'h202020;
         color_palette[1] = 24'he69c21;
         color_palette[2] = 24'h0c9300;
         color_palette[3] = 24'hfffeff;
@@ -98,9 +98,16 @@ module Mush_display (
         RGB_output = 24'h9290ff; // Default to background color
         for (int j = 0; j < MAX_SPRITES; j++) begin
             if (double_buffer_valid[current_buffer][j]) begin
-                logic [15:0] addr = double_buffer_addr[current_buffer][j];
-                RGB_output = (addr < ADDRESS_LIMIT) ? color_palette[sprite_memory[addr >> 1][1:0]] : color_palette[0];
-                if (RGB_output != 24'h9290ff) break;
+                // Directly use the address in the conditional expression without declaring a new logic variable
+                if (double_buffer_addr[current_buffer][j] < ADDRESS_LIMIT) begin
+                    RGB_output = color_palette[sprite_memory[double_buffer_addr[current_buffer][j] >> 1][1:0]];
+                    if (RGB_output != 24'h9290ff) begin
+                        break; // Use first non-default color
+                    end
+                end
+                else begin
+                    RGB_output = color_palette[0]; // Use default color if address is out of limit
+                end
             end
         end
     end
