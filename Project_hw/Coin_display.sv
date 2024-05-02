@@ -9,9 +9,9 @@ module Coin_display (
 
     // Configuration parameters
     parameter [5:0] COMPONENT_ID = 6'b000011;
-    parameter [4:0] MAX_PATTERN_INDEX = 5'd4;
-    parameter [15:0] ADDRESS_LIMIT = 16'd512;
-    parameter [4:0] MAX_CHILDREN = 5'd4;
+    parameter [4:0] MAX_PATTERN_INDEX = 5'd_4;
+    parameter [15:0] ADDRESS_LIMIT = 16'd_512;
+    parameter [4:0] MAX_CHILDREN = 5'd_4;
     
     // Memory and color definitions
     logic [3:0] sprite_memory [0:511];
@@ -26,10 +26,10 @@ module Coin_display (
         color_plate[3] = 24'hfffeff;
         color_plate[4] = 24'hb33425;
 
-        pattern_table[0] = {16'd0, 16'd8, 16'd16, 16'd8, 16'd16};
-        pattern_table[1] = {16'd128, 16'd8, 16'd16, 16'd8, 16'd16};
-        pattern_table[2] = {16'd256, 16'd8, 16'd16, 16'd8, 16'd16};
-        pattern_table[3] = {16'd384, 16'd8, 16'd16, 16'd8, 16'd16};
+        pattern_table[0] = {16'd_0, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
+        pattern_table[1] = {16'd_128, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
+        pattern_table[2] = {16'd_256, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
+        pattern_table[3] = {16'd_384, 16'd_8, 16'd_16, 16'd_8, 16'd_16};
     end
 
     // Buffer definitions for double-buffering

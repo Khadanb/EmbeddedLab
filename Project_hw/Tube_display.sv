@@ -25,8 +25,8 @@ module Tube_display (
         color_plate[2] = 24'h8cd600;
         color_plate[3] = 24'h109400;
 
-        pattern_table[0] = {16'd0, 16'd32, 16'd16, 16'd32, 16'd16};
-        pattern_table[1] = {16'd544, 16'd32, 16'd1, 16'd32, 16'd128};
+        pattern_table[0] = {16'd_0, 16'd_32, 16'd_16, 16'd_32, 16'd_16};
+        pattern_table[1] = {16'd_544, 16'd_32, 16'd_1, 16'd_32, 16'd_128};
     end
 
     // Buffer definitions for double-buffering

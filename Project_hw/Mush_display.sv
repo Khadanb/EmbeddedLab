@@ -1,9 +1,3 @@
-/*
- * Avalon memory-mapped peripheral that generates VGA
- * Stephen A. Edwards
- * Columbia University
- */
-
 module Mush_display (
     input logic        clk,
     input logic        reset,
@@ -21,8 +15,19 @@ module Mush_display (
 
     // Memory storage
     logic [3:0] mem [0:255];
-    logic [23:0] color_plate [0:3] = {24'h202020, 24'he69c21, 24'h0c9300, 24'hfffeff};
-    logic [79:0] pattern_table [0:1] = {{16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16}, {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16}};
+    logic [23:0] color_plate [0:3];
+    logic [79:0] pattern_table [0:1];
+
+    // Initialize color_plate and pattern_table
+    initial begin
+        color_plate[0] = 24'h202020;
+        color_plate[1] = 24'he69c21;
+        color_plate[2] = 24'h0c9300;
+        color_plate[3] = 24'hfffeff;
+
+        pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
+        pattern_table[1] = {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
+    end
 
     // Ping-pong buffering for double-buffering technique
     logic [23:0] buffered_color_output[2][2];
@@ -39,7 +44,6 @@ module Mush_display (
     logic [12:0] payload;
     logic select_buffer;
 
-    // Signal assignments
     assign component = writedata[31:26];
     assign child_index = writedata[25:21];
     assign control_code = writedata[20:17];
@@ -76,8 +80,9 @@ module Mush_display (
             4'h1: if (component == COMPONENT_ID && child_index < MAX_CHILDREN) begin
                 // Update state based on data type
                 buffered_state_data[select_buffer][child_index][31:30] = payload[12:11]; // visibility and flip
-                if (data_type == 3'b001 && payload[4:0] < NUM_PATTERNS)
+                if (data_type == 3'b001 && payload[4:0] < NUM_PATTERNS) begin
                     buffered_state_data[select_buffer][child_index][111:32] = pattern_table[payload[4:0]]; // pattern
+                end
                 buffered_state_data[select_buffer][child_index][29:10] = payload[9:0]; // coordinates and shift
             end
         endcase
@@ -89,7 +94,7 @@ module Mush_display (
         for (int j = 0; j < MAX_CHILDREN; j++) begin
             if (buffer_valid[buffer_select][j]) begin
                 logic [15:0] addr = buffered_address_output[buffer_select][j];
-                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1]] : color_plate[0];
+                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1][1:0]] : color_plate[0];
                 if (RGB_output != color_plate[0]) break; // Use first non-default color
             end
         end
