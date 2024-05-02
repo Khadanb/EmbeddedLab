@@ -69,7 +69,7 @@ void flush_mario(const Entity *entity, int frame_select) {
     int y = entity->position.y;
     int pattern_code = entity->render.pattern_code;
 
-	printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	// printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
     write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
     write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -340,7 +340,7 @@ void *input_thread_function(void *ignored)
 void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
 	mario->state.state = STATE_ENLARGE;
 	mario->state.type = TYPE_MARIO_LARGE;
-	printf("Hit Mushroom\n");
+	// printf("Hit Mushroom\n");
 }
 
 void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type) {
