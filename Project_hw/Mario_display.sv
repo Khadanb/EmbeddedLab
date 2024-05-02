@@ -120,17 +120,17 @@ module Mario_display (
     always_comb begin
         buffer_color_output[0] = (buffer_address_output[0] < ADDRESS_LIMIT) ? 
             (buffer_address_output[0][0] ? 
-                color_palette[pixel_data[buffer_address_output[0][15:1]][3:2]] :
-                color_palette[pixel_data[buffer_address_output[0][15:1]][1:0]]
+                color_plate[pixel_data[buffer_address_output[0][15:1]][3:2]] :
+                color_plate[pixel_data[buffer_address_output[0][15:1]][1:0]]
             ) :
-            color_palette[pixel_data[0]];
+            color_plate[pixel_data[0]];
             
         buffer_color_output[1] = (buffer_address_output[1] < ADDRESS_LIMIT) ? 
             (buffer_address_output[1][0] ? 
-                color_palette[pixel_data[buffer_address_output[1][15:1]][3:2]] :
-                color_palette[pixel_data[buffer_address_output[1][15:1]][1:0]]
+                color_plate[pixel_data[buffer_address_output[1][15:1]][3:2]] :
+                color_plate[pixel_data[buffer_address_output[1][15:1]][1:0]]
             ) :
-            color_palette[pixel_data[0]];
+            color_plate[pixel_data[0]];
                                     
         RGB_output = buffer_valid[buffer_select] ? buffer_color_output[buffer_select] : 24'h202020;
     end
