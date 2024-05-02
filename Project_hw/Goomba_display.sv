@@ -84,8 +84,9 @@ module Goomba_display (
         case (action)
             4'b1111: begin  // Reset buffers based on toggle
                 buffer_select = buffer_toggle;
-                foreach (buffer_state[~buffer_toggle][j])
+                for (int j = 0; j < CHILD_COMPONENT_LIMIT; j = j + 1) begin
                     buffer_state[~buffer_toggle][j][31] = 1'b0;  // Clear visibility
+                end
             end
             4'h0001: if (component == COMPONENT_ID && child_component < CHILD_COMPONENT_LIMIT) begin
                 // Update specific child component settings
@@ -107,11 +108,12 @@ module Goomba_display (
     // Determine RGB output based on active buffer state and validity
     always_comb begin
         RGB_output = 24'h202020;  // Default to background color
-        foreach (buffer_color_output[buffer_select][k])
+        for (int k = 0; k < CHILD_COMPONENT_LIMIT; k = k + 1) begin
             if (buffer_valid[buffer_select][k]) begin
                 RGB_output = buffer_color_output[buffer_select][k];
-                break;
+                if (RGB_output != 24'h202020) break;  // Exit loop on first valid color
             end
+        end
     end
 
     // Initialize pixel data from memory
