@@ -15,7 +15,7 @@ module Mush_display (
 
     // Memory and colors
     logic [3:0] sprite_memory [0:255];
-    logic [23:0] color_palette [0:3] = {24'h9290ff, 24'he69c21, 24'h0c9300, 24'hfffeff};
+    logic [23:0] color_palette [0:3] = {24'h202020, 24'he69c21, 24'h0c9300, 24'hfffeff};
     logic [79:0] pattern_data [0:1] = {{16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16}, {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16}};
 
     // Double buffering
