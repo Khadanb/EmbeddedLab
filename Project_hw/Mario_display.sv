@@ -19,7 +19,7 @@ module Mario_display (
     parameter [4:0] MAX_PATTERN_COUNT = 5'd_19;
     parameter [15:0] ADDRESS_LIMIT = 16'd_7168;
     logic [3:0] pixel_data [0:3583];
-    logic [23:0] color_palette [0:3];
+    logic [23:0] color_plate [0:3];
     logic [79:0] pattern_table [0:18]; 
 
     // Initialize pattern data
