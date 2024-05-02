@@ -1,9 +1,3 @@
-/*
- * Avalon memory-mapped peripheral that generates VGA
- * Stephen A. Edwards
- * Columbia University
- */
-
 module Tube_display (
     input logic        clk,
     input logic        reset,
@@ -21,11 +15,19 @@ module Tube_display (
     
     // Memory and color definitions
     logic [3:0] sprite_memory [0:287];
-    logic [23:0] color_palette [0:3] = {24'h202020, 24'h000000, 24'h8cd600, 24'h109400};
-    logic [79:0] pattern_definitions [0:1] = {
-        {16'd_0, 16'd_32, 16'd_16, 16'd_32, 16'd_16},
-        {16'd_544, 16'd_32, 16'd_1, 16'd_32, 16'd_128}
-    };
+    logic [23:0] color_plate [0:3];
+    logic [79:0] pattern_table [0:1]; 
+
+    // Initialize color_plate and pattern_table in initial block
+    initial begin
+        color_plate[0] = 24'h202020;
+        color_plate[1] = 24'h000000;
+        color_plate[2] = 24'h8cd600;
+        color_plate[3] = 24'h109400;
+
+        pattern_table[0] = {16'd0, 16'd32, 16'd16, 16'd32, 16'd16};
+        pattern_table[1] = {16'd544, 16'd32, 16'd1, 16'd32, 16'd128};
+    end
 
     // Buffer definitions for double-buffering
     logic [23:0] buffer_color_output[2][MAX_CHILDREN];
@@ -84,7 +86,7 @@ module Tube_display (
             4'h1: if (component_id == COMPONENT_ID && child_index < MAX_CHILDREN) begin
                 buffer_state_data[buffer_to_activate][child_index][31:30] = message_data[12:11]; // visibility and flip
                 if (data_type == 3'b001 && message_data[4:0] < MAX_PATTERN_INDEX) begin
-                    buffer_state_data[buffer_to_activate][child_index][111:32] = pattern_definitions[message_data[4:0]];
+                    buffer_state_data[buffer_to_activate][child_index][111:32] = pattern_table[message_data[4:0]];
                 end
                 buffer_state_data[buffer_to_activate][child_index][29:0] = message_data[9:0]; // coordinates and shift
             end
@@ -97,8 +99,8 @@ module Tube_display (
         for (int idx = 0; idx < MAX_CHILDREN; idx++) begin
             if (buffer_valid[active_buffer][idx]) begin
                 buffer_color_output[active_buffer][idx] = (buffer_address_output[active_buffer][idx] < ADDRESS_LIMIT) ? 
-                    color_palette[sprite_memory[buffer_address_output[active_buffer][idx] >> 1][1:0]] : 
-                    color_palette[0];
+                    color_plate[sprite_memory[buffer_address_output[active_buffer][idx] >> 1][1:0]] : 
+                    color_plate[0];
                 RGB_output = buffer_color_output[active_buffer][idx];
                 break; // Use the first valid output
             end
@@ -106,6 +108,5 @@ module Tube_display (
     end
 
     // Initialize memory
-    initial $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw//on_chip_mem/Tube_2bit.txt", sprite_memory);
-
+    initial $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Tube_2bit.txt", sprite_memory);
 endmodule

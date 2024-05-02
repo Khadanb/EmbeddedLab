@@ -21,7 +21,7 @@ module Mush_display (
 
     // Memory storage
     logic [3:0] mem [0:255];
-    logic [23:0] color_palette [0:3] = {24'h202020, 24'he69c21, 24'h0c9300, 24'hfffeff};
+    logic [23:0] color_plate [0:3] = {24'h202020, 24'he69c21, 24'h0c9300, 24'hfffeff};
     logic [79:0] pattern_table [0:1] = {{16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16}, {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16}};
 
     // Ping-pong buffering for double-buffering technique
@@ -85,12 +85,12 @@ module Mush_display (
 
     // Output computation
     always_comb begin
-        RGB_output = color_palette[0]; // default color
+        RGB_output = color_plate[0]; // default color
         for (int j = 0; j < MAX_CHILDREN; j++) begin
             if (buffer_valid[buffer_select][j]) begin
                 logic [15:0] addr = buffered_address_output[buffer_select][j];
-                RGB_output = (addr < ADDR_LIMIT) ? color_palette[mem[addr >> 1]] : color_palette[0];
-                if (RGB_output != color_palette[0]) break; // Use first non-default color
+                RGB_output = (addr < ADDR_LIMIT) ? color_plate[mem[addr >> 1]] : color_plate[0];
+                if (RGB_output != color_plate[0]) break; // Use first non-default color
             end
         end
     end
