@@ -22,6 +22,7 @@ module Block_display (
     logic [23:0] color_palette [0:9];
     logic [79:0] pattern_data [0:16]; 
 
+
     // Define pattern and color data
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
     assign pattern_table[1] = {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
@@ -53,10 +54,10 @@ module Block_display (
 	assign color_plate[9] = 24'hffcdc4;
 
     // Buffers for rendering logic
-    logic [23:0] buffer_color_output[0:1][0:8];
-    logic [15:0] buffer_address_output[0:1][0:8];
-    logic        buffer_valid[0:1][0:8];
-    logic [111:0] buffer_state[0:1][0:8];
+    logic [23:0] buffer_color_output[2][9];
+    logic [15:0] buffer_address_output[2][9];
+    logic        buffer_valid[2][9];
+    logic [111:0] buffer_state[2][9];
     logic        buffer_select = 1'b0;
 
     // Decode writedata fields
@@ -78,7 +79,7 @@ module Block_display (
     // Address calculators for each child component in both buffer states
     genvar i;
     generate
-        for (i = 0; i < MAX_CHILD_COMPONENTS; i = i + 1) begin : gen_addr_cal
+        for (i = 0; i < MAX_CHILD_COMPONENTS; i++) begin : gen_addr_cal
             addr_cal address_calculator_ping(
                 .pattern_info(buffer_state[0][i][111:32]),
                 .sprite_info(buffer_state[0][i][31:0]),
@@ -87,7 +88,6 @@ module Block_display (
                 .addr_output(buffer_address_output[0][i]),
                 .valid(buffer_valid[0][i])
             );
-
             addr_cal address_calculator_pong(
                 .pattern_info(buffer_state[1][i][111:32]),
                 .sprite_info(buffer_state[1][i][31:0]),
@@ -104,8 +104,9 @@ module Block_display (
         case (action)
             4'b1111: begin  // Reset buffers based on toggle
                 buffer_select = buffer_toggle;
-                foreach (buffer_state[~buffer_toggle][j])
+                for (int j = 0; j < MAX_CHILD_COMPONENTS; j++) begin
                     buffer_state[~buffer_toggle][j][31] = 1'b0;  // Clear visibility
+                end
             end
             4'h0001: if (component == COMPONENT_ID && child_component < MAX_CHILD_COMPONENTS) begin
                 // Update specific child component settings
@@ -113,8 +114,9 @@ module Block_display (
                     3'b001: begin  // Visibility and pattern
                         buffer_state[buffer_toggle][child_component][31] = action_data[12];
                         buffer_state[buffer_toggle][child_component][30] = action_data[11];
-                        if (action_data[4:0] < MAX_PATTERN_COUNT)
+                        if (action_data[4:0] < MAX_PATTERN_COUNT) begin
                             buffer_state[buffer_toggle][child_component][111:32] = pattern_data[action_data[4:0]];
+                        end
                     end
                     3'b010: buffer_state[buffer_toggle][child_component][29:20] = action_data[9:0];  // X position
                     3'b011: buffer_state[buffer_toggle][child_component][19:10] = action_data[9:0];  // Y position
@@ -127,12 +129,14 @@ module Block_display (
     // Determine RGB output based on active buffer state and validity
     always_comb begin
         RGB_output = 24'h202020;  // Default to background color
-        foreach (buffer_color_output[buffer_select][k])
+        for (int k = 0; k < MAX_CHILD_COMPONENTS; k++) begin
             if (buffer_valid[buffer_select][k]) begin
                 RGB_output = buffer_color_output[buffer_select][k];
                 break;
             end
+        end
     end
+
 
     // Initialize pixel data from memory
     initial begin
