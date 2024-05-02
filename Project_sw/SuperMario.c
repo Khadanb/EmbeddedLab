@@ -45,10 +45,18 @@ int sound_new = 0;
 int sound_ind = 0;
 
 struct libusb_device_handle *keyboard;
-enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
-enum key_input current_key;
+
 uint8_t endpoint_address;
 pthread_t input_thread;
+
+enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
+enum key_input current_key;
+libusb_context *ctx = NULL; 
+libusb_device **devs;       
+int r;                   
+ssize_t cnt;                
+struct libusb_device_handle *controller;  
+
 
 void write_to_hardware(int vga_fd, int register_address, int data) {
 	vga_ball_arg_t vla;
@@ -275,23 +283,17 @@ void entity_activation_update(Game *game, int camera_pos){
 	}
 }
 
-libusb_context *ctx = NULL; 
-libusb_device **devs;       
-int r;                   
-ssize_t cnt;                
-struct libusb_device_handle *mouse;  
-
 void *input_thread_function(void *ignored) 
 {
 	unsigned char buff[64];
 	int size; 
-	libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
+	libusb_interrupt_transfer(controller, 0x81, buff, 0x0008, &size, 0);
 
 	while(1) {
 		size = 8; 
 		if (size == 0x0008) {
 			
-			libusb_interrupt_transfer(mouse, 0x81, buff, 0x0008, &size, 0);
+			libusb_interrupt_transfer(controller, 0x81, buff, 0x0008, &size, 0);
 
 			if (buff[5] == 47) {
 				// A:     127 127 0 128 128 47 
@@ -326,68 +328,6 @@ void *input_thread_function(void *ignored)
 	}
 	return NULL;
 }
-
-
-// void *input_thread_function(void *ignored)
-// {
-// 	struct usb_keyboard_packet packet;
-// 	int transferred;
-// 	int r;
-// 	struct timeval timeout = { 0, 500000 };
-// 	uint8_t first, second, chosen;
-
-// 	for (;;) {
-// 		r = libusb_interrupt_transfer(keyboard, endpoint_address, (unsigned char *)&packet, sizeof(packet), &transferred, 0);
-// 		if (r == 0 && transferred == sizeof(packet)) {
-
-// 			first = packet.keycode[0];
-// 			second = packet.keycode[1];
-// 			chosen = 0;
-
-// 			if (first != 0 && second != 0) {
-
-// 				if (first == second) {
-// 					usleep(5000);
-// 					continue;
-// 				} else {
-// 					chosen = second;
-// 				}
-
-// 			} else {
-// 				chosen = first;
-// 			}
-
-// 			switch(chosen) {
-// 				case 0x2C:
-// 					current_key = KEY_JUMP;
-// 					break;
-// 				case 0x04:
-// 					current_key = KEY_LEFT;
-// 					break;
-// 				case 0x07:
-// 					current_key = KEY_RIGHT;
-// 					break;
-// 				case 0x0A:
-// 					current_key = KEY_NEWGAME;
-// 					break;
-// 				default:
-// 					current_key = KEY_NONE;
-// 					break;
-// 			}
-// 		} else {
-// 			if (r == LIBUSB_ERROR_NO_DEVICE) {
-
-// 				fprintf(stderr, "Keyboard disconnected.\n");
-// 				break;
-// 			}
-
-// 			fprintf(stderr, "Transfer error: %s\n", libusb_error_name(r));
-// 			current_key = KEY_NONE;
-// 			libusb_handle_events_timeout(NULL, &timeout);
-// 		}
-// 	}
-// 	return NULL;
-// }
 
 void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
 	mario->state.state = STATE_ENLARGE;
@@ -689,12 +629,6 @@ int main() {
 		fprintf(stderr, "Failed to open hardware device: %s\n", device_path);
 		return EXIT_FAILURE;
 	}
-
-	// if ((keyboard = openkeyboard(&endpoint_address)) == NULL) {
-	// 	fprintf(stderr, "Did not find a keyboard\n");
-	// 	exit(EXIT_FAILURE);
-	// }
-
 	r = libusb_init(&ctx);      // initialize a library session
   	if (r < 0)
   	{
@@ -707,8 +641,8 @@ int main() {
   	{
     	printf("%s\n", "Get Device Error"); // there was an error
   	}
-  	mouse = libusb_open_device_with_vid_pid(ctx, 0x0079, 0x0011);
-	if (mouse == NULL)
+  	controller = libusb_open_device_with_vid_pid(ctx, 0x0424, 0x2512);
+	if (controller == NULL)
 	{
 		printf("%s\n", "Cannot open device");
 		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
@@ -719,13 +653,13 @@ int main() {
 	{
 		printf("%s\n", "Device opened");
 		libusb_free_device_list(devs, 1); // free the list, unref the devices in it
-		if (libusb_kernel_driver_active(mouse, 0) == 1)
+		if (libusb_kernel_driver_active(controller, 0) == 1)
 		{ // find out if kernel driver is attached
 			printf("%s\n", "Kernel Driver Active");
-		  	if (libusb_detach_kernel_driver(mouse, 0) == 0) // detach it
+		  	if (libusb_detach_kernel_driver(controller, 0) == 0) // detach it
 		    printf("%s\n", "Kernel Driver Detached!");
 		}
-		r = libusb_claim_interface(mouse, 0); // claim interface 0 (the first) of device (mine had just 1)
+		r = libusb_claim_interface(controller, 0); // claim interface 0 (the first) of device (mine had just 1)
 		if (r < 0)
 		{
 		  	printf("%s\n", "Cannot Claim Interface");
