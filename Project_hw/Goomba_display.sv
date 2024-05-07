@@ -28,7 +28,7 @@ module Goomba_display (
     assign pattern_data[1] = {16'd_256, 16'd_16, 16'd_8, 16'd_16, 16'd_8};
 
     assign color_palette[0] = 24'h202020;  // Background color
-    assign color_palette[1] = 24'h9c4a00;  // Brown
+    assign color_palette[1] = 24'h9c9c9c;  // Brown
     assign color_palette[2] = 24'h000000;  // Black
     assign color_palette[3] = 24'hffcec5;  // Peach
 
@@ -110,8 +110,15 @@ module Goomba_display (
         RGB_output = 24'h202020;  // Default to background color
         for (int k = 0; k < CHILD_COMPONENT_LIMIT; k = k + 1) begin
             if (buffer_valid[buffer_select][k]) begin
-                RGB_output = buffer_color_output[buffer_select][k];
-                if (RGB_output != 24'h202020) break;  // Exit loop on first valid color
+                // Directly use the address in the conditional expression without declaring a new logic variable
+                if (buffer_address_output[buffer_select][k] < ADDRESS_LIMIT) begin
+                    RGB_output = color_palette[pixel_data[buffer_address_output[buffer_select][k] >> 1]];
+                    if (RGB_output != 24'h202020) begin
+                        break;  // Exit loop on first valid color
+                    end
+                end else begin
+                    RGB_output = color_palette[0]; // Use default color if address is out of limit
+                end
             end
         end
     end

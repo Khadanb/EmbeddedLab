@@ -131,7 +131,7 @@ module Block_display (
         RGB_output = 24'h202020;  // Default to background color
         for (int k = 0; k < MAX_CHILD_COMPONENTS; k++) begin
             if (buffer_valid[buffer_select][k]) begin
-                RGB_output = buffer_color_output[buffer_select][k];
+                RGB_output = color_palette[pixel_memory[buffer_color_output[buffer_select][k]]];
                 break;
             end
         end
