@@ -451,10 +451,10 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->position.x += mario->motion.vx;
     mario->position.y += mario->motion.vy;
 
-	// if (mario->position.y > GROUND_LEVEL) {
-	// 	mario->position.y = GROUND_LEVEL;
-	// 	mario->motion.vy = 0;
-	// }
+	if (mario->position.y > GROUND_LEVEL) {
+		mario->position.y = GROUND_LEVEL;
+		mario->motion.vy = 0;
+	}
 }
 
 void process_mushroom_logic(Entity *mushroom, Game *game) {
