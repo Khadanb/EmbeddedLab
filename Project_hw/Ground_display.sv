@@ -5,134 +5,122 @@
  * Columbia University
  */
 
-module Ground_display (
-    input logic        clk,
-    input logic        reset,
-    input logic [31:0] writedata,
-    input logic [9:0]  hcount,
-    input logic [9:0]  vcount,
-    output logic [23:0] RGB_output
-);
+module Ground_display (input logic        clk,
+	    input logic 	    reset,
+		input logic [31:0]  writedata,
+		input logic [9:0]   hcount,
+		input logic [9:0]   vcount,
 
-    // Parameters for configuration
-    parameter [5:0] COMPONENT_ID = 6'b001111;  // Unique identifier for this component
-    parameter [4:0] NUM_PATTERNS = 5'd_1;        // Number of different patterns
-    parameter [15:0] ADDRESS_LIMIT = 16'd_256;   // Memory address limit for color indexing
-    logic [3:0] pixel_memory [0:127];           // Memory for pixel data
-    logic [23:0] color_palette [0:3];           // Palette of colors available
-    logic [79:0] pattern_table [0:1];           // Table storing pattern information
+		output logic [23:0]	RGB_output);
+
+    
+    parameter [5:0] COMPONENT_ID = 6'b001111; 
+    parameter [4:0] pattern_num = 5'd_1;
+    parameter [15:0] addr_limit = 16'd_256;
+	logic [3:0] mem [0:127];
+	logic [23:0] color_plate [0:3];
+    logic [79:0] pattern_table [0:1]; 
 
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_650, 16'd_32};
 
-    // Color palette definitions
-    assign color_palette[0] = 24'h202020;  // Background color
-    assign color_palette[1] = 24'hFFFFFF;  // White
-    assign color_palette[2] = 24'h808080;  // Gray
-    assign color_palette[3] = 24'hD3D3D3;  // Light Gray
-
-    parameter [9:0] GROUND_LEVEL = 10'd_368;  // Vertical position of the ground
-
-    // Ping-pong buffer outputs and states
-    logic [23:0] buffer_color_output[0:1];
-    logic [15:0] buffer_address_output[0:1];
-    logic        buffer_address_valid[0:1];
-    logic [111:0] buffer_state[0:1];
+	assign color_plate[0] = 24'h202020;
+	assign color_plate[1] = 24'hFFFFFF;
+	assign color_plate[2] = 24'h808080;
+	assign color_plate[3] = 24'hD3D3D3;
+	
+	parameter [9:0] ground_height = 10'd_368;	
+    
+    
+    logic [23:0] buffer_RGB_out[0:1];
+    logic [15:0] buffer_addr_out[0:1];
+    logic        buffer_addr_valid[0:1];
+    logic [111:0] frame_buffer_state[0:1];
     logic        buffer_select = 1'b0;
 
-    // Decoded writedata fields
-    logic [5:0] component;
-    logic [4:0] subcomponent;
-    logic [3:0] action;
-    logic [2:0] action_type;
-    logic [12:0] message;
-    logic        buffer_toggle;
+	logic [5:0] sub_comp;
+	logic [4:0] child_comp;
+	logic [3:0] info;
+	logic [2:0] input_type;
+	logic [12:0] input_msg;
+	logic		buffer_state;
 
-    // Decoding writedata
-    assign component = writedata[31:26];
-    assign subcomponent = writedata[25:21];
-    assign action = writedata[20:17];
-    assign action_type = writedata[16:14];
-    assign buffer_toggle = writedata[13];
-    assign message = writedata[12:0];
+	assign sub_comp = writedata[31:26];
+	assign child_comp = writedata[25:21];
+	assign info = writedata[20:17];
+	assign input_type = writedata[16:14];
+	assign buffer_state = writedata[13];
+	assign input_msg = writedata[12:0];
+	
+	assign frame_buffer_state[0][19:10] = ground_height;
+	assign frame_buffer_state[1][19:10] = ground_height;
+	logic [9:0] l_edge = 10'd0;
+	logic [9:0] r_edge = 10'd0;
 
-    // Assign static ground level to buffer states
-    assign buffer_state[0][19:10] = GROUND_LEVEL;
-    assign buffer_state[1][19:10] = GROUND_LEVEL;
-    logic [9:0] left_edge = 10'd0;
-    logic [9:0] right_edge = 10'd0;
-
-    // Address calculation blocks for each buffer
-    addr_cal address_calculator_ping(
-        .pattern_info(buffer_state[0][111:32]),
-        .sprite_info(buffer_state[0][31:0]),
-        .hcount(hcount),
-        .vcount(vcount),
-        .addr_output(buffer_address_output[0]),
-        .valid(buffer_address_valid[0])
-    );
-
-    addr_cal address_calculator_pong(
-        .pattern_info(buffer_state[1][111:32]),
-        .sprite_info(buffer_state[1][31:0]),
-        .hcount(hcount),
-        .vcount(vcount),
-        .addr_output(buffer_address_output[1]),
-        .valid(buffer_address_valid[1])
-    );
-
-    // Processing inputs
-    always_ff @(posedge clk) begin
-        case (action)
-            4'b1111: begin  // Flush and clear buffers based on toggle
-                buffer_select = buffer_toggle;
-                buffer_state[~buffer_toggle][31] = 1'b0;
+    addr_cal AC_ping_0(.pattern_info(frame_buffer_state[0][111:32]), .sprite_info(frame_buffer_state[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[0]), .valid(buffer_addr_valid[0]));
+    addr_cal AC_pong_0(.pattern_info(frame_buffer_state[1][111:32]), .sprite_info(frame_buffer_state[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[1]), .valid(buffer_addr_valid[1]));
+    
+	always_ff @(posedge clk) begin
+        case (info)
+            
+            4'b1111: begin
+                buffer_select = buffer_state;
+                frame_buffer_state[~buffer_state][31] = 1'b0;
             end
-            4'h0001 : begin  // Write to state holder
-                if (component == COMPONENT_ID) begin
-                    case (action_type)
-                        3'b001: begin  // Update visibility and pattern
-                            buffer_state[buffer_toggle][31] = message[12];  // Visible
-                            buffer_state[buffer_toggle][30] = message[11];  // Flipped
-                            if (message[4:0] < NUM_PATTERNS)
-                                buffer_state[buffer_toggle][111:32] = pattern_table[message[4:0]];
+
+	        4'h0001 : begin
+                
+            	if (sub_comp == COMPONENT_ID) begin
+                    case (input_type)
+                        3'b001: begin
+                            // visible
+                            frame_buffer_state[buffer_state][31] = input_msg[12];
+                            // fliped
+                            frame_buffer_state[buffer_state][30] = input_msg[11];
+                            // pattern code
+                            if (input_msg[4:0] < pattern_num)
+                                frame_buffer_state[buffer_state][111:32] = pattern_table[input_msg[4:0]];
                         end
-                        3'b010: buffer_state[buffer_toggle][29:20] = message[9:0];  // X coordinate
-                        3'b011: left_edge = message[9:0];  // Y start coordinate
-                        3'b100: right_edge = message[9:0];  // Y end coordinate
+                        3'b010: begin
+                            // x_coordinate
+                            frame_buffer_state[buffer_state][29:20] = input_msg[9:0];
+                        end
+                        3'b011: begin
+                            
+							l_edge = input_msg[9:0];
+                        end
+                        3'b100: begin
+                            
+							r_edge = input_msg[9:0];
+                        end
                     endcase
-                end
+		        end
             end
-        endcase
-    end
+       endcase
+	end
 
-    // Color output determination
-    assign buffer_color_output[0] = (buffer_address_output[0] < ADDRESS_LIMIT) ?
-        (buffer_address_output[0][0] ? 
-            color_palette[pixel_memory[buffer_address_output[0][15:1]][3:2]] :
-            color_palette[pixel_memory[buffer_address_output[0][15:1]][1:0]]) :
-        color_palette[pixel_memory[0]];
+	assign buffer_RGB_out[0] =  (buffer_addr_out[0] < addr_limit)? 
+			(
+				(buffer_addr_out[0][0])? 
+					color_plate[mem[(buffer_addr_out[0][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_out[0][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
+			
+	assign buffer_RGB_out[1] =  (buffer_addr_out[1] < addr_limit)? 
+			(
+				(buffer_addr_out[1][0])? 
+					color_plate[mem[(buffer_addr_out[1][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_out[1][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
+                                    
+	assign RGB_output = buffer_addr_valid[buffer_select]? 
+						(((hcount < l_edge)||(hcount > r_edge))? buffer_RGB_out[buffer_select] : 24'h202020)
+						: 24'h202020;
 
-    assign buffer_color_output[1] = (buffer_address_output[1] < ADDRESS_LIMIT) ?
-        (buffer_address_output[1][0] ? 
-            color_palette[pixel_memory[buffer_address_output[1][15:1]][3:2]] :
-            color_palette[pixel_memory[buffer_address_output[1][15:1]][1:0]]) :
-        color_palette[pixel_memory[0]];
+initial begin
+	$readmemh("/user/stud/fall22/hy2759/4840/pro_test/lab3-hw/on_chip_mem/Ground_2bit.txt", mem);
+end
 
-    // Determine final RGB output
-    always_comb begin
-    if (buffer_address_valid[buffer_select]) begin
-            if (hcount >= left_edge && hcount <= right_edge) begin
-                RGB_output = buffer_color_output[buffer_select];
-            end else begin
-                RGB_output = 24'h202020;  // Default background color outside ground limits
-            end
-        end else begin
-            RGB_output = 24'h202020;  // Default background color when buffer is invalid
-        end
-    end
-    // Initialize pixel memory
-    initial begin
-        $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Ground_2bit.txt", pixel_memory);
-    end
-
+   
 endmodule
