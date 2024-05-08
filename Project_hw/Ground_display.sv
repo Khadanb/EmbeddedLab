@@ -119,10 +119,17 @@ module Ground_display (
         color_palette[pixel_memory[0]];
 
     // Determine final RGB output
-    assign RGB_output = buffer_address_valid[buffer_select] ? 
-        (((hcount < left_edge) || (hcount > right_edge)) ? buffer_color_output[buffer_select] : 24'h202020) :
-        24'h202020;
-
+    always_comb begin
+    if (buffer_address_valid[buffer_select]) begin
+            if (hcount >= left_edge && hcount <= right_edge) begin
+                RGB_output = buffer_color_output[buffer_select];
+            end else begin
+                RGB_output = 24'h202020;  // Default background color outside ground limits
+            end
+        end else begin
+            RGB_output = 24'h202020;  // Default background color when buffer is invalid
+        end
+    end
     // Initialize pixel memory
     initial begin
         $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Ground_2bit.txt", pixel_memory);

@@ -23,10 +23,10 @@ module ppu (input logic        clk,
 	
 	Mario_display Mario_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[3]));
 	Block_display Block_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[7]));
-	Coin_display Coin_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[9]));
-	Cloud_display Cloud_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[16]));
+	// Coin_display Coin_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[9]));
+	// Cloud_display Cloud_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[16]));
 	Tube_display Tube_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[15]));	
-	Mush_display Mush_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[12]));
+	// Mush_display Mush_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[12]));
 	Ground_display Ground_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[14]));
 	Goomba_display Goomba_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[5]));
 	always_comb begin
@@ -40,10 +40,10 @@ module ppu (input logic        clk,
 		RGB_list[6] = 24'h202020;
 		// RGB_list[7] = 24'h202020;	//Block
 		RGB_list[8] = 24'h202020;	
-		// RGB_list[9] = 24'h202020;	//Coin
+		RGB_list[9] = 24'h202020;	//Coin
 		RGB_list[10] = 24'h202020;
 		RGB_list[11] = 24'h202020;
-		// RGB_list[12] = 24'h202020;	//Mush
+		RGB_list[12] = 24'h202020;	//Mush
 		RGB_list[13] = 24'h202020;
 		// RGB_list[14] = 24'h202020;	//Ground
 		// RGB_list[15] = 24'h202020;	//Tube
