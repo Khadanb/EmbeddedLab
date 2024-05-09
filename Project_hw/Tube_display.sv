@@ -1,112 +1,152 @@
-module Tube_display (
-    input logic        clk,
-    input logic        reset,
-    input logic [31:0]  writedata,
-    input logic [9:0]   hcount,
-    input logic [9:0]   vcount,
-    output logic [23:0] RGB_output
-);
+/*
+ * Avalon memory-mapped peripheral that generates VGA
+ *
+ * Stephen A. Edwards
+ * Columbia University
+ */
 
-    // Configuration parameters
-    parameter [5:0] COMPONENT_ID = 6'b001010;
-    parameter [4:0] MAX_PATTERN_INDEX = 5'd_2;
-    parameter [15:0] ADDRESS_LIMIT = 16'd_576;
-    parameter [4:0] MAX_CHILDREN = 5'd_2;
+module Tube_display (input logic        clk,
+	    input logic 	    reset,
+		input logic [31:0]  writedata,
+		input logic [9:0]   hcount,
+		input logic [9:0]   vcount,
+
+		output logic [23:0]	RGB_output);
+
     
-    // Memory and color definitions
-    logic [3:0] sprite_memory [0:287];
-    logic [23:0] color_plate [0:3];
+    parameter [5:0] COMPONENT_ID = 6'b001010; 
+    parameter [4:0] pattern_num = 5'd_2;
+    parameter [15:0] addr_limit = 16'd_576;  
+	parameter [4:0] child_limit = 5'd_2;
+	logic [3:0] mem [0:287];
+	logic [23:0] color_plate [0:3];
     logic [79:0] pattern_table [0:1]; 
 
-    // Initialize color_plate and pattern_table in initial block
-    initial begin
-        color_plate[0] = 24'h202020;
-        color_plate[1] = 24'h000000;
-        color_plate[2] = 24'h8cd600;
-        color_plate[3] = 24'h109400;
+    assign pattern_table[0] = {16'd_0, 16'd_32, 16'd_16, 16'd_32, 16'd_16};
+	assign pattern_table[1] = {16'd_544, 16'd_32, 16'd_1, 16'd_32, 16'd_128};
 
-        pattern_table[0] = {16'd_0, 16'd_32, 16'd_16, 16'd_32, 16'd_16};
-        pattern_table[1] = {16'd_544, 16'd_32, 16'd_1, 16'd_32, 16'd_128};
-    end
+	assign color_plate[0] = 24'h202020;
+	assign color_plate[1] = 24'h000000;
+	assign color_plate[2] = 24'h8c0000;
+	assign color_plate[3] = 24'h100000;
 
-    // Buffer definitions for double-buffering
-    logic [23:0] buffer_color_output[2][MAX_CHILDREN];
-    logic [15:0] buffer_address_output[2][MAX_CHILDREN];
-    logic buffer_valid[2][MAX_CHILDREN];
-    logic [111:0] buffer_state_data[2][MAX_CHILDREN];
-    logic active_buffer = 1'b0;
+    
+    
+    
+    logic [23:0] buffer_RGB_output[0:1][0:1];
+    logic [15:0] buffer_addr_output[0:1][0:1];
+    logic        buffer_addr_out_valid[0:1][0:1];
+    logic [111:0] buffer_stateholder[0:1][0:1];
+    logic        buffer = 1'b0;
 
-    // Data extraction from writedata
-    logic [5:0] component_id;
-    logic [4:0] child_index;
-    logic [3:0] control_code;
-    logic [2:0] data_type;
-    logic [12:0] message_data;
-    logic buffer_to_activate;
+	logic [5:0] sub_comp;
+	logic [4:0] child_comp;
+	logic [3:0] info;
+	logic [2:0] input_type;
+	logic [12:0] input_msg;
+	logic		buffer_select;
 
-    assign component_id = writedata[31:26];
-    assign child_index = writedata[25:21];
-    assign control_code = writedata[20:17];
-    assign data_type = writedata[16:14];
-    assign buffer_to_activate = writedata[13];
-    assign message_data = writedata[12:0];
+	assign sub_comp = writedata[31:26];
+	assign child_comp = writedata[25:21];
+	assign info = writedata[20:17];
+	assign input_type = writedata[16:14];
+	assign buffer_select = writedata[13];
+	assign input_msg = writedata[12:0];
 
-    // Address calculation instances
-    genvar i;
-    generate
-        for (i = 0; i < MAX_CHILDREN; i++) begin : buffer_processing
-            addr_cal addr_cal_instance(
-                .pattern_info(buffer_state_data[0][i][111:32]),
-                .sprite_info(buffer_state_data[0][i][31:0]),
-                .hcount(hcount),
-                .vcount(vcount),
-                .addr_output(buffer_address_output[0][i]),
-                .valid(buffer_valid[0][i])
-            );
-            addr_cal addr_cal_instance_pong(
-                .pattern_info(buffer_state_data[1][i][111:32]),
-                .sprite_info(buffer_state_data[1][i][31:0]),
-                .hcount(hcount),
-                .vcount(vcount),
-                .addr_output(buffer_address_output[1][i]),
-                .valid(buffer_valid[1][i])
-            );
-        end
-    endgenerate
+	
+	integer i, j, k;
+	
 
-    // Handle input data and buffer updates
-    always_ff @(posedge clk) begin
-        case (control_code)
-            4'b1111: begin // Buffer switch and clear
-                active_buffer = buffer_to_activate;
-                for (int idx = 0; idx < MAX_CHILDREN; idx++) begin
-                    buffer_state_data[~active_buffer][idx][31] = 1'b0; // Clear visibility
-                end
+    
+    
+    
+	addr_cal AC_ping_0(.pattern_info(buffer_stateholder[0][0][111:32]), .sprite_info(buffer_stateholder[0][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][0]), .valid(buffer_addr_out_valid[0][0]));
+    addr_cal AC_ping_1(.pattern_info(buffer_stateholder[0][1][111:32]), .sprite_info(buffer_stateholder[0][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][1]), .valid(buffer_addr_out_valid[0][1]));
+
+    addr_cal AC_pong_0(.pattern_info(buffer_stateholder[1][0][111:32]), .sprite_info(buffer_stateholder[1][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][0]), .valid(buffer_addr_out_valid[1][0]));
+    addr_cal AC_pong_1(.pattern_info(buffer_stateholder[1][1][111:32]), .sprite_info(buffer_stateholder[1][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][1]), .valid(buffer_addr_out_valid[1][1]));
+
+
+    
+	always_ff @(posedge clk) begin
+        case (info)
+            
+            4'b1111: begin
+                buffer = buffer_select;
+				for (i = 0; i < child_limit; i = i + 1) begin
+					buffer_stateholder[~buffer_select][i][31] = 1'b0;
+				end 
+
             end
-            4'h1: if (component_id == COMPONENT_ID && child_index < MAX_CHILDREN) begin
-                buffer_state_data[buffer_to_activate][child_index][31:30] = message_data[12:11]; // visibility and flip
-                if (data_type == 3'b001 && message_data[4:0] < MAX_PATTERN_INDEX) begin
-                    buffer_state_data[buffer_to_activate][child_index][111:32] = pattern_table[message_data[4:0]];
-                end
-                buffer_state_data[buffer_to_activate][child_index][29:0] = message_data[9:0]; // coordinates and shift
-            end
-        endcase
-    end
 
-    // Determine the output color
-    always_comb begin
-        RGB_output = 24'h202020; // Default color
-        for (int idx = 0; idx < MAX_CHILDREN; idx++) begin
-            if (buffer_valid[active_buffer][idx]) begin
-                buffer_color_output[active_buffer][idx] = (buffer_address_output[active_buffer][idx] < ADDRESS_LIMIT) ? 
-                    color_plate[sprite_memory[buffer_address_output[active_buffer][idx] >> 1][1:0]] : 
-                    color_plate[0];
-                RGB_output = buffer_color_output[active_buffer][idx];
-                break; // Use the first valid output
+            
+	        4'h0001 : begin
+                
+            	if (sub_comp == COMPONENT_ID) begin
+					if (child_comp < child_limit) begin
+		                case (input_type)
+		                    3'b001: begin
+		                        // visible
+		                        buffer_stateholder[buffer_select][child_comp][31] = input_msg[12];
+		                        // flipped
+		                        buffer_stateholder[buffer_select][child_comp][30] = input_msg[11];
+		                        // pattern code
+		                        if (input_msg[4:0] < pattern_num)
+		                            buffer_stateholder[buffer_select][child_comp][111:32] = pattern_table[input_msg[4:0]];
+		                    end
+		                    3'b010: begin
+		                        // x_coordinate
+		                        buffer_stateholder[buffer_select][child_comp][29:20] = input_msg[9:0];
+		                    end
+		                    3'b011: begin
+		                        // y_coordinate
+		                        buffer_stateholder[buffer_select][child_comp][19:10] = input_msg[9:0];
+		                    end
+		                    3'b100: begin
+		                        // shift_amount
+		                        buffer_stateholder[buffer_select][child_comp][9:0] = input_msg[9:0];
+		                    end
+		                endcase
+					end
+		        end
             end
-        end
-    end
+       endcase
+	end
 
-    // Initialize memory
-    initial $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Tube_2bit.txt", sprite_memory);
+
+        
+
+	always_comb begin
+		for (j = 0; j < child_limit; j = j + 1) begin
+			buffer_RGB_output[0][j] =  (buffer_addr_output[0][j] < addr_limit)? 
+			(
+				(buffer_addr_output[0][j][0])? 
+					color_plate[mem[(buffer_addr_output[0][j][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_output[0][j][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
+			
+			buffer_RGB_output[1][j] =  (buffer_addr_output[1][j] < addr_limit)? 
+			(
+				(buffer_addr_output[1][j][0])? 
+					color_plate[mem[(buffer_addr_output[1][j][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_output[1][j][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
+		end
+		
+		RGB_output = 24'h202020;
+		for (k = 0; k < child_limit; k = k + 1) begin
+			if ((buffer_RGB_output[buffer][k] != 24'h202020) && buffer_addr_out_valid[buffer][k]) begin
+				RGB_output = buffer_RGB_output[buffer][k];
+				break;
+			end
+		end
+	end
+		
+initial begin
+	$readmemh("/user/stud/fall22/hy2759/4840/pro_test/lab3-hw/on_chip_mem/Tube_2bit.txt", mem);
+end
+
+   
 endmodule
