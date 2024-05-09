@@ -61,8 +61,8 @@ module Ground_display (input logic        clk,
 
 	addr_cal AC_ping_0(.pattern_info(frame_buffer_state[0][111:32]), .sprite_info(frame_buffer_state[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[0]), .valid(buffer_addr_valid[0]));
 	addr_cal AC_pong_0(.pattern_info(frame_buffer_state[1][111:32]), .sprite_info(frame_buffer_state[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[1]), .valid(buffer_addr_valid[1]));
-	addr_cal AC_ping_0(.pattern_info(frame_buffer_state[2][111:32]), .sprite_info(frame_buffer_state[2][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[2]), .valid(buffer_addr_valid[2]));
-	addr_cal AC_pong_0(.pattern_info(frame_buffer_state[3][111:32]), .sprite_info(frame_buffer_state[3][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[3]), .valid(buffer_addr_valid[3]));
+	addr_cal AC_ping_1(.pattern_info(frame_buffer_state[2][111:32]), .sprite_info(frame_buffer_state[2][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[2]), .valid(buffer_addr_valid[2]));
+	addr_cal AC_pong_1(.pattern_info(frame_buffer_state[3][111:32]), .sprite_info(frame_buffer_state[3][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[3]), .valid(buffer_addr_valid[3]));
 
 	always_ff @(posedge clk) begin
 		case (info)
