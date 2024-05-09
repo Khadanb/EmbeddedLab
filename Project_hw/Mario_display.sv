@@ -13,7 +13,6 @@ module Mario_display (input logic        clk,
 
 		output logic [23:0]	RGB_output);
 
-
 	parameter [5:0] COMPONENT_ID = 6'b000001;
 	parameter [4:0] pattern_num = 5'd_19;
 	parameter [15:0] addr_limit = 16'd_7168;
@@ -46,9 +45,6 @@ module Mario_display (input logic        clk,
 	assign color_plate[2] = 24'h6b6d00;
 	assign color_plate[3] = 24'hea9e22;
 
-
-
-
 	logic [23:0] buffer_RGB_output[0:1];
 	logic [15:0] buffer_addr_output[0:1];
 	logic        buffer_addr_out_valid[0:1];
@@ -69,9 +65,6 @@ module Mario_display (input logic        clk,
 	assign buffer_select = writedata[13];
 	assign input_msg = writedata[12:0];
 
-
-
-
 	addr_cal AC_ping_0(.pattern_info(buffer_stateholder[0][111:32]), .sprite_info(buffer_stateholder[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0]), .valid(buffer_addr_out_valid[0]));
 	addr_cal AC_pong_0(.pattern_info(buffer_stateholder[1][111:32]), .sprite_info(buffer_stateholder[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1]), .valid(buffer_addr_out_valid[1]));
 
@@ -82,7 +75,6 @@ module Mario_display (input logic        clk,
 				buffer = buffer_select;
 				buffer_stateholder[~buffer_select][31] = 1'b0;
 			end
-
 
 			4'h0001 : begin
 
@@ -115,8 +107,6 @@ module Mario_display (input logic        clk,
 	   endcase
 	end
 
-
-
 	always_comb begin
 		buffer_RGB_output[0] =  (buffer_addr_output[0] < addr_limit)?
 			(
@@ -134,17 +124,11 @@ module Mario_display (input logic        clk,
 			) :
 			color_plate[mem[0]];
 
-
-
-
-
 		RGB_output = buffer_addr_out_valid[buffer]? buffer_RGB_output[buffer] : 24'h202020;
 	end
 
-
-
 initial begin
-	$readmemh("/user/stud/fall22/hy2759/4840/pro_test/lab3-hw/on_chip_mem/Mario_2bit.txt", mem);
+	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Mario_2bit.txt", mem);
 end
 
 

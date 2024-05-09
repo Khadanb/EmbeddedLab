@@ -12,8 +12,7 @@ module Tube_display (input logic        clk,
 		input logic [9:0]   vcount,
 
 		output logic [23:0]	RGB_output);
-
-    
+  
     parameter [5:0] COMPONENT_ID = 6'b001010; 
     parameter [4:0] pattern_num = 5'd_2;
     parameter [15:0] addr_limit = 16'd_576;  
@@ -29,9 +28,6 @@ module Tube_display (input logic        clk,
 	assign color_plate[1] = 24'h000000;
 	assign color_plate[2] = 24'h8c0000;
 	assign color_plate[3] = 24'h100000;
-
-    
-    
     
     logic [23:0] buffer_RGB_output[0:1][0:1];
     logic [15:0] buffer_addr_output[0:1][0:1];
@@ -53,21 +49,14 @@ module Tube_display (input logic        clk,
 	assign buffer_select = writedata[13];
 	assign input_msg = writedata[12:0];
 
-	
 	integer i, j, k;
 	
-
-    
-    
-    
 	addr_cal AC_ping_0(.pattern_info(buffer_stateholder[0][0][111:32]), .sprite_info(buffer_stateholder[0][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][0]), .valid(buffer_addr_out_valid[0][0]));
     addr_cal AC_ping_1(.pattern_info(buffer_stateholder[0][1][111:32]), .sprite_info(buffer_stateholder[0][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][1]), .valid(buffer_addr_out_valid[0][1]));
 
     addr_cal AC_pong_0(.pattern_info(buffer_stateholder[1][0][111:32]), .sprite_info(buffer_stateholder[1][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][0]), .valid(buffer_addr_out_valid[1][0]));
     addr_cal AC_pong_1(.pattern_info(buffer_stateholder[1][1][111:32]), .sprite_info(buffer_stateholder[1][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][1]), .valid(buffer_addr_out_valid[1][1]));
 
-
-    
 	always_ff @(posedge clk) begin
         case (info)
             
@@ -79,7 +68,6 @@ module Tube_display (input logic        clk,
 
             end
 
-            
 	        4'h0001 : begin
                 
             	if (sub_comp == COMPONENT_ID) begin
@@ -113,9 +101,6 @@ module Tube_display (input logic        clk,
        endcase
 	end
 
-
-        
-
 	always_comb begin
 		for (j = 0; j < child_limit; j = j + 1) begin
 			buffer_RGB_output[0][j] =  (buffer_addr_output[0][j] < addr_limit)? 
@@ -145,7 +130,7 @@ module Tube_display (input logic        clk,
 	end
 		
 initial begin
-	$readmemh("/user/stud/fall22/hy2759/4840/pro_test/lab3-hw/on_chip_mem/Tube_2bit.txt", mem);
+	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Tube_2bit.txt", mem);
 end
 
    
