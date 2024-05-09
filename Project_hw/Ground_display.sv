@@ -29,7 +29,7 @@ module Ground_display (input logic        clk,
 	assign color_plate[3] = 24'hD3D3D3;
 
 	parameter [9:0] ground_height = 10'd_368;
-
+	parameter [9:0] ceiling_height = 10'd_0;
 
 	logic [23:0] buffer_RGB_out[0:1];
 	logic [15:0] buffer_addr_out[0:1];
@@ -52,7 +52,7 @@ module Ground_display (input logic        clk,
 	assign input_msg = writedata[12:0];
 
 	assign frame_buffer_state[0][19:10] = ground_height;
-	assign frame_buffer_state[1][19:10] = ground_height;
+	assign frame_buffer_state[1][19:10] = ceiling_height;
 	logic [9:0] l_edge = 10'd0;
 	logic [9:0] r_edge = 10'd0;
 
