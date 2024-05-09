@@ -452,8 +452,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->position.y += mario->motion.vy;
 
 	if (mario->position.y > GROUND_LEVEL) {
-		mario->position.y = GROUND_LEVEL;
-		mario->motion.vy = 0;
+		mario->state.state = STATE_DEAD; 
 	}
 }
 
