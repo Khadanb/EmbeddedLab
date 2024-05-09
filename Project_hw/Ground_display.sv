@@ -31,10 +31,10 @@ module Ground_display (input logic        clk,
 	parameter [9:0] ground_height = 10'd_368;
 	parameter [9:0] ceiling_height = 10'd_0;
 
-	logic [23:0] buffer_RGB_out[0:1];
-	logic [15:0] buffer_addr_out[0:1];
-	logic        buffer_addr_valid[0:1];
-	logic [111:0] frame_buffer_state[0:1];
+	logic [23:0] buffer_RGB_out[0:3];
+	logic [15:0] buffer_addr_out[0:3];
+	logic        buffer_addr_valid[0:3];
+	logic [111:0] frame_buffer_state[0:3];
 	logic        buffer_select = 1'b0;
 
 	logic [5:0] sub_comp;
@@ -52,19 +52,30 @@ module Ground_display (input logic        clk,
 	assign input_msg = writedata[12:0];
 
 	assign frame_buffer_state[0][19:10] = ground_height;
-	assign frame_buffer_state[1][19:10] = ceiling_height;
+	assign frame_buffer_state[1][19:10] = ground_height;
+	assign frame_buffer_state[2][19:10] = ceiling_height;
+	assign frame_buffer_state[3][19:10] = ceiling_height;
+
 	logic [9:0] l_edge = 10'd0;
 	logic [9:0] r_edge = 10'd0;
 
 	addr_cal AC_ping_0(.pattern_info(frame_buffer_state[0][111:32]), .sprite_info(frame_buffer_state[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[0]), .valid(buffer_addr_valid[0]));
 	addr_cal AC_pong_0(.pattern_info(frame_buffer_state[1][111:32]), .sprite_info(frame_buffer_state[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[1]), .valid(buffer_addr_valid[1]));
+	addr_cal AC_ping_0(.pattern_info(frame_buffer_state[2][111:32]), .sprite_info(frame_buffer_state[2][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[2]), .valid(buffer_addr_valid[2]));
+	addr_cal AC_pong_0(.pattern_info(frame_buffer_state[3][111:32]), .sprite_info(frame_buffer_state[3][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_out[3]), .valid(buffer_addr_valid[3]));
 
 	always_ff @(posedge clk) begin
 		case (info)
 
 			4'b1111: begin
 				buffer_select = buffer_state;
-				frame_buffer_state[~buffer_state][31] = 1'b0;
+				if (buffer_state) begin
+					frame_buffer_state[0][31] = 1'b0;
+					frame_buffer_state[2][31] = 1'b0;
+				end else begin
+					frame_buffer_state[1][31] = 1'b0;
+					frame_buffer_state[3][31] = 1'b0;
+				end
 			end
 
 			4'h0001 : begin
@@ -72,17 +83,36 @@ module Ground_display (input logic        clk,
 				if (sub_comp == COMPONENT_ID) begin
 					case (input_type)
 						3'b001: begin
-							// visible
-							frame_buffer_state[buffer_state][31] = input_msg[12];
-							// fliped
-							frame_buffer_state[buffer_state][30] = input_msg[11];
-							// pattern code
-							if (input_msg[4:0] < pattern_num)
-								frame_buffer_state[buffer_state][111:32] = pattern_table[input_msg[4:0]];
+
+							if (buffer_state) begin
+								frame_buffer_state[1][31] = input_msg[12];
+								frame_buffer_state[1][30] = input_msg[11];
+								frame_buffer_state[3][31] = input_msg[12];
+								frame_buffer_state[3][30] = input_msg[11];
+								if (input_msg[4:0] < pattern_num) begin
+									frame_buffer_state[1][111:32] = pattern_table[input_msg[4:0]];
+									frame_buffer_state[3][111:32] = pattern_table[input_msg[4:0]];
+								end
+							end else begin
+								frame_buffer_state[0][31] = input_msg[12];
+								frame_buffer_state[0][30] = input_msg[11];
+								frame_buffer_state[2][31] = input_msg[12];
+								frame_buffer_state[2][30] = input_msg[11];
+								if (input_msg[4:0] < pattern_num) begin
+									frame_buffer_state[0][111:32] = pattern_table[input_msg[4:0]];
+									frame_buffer_state[2][111:32] = pattern_table[input_msg[4:0]];
+								end
+							end
 						end
 						3'b010: begin
 							// x_coordinate
-							frame_buffer_state[buffer_state][29:20] = input_msg[9:0];
+							if (buffer_state) begin
+								frame_buffer_state[1][29:20] = input_msg[9:0];
+								frame_buffer_state[3][29:20] = input_msg[9:0];
+							end else begin
+								frame_buffer_state[0][29:20] = input_msg[9:0];
+								frame_buffer_state[2][29:20] = input_msg[9:0];
+							end
 						end
 						3'b011: begin
 
@@ -113,10 +143,39 @@ module Ground_display (input logic        clk,
 					color_plate[mem[(buffer_addr_out[1][15:1])][1:0]]
 			) :
 			color_plate[mem[0]];
+	
+	assign buffer_RGB_out[2] =  (buffer_addr_out[2] < addr_limit)?
+			(
+				(buffer_addr_out[0][0])?
+					color_plate[mem[(buffer_addr_out[2][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_out[2][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
 
-	assign RGB_output = buffer_addr_valid[buffer_select]?
-						(((hcount < l_edge)||(hcount > r_edge))? buffer_RGB_out[buffer_select] : 24'h202020)
-						: 24'h202020;
+	assign buffer_RGB_out[3] =  (buffer_addr_out[3] < addr_limit)?
+			(
+				(buffer_addr_out[1][0])?
+					color_plate[mem[(buffer_addr_out[3][15:1])][3:2]] :
+					color_plate[mem[(buffer_addr_out[3][15:1])][1:0]]
+			) :
+			color_plate[mem[0]];
+
+	always_comb begin
+		if (vcount >= ground_height && vcount < ground_height + 32) begin
+			
+			RGB_output = buffer_addr_valid[buffer_select ? 1 : 0] ?
+						buffer_RGB_out[buffer_select ? 1 : 0] :
+						24'h202020; 
+		end else if (vcount <= ceiling_height + 32 && vcount > ceiling_height) begin
+			
+			RGB_output = buffer_addr_valid[buffer_select ? 3 : 2] ?
+						buffer_RGB_out[buffer_select ? 3 : 2] :
+						24'h202020; 
+		end else begin
+			RGB_output = 24'h202020; 
+		end
+	end
+
 
 initial begin
 	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Ground_2bit.txt", mem);
