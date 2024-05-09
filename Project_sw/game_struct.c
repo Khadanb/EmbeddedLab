@@ -68,15 +68,6 @@ void new_game(Game *game) {
         .state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
     };
 
-    // Initialize Mushroom
-    Entity *mushroom = &game->entities[2]; 
-    *mushroom = (Entity){
-        .position = {200, 300, 16, 16},
-        .motion = {0, 0, 0, 0},
-        .render = {ANI_MUSH_NORMAL, 1, 0},
-        .state = {1,STATE_NORMAL, 0, TYPE_MUSHROOM}
-    };
-
     // Initialize Ground
     Entity *ground = &game->entities[3];
     *ground = (Entity){
@@ -86,6 +77,13 @@ void new_game(Game *game) {
         .state = {1, STATE_NORMAL, 0, TYPE_GROUND}
     };
 
+    Entity *tube = &game->entities[4];
+    *tube = (Entity){
+        .position = {200, GROUND_LEVEL, 16, 32},
+        .motion = {0,0,0,0},
+        .render = {ANI_TUBE_B, 1, 0},
+        .state = {1, STATE_NORMAL, 0, TYPE_TUBE}
+    };
     // // Attempt to add a ceiling 
     // Entity *ceiling = &game->entities[4];
     // *ceiling = (Entity){

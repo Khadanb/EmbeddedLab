@@ -40,10 +40,10 @@ module ppu (input logic        clk,
 		RGB_list[6] = 24'h202020;
 		// RGB_list[7] = 24'h202020;	//Block
 		RGB_list[8] = 24'h202020;	
-		RGB_list[9] = 24'h202020;	//Coin
+		RGB_list[9] = 24'h202020;	
 		RGB_list[10] = 24'h202020;
 		RGB_list[11] = 24'h202020;
-		RGB_list[12] = 24'h202020;	//Mush
+		RGB_list[12] = 24'h202020;	
 		RGB_list[13] = 24'h202020;
 		// RGB_list[14] = 24'h202020;	//Ground
 		// RGB_list[15] = 24'h202020;	//Tube
