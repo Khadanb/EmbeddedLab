@@ -342,7 +342,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->state.state = STATE_DEAD;
 	}
 	
-	int x = entity->position.x;
+	int x = mario->position.x;
 	printf("x=%d\n",x);
 	game->camera_pos += (x - 128) > 0 ? x : 0 ;
 }
