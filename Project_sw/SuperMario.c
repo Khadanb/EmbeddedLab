@@ -155,7 +155,6 @@ void flush_ground(int camera_pos, int frame_select) {
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
 	block_index = 0;
-	coin_index = 0;
 	Entity *entity;
 
 	flush_ground(game->camera_pos, frame_select);
