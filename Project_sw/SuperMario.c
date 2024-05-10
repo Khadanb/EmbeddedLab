@@ -280,9 +280,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     
     if (current_key == KEY_LEFT) {
         
-        if (mario->position.x > game->camera_pos) {
-            mario->motion.ax = -WALK_ACC;
-        }
+        mario->motion.ax = -WALK_ACC;
         mario->render.flip = 1; 
     } else if (current_key == KEY_RIGHT) {
         mario->motion.ax = WALK_ACC;
@@ -343,11 +341,13 @@ void process_mario_logic(Entity *mario, Game *game) {
 		game->camera_pos = 70; 
 	} else {
 		int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);		
-		if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos && mario->render.flip == 1) {
+		if (mario->position.x < screen_midpoint && mario->position.x >= game->camera_pos && mario->render.flip == 1) {
 			mario->position.x += mario->motion.vx; 
 		} else if (mario->position.x >= screen_midpoint && mario->render.flip == 0) {
 			game->camera_pos += mario->motion.vx;
 			mario->position.x = screen_midpoint;  
+		} else if(mario->position.x < camera_pos) {
+			mario->position.x = camera_pos;
 		}
 	}
 
