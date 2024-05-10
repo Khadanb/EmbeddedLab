@@ -56,7 +56,7 @@ void flush_mario(const Entity *entity, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 
-	// printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -116,6 +116,7 @@ void flush_tube(const Entity *entity, int frame_select) {
 void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 	if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return;
 	if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
+	if (entity->state.active != 1) return; 
 
 	switch (entity->state.type) {
 		case TYPE_MARIO_SMALL:
@@ -139,7 +140,6 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 		case TYPE_TUBE:
 			flush_tube(entity, frame_select);
 		default:
-			printf("ERROR: Unkown Entity Found!\n");
 			break;
 	}
 }
