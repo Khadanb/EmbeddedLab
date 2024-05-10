@@ -49,7 +49,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_S_SHUT;
 				} else {
-					int ani_div = (counter / 6) % 3;
+					int ani_div = counter % 18;;
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
 												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
 												  ANI_MARIO_S_WALK3;
@@ -77,7 +77,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_L_SHUT;
 				} else {
-					int ani_div = (counter / 6) % 3;
+					int ani_div = counter % 18;;
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_L_WALK1 :
 												  (ani_div == 1) ? ANI_MARIO_L_WALK2 :
 												  ANI_MARIO_L_WALK3;
@@ -85,7 +85,9 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				break;
 		}
 
-		// entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 8) % 2;
+		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
+		entity->position.x = entity->position.x - game->camera_pos;
+		// entity->position.y = entity->position.y;
 	}
 }
 
