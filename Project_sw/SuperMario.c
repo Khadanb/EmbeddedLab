@@ -337,16 +337,14 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 
 	// Update position
-	mario->position.x += mario->motion.vx;
+	game->camera_pos += mario->motion.vx;
 	mario->position.y += mario->motion.vy;
+	mario->position = game->camera_pos + 128
 
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
 	
-	int x = mario->position.x;
-	
-	game->camera_pos = (x - 128) > 0 ? x - 128 : 0;
 	if (frame_counter % 100 == 0)
 		printf("cpos=%d\n",game->camera_pos);
 }
@@ -464,7 +462,7 @@ int main() {
 
 			if (!entity) continue;
 
-			if (entity->state.active) {
+			if (entity->state.active == 1) {
 				switch (entity->state.type) {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
@@ -481,9 +479,7 @@ int main() {
 						if (entity->position.x < game.camera_pos) {
 							entity->state.active = 0;
 							printf("Cull entity\n");
-						} //else {
-						// 	// entity->position.x -= game.camera_pos;
-						// }
+						}
 						break;
 				}
 			}
