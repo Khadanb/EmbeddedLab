@@ -279,7 +279,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->motion.ax = 0;
 
 	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT) {
+	if (current_key == KEY_LEFT && game->camera_pos < mario->position.x) {
 		mario->motion.ax = -WALK_ACC;
 		mario->render.flip = 1;
 	} else if (current_key == KEY_RIGHT) {
@@ -347,9 +347,9 @@ void process_mario_logic(Entity *mario, Game *game) {
 	} else {
 		if (mario->position.x > screen_midpoint) {
 			game->camera_velocity = mario->motion.vx;
-			game->camera_pos = (mario->position.x - screen_midpoint);
-		} else if (mario->position.x <= game->camera_pos + 32) {
-			mario->position.x = game->camera_pos + 32;
+			game->camera_pos += mario->motion.vx;
+		} else if (mario->position.x <= game->camera_pos) {
+			mario->position.x = game->camera_pos;
 		}
 	}
 
