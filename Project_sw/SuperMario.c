@@ -335,21 +335,11 @@ void process_mario_logic(Entity *mario, Game *game) {
             }
         }
     }
-
-    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
-
-    // Only allow the camera to move if Mario is moving to the right and crosses the midpoint
-    if (mario->position.x >= screen_midpoint) {
-		if (mario->motion.vx > 0)
-        	game->camera_pos += mario->motion.vx;
-        mario->position.x = screen_midpoint;  // Keep Mario at the midpoint
-    } else if (mario->position.x < game->camera_pos) {
-        mario->position.x = game->camera_pos;  // Prevent Mario from moving past the camera's left edge
-    } else {
-        mario->position.x += mario->motion.vx;  // Mario moves freely within the range
-    }
-
-    // Update vertical position and check for ground contact
+	if (game->camera_pos + mario->motion.vx > 70) {
+		game->camera_pos += mario->motion.vx;
+		game->camera_veloity = mario->motion.vx;
+	}
+	
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
