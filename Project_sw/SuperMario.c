@@ -415,51 +415,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	}
 }
 
-void process_block_logic(Entity *block, Game *game) {
-	int entityAdded;
-	enum contact type;
-	Entity *entity;
-
-	for (int i = 0; i < MAX_ENTITIES; i++) {
-		entity = &game->entities[i];
-		if (entity == block || !entity->state.active) continue;
-
-		if (entity->state.type == TYPE_MARIO_SMALL || entity->state.type == TYPE_MARIO_LARGE) {
-			type = hitbox_contact(entity, block);
-			if (type == UP) {
-
-				if ((block->state.type == TYPE_BLOCK_A || block->state.type == TYPE_BLOCK_OBJ_M) && entity->state.type == TYPE_MARIO_LARGE) {
-					block->state.active = 0;
-					continue;
-				}
-
-				if (block->state.type == TYPE_BLOCK_OBJ_C || block->state.type == TYPE_BLOCK_OBJ_M) {
-					entityAdded = 0;
-					for (int j = 0; j < MAX_ENTITIES && !entityAdded; j++) {
-						if (!game->entities[j].state.active) {
-							Entity *newItem = &game->entities[j];
-							newItem->position.x = block->position.x;
-							newItem->position.y = block->position.y - newItem->position.height;
-							newItem->state.active = 1;
-							newItem->state.state = STATE_NORMAL;
-							newItem->state.type = (block->state.type == TYPE_BLOCK_OBJ_C) ? TYPE_COIN : TYPE_MUSHROOM;
-							entityAdded = 1;
-						}
-					}
-
-					if (!entityAdded || block->state.type == TYPE_BLOCK_OBJ_M) {
-						block->state.active = 0;
-					}
-				}
-
-				if (block->state.type == TYPE_BLOCK_A) {
-					block->state.state = BLOCK_ANIMATE;
-				}
-			}
-		}
-	}
-}
-
 int main() {
 	pthread_t input_thread;
 	Game game;
@@ -514,9 +469,7 @@ int main() {
 					case TYPE_BLOCK_B_4:
 					case TYPE_BLOCK_B_16:
 					case TYPE_BLOCK_A_H_8:
-					case TYPE_BLOCK_OBJ_C:
-					case TYPE_BLOCK_OBJ_M:
-						process_block_logic(entity, &game);
+					case TYPE_BLOCK_OBJ_C;
 						break;
 					default:
 						break;
