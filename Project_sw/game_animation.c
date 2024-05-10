@@ -85,9 +85,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				break;
 		}
 
-		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 8) % 2;
-		entity->position.x = entity->position.x - game->camera_pos;
-		entity->position.y = entity->position.y;
+		// entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 8) % 2;
 	}
 }
 
@@ -119,9 +117,12 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
+		entity->position.x = entity->position.x - game->camera_pos;
+		entity->position.y = entity->position.y;
+		if (entity->position.x < 0) {
+			entity->state.active = 0;
+		}
 	}
-	entity->position.x = entity->position.x - game->camera_pos;
-	entity->position.y = entity->position.y;
 }
 
 void animate_block(Game *game, Entity *entity, int f_counter) {
@@ -184,5 +185,8 @@ void animate_block(Game *game, Entity *entity, int f_counter) {
 		entity->render.visible = 1;
 		entity->position.x = entity->position.x - game->camera_pos;
 		entity->position.y = entity->position.y;
+		if (entity->position.x < 0) {
+			entity->state.active = 0;
+		}
 	}
 }
