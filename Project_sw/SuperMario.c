@@ -344,7 +344,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	
 	int x = mario->position.x;
 	printf("x=%d\n",x);
-	game->camera_pos += (x - 128) > 0 ? x : 0 ;
+	game->camera_pos = (x - 128) > 0 ? x : 0 ;
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
