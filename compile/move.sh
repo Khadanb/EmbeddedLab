@@ -1,5 +1,5 @@
 #!/bin/bash
-read -p "Enter Computer Number: " ComputerNumber
+# read -p "Enter Computer Number: " ComputerNumber
 
 mount /dev/mmcblk0p1 /mnt
 
@@ -10,4 +10,6 @@ mount /dev/mmcblk0p1 /mnt
 cp "soc_system.rbf" /mnt
 cp "soc_system.dtb" /mnt
 
-echo "Transfer initiated for micro${ComputerNumber}."
+# echo "Transfer initiated for micro${ComputerNumber}."
+cd mnt
+ll
