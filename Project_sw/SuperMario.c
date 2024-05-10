@@ -462,15 +462,6 @@ int main() {
 					case TYPE_GOOMBA:
 						process_goomba_logic(entity, &game);
 						break;
-					case TYPE_BLOCK_A:
-					case TYPE_BLOCK_B_1:
-					case TYPE_BLOCK_B_2:
-					case TYPE_BLOCK_B_3:
-					case TYPE_BLOCK_B_4:
-					case TYPE_BLOCK_B_16:
-					case TYPE_BLOCK_A_H_8:
-					case TYPE_BLOCK_OBJ_C;
-						break;
 					default:
 						break;
 				}
