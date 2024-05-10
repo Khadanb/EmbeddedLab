@@ -346,7 +346,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         other = &game->entities[i];
 
 		if(other->state.type != TYPE_GROUND) {
-			other.position.x -= mario->motion.vx;
+			other->position.x -= mario->motion.vx;
 		}
     }
 }
