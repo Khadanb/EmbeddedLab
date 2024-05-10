@@ -271,43 +271,43 @@ void process_mario_logic(Entity *mario, Game *game) {
         return;
     }
 
-    // Apply gravity to Mario's vertical motion
+    
     mario->motion.ay = GRAVITY;
 
-    // Reset horizontal acceleration
+    
     mario->motion.ax = 0;
 
-    // Determine horizontal movement based on current key press
+    
     if (current_key == KEY_LEFT) {
-        // Only allow Mario to move left if he's not at the camera's left boundary
+        
         if (mario->position.x > game->camera_pos) {
             mario->motion.ax = -WALK_ACC;
         }
-        mario->render.flip = 1; // Mario faces left
+        mario->render.flip = 1; 
     } else if (current_key == KEY_RIGHT) {
         mario->motion.ax = WALK_ACC;
-        mario->render.flip = 0; // Mario faces right
+        mario->render.flip = 0; 
     }
 
-    // Handle jump logic
+    
     if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-        mario->motion.vy = -JUMP_INIT_V_LARGE; // Apply vertical jump speed
+        mario->motion.vy = -JUMP_INIT_V_LARGE; 
     }
 
-    // Apply friction if Mario is not moving vertically
+    
     if (mario->motion.vy == 0 && fabs(mario->motion.vx) > 0.01f) {
-        mario->motion.ax -= mario->motion.vx * FRICTION; // Apply friction to slow down Mario
+        mario->motion.ax -= mario->motion.vx * FRICTION; 
     }
 
-    // Update Mario's velocities
+    
     mario->motion.vx += mario->motion.ax;
     mario->motion.vy += mario->motion.ay;
 
-    // Limit Mario's velocities to maximum allowed speeds
+    
     mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
-    // Collision detection with other entities
+    
     for (int i = 1; i < MAX_ENTITIES; i++) {
         Entity *other = &game->entities[i];
         if (other == NULL || !other->state.active) continue;
@@ -315,7 +315,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         if (contactType != NONE) {
             switch (other->state.type) {
                 case TYPE_GOOMBA:
-                    break; // Add specific logic for Goomba collisions
+                    break; 
                 case TYPE_BLOCK_A:
                 case TYPE_BLOCK_B_1:
                 case TYPE_BLOCK_B_2:
@@ -339,29 +339,22 @@ void process_mario_logic(Entity *mario, Game *game) {
         }
     }
 
-    // Define the midpoint for the screen relative to the camera position
-    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2) - 70;
+    if (game->camera_pos < 70) {
+		game->camera_pos = 70; 
+	} else {
+		int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);		
+		if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos && mario->render.flip == 1) {
+			mario->position.x += mario->motion.vx; 
+		} else if (mario->position.x >= screen_midpoint && mario->render.flip == 0) {
+			game->camera_pos += mario->motion.vx;
+			mario->position.x = screen_midpoint;  
+		}
+	}
 
-    // Update Mario's vertical position
-    mario->position.y += mario->motion.vy;
-
-    // Horizontal movement logic
-    if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
-        mario->position.x += mario->motion.vx; // Allow free movement within the defined range
-    } else {
-        // Keep Mario at the midpoint if he tries to exceed it
-        if (mario->position.x >= screen_midpoint) {
-            game->camera_pos += mario->motion.vx; // Scroll camera
-            mario->position.x = screen_midpoint; // Fix Mario at midpoint
-        } else if (mario->position.x <= game->camera_pos) {
-            mario->position.x = game->camera_pos; // Prevent Mario from moving past the camera's left edge
-        }
-    }
-
-    // Check for falling below the ground level
-    if (mario->position.y > GROUND_LEVEL) {
-        mario->state.state = STATE_DEAD;
-    }
+	mario->position.y += mario->motion.vy;
+	if (mario->position.y > GROUND_LEVEL) {
+		mario->state.state = STATE_DEAD;
+	}
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
