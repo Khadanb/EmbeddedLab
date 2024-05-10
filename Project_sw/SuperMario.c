@@ -338,6 +338,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 
 	// Update position
 	game->camera_pos += mario->motion.vx;
+	game->camera_velocity = mario->motion.vx;
 	mario->position.y += mario->motion.vy;
 	mario->position.x = game->camera_pos + 128;
 
