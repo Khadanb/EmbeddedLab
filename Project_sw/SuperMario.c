@@ -338,11 +338,11 @@ void process_mario_logic(Entity *mario, Game *game) {
 
 	// Update position
 	game->camera_velocity = mario->motion.vx;
-	if ((game->camera_pos + mario->motion.vx) > 0) {
-		game->camera_pos += mario->motion.vx;
-	} else {
-		game->camera_pos = 0; 
-	}
+	// if ((game->camera_pos + mario->motion.vx) > 0) {
+	// 	game->camera_pos += mario->motion.vx;
+	// } else {
+	// 	game->camera_pos = 0; 
+	// }
 	mario->position.y += mario->motion.vy;
 	// if ((mario->position.x < game->camera_pos + 128) && mario->position.x > game->camera_pos) {
 	// 	mario->position.x += mario->motion.vx;
