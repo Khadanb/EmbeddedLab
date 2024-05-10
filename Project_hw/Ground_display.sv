@@ -161,7 +161,7 @@ module Ground_display (input logic        clk,
 			color_plate[mem[0]];
 
 	always_comb begin
-		if (vcount >= ground_height && vcount < ground_height + 32) begin
+		if (vcount >= ground_height && vcount < ground_height + 32 && (hcount < l_edge || hcount > r_edge)) begin
 			
 			RGB_output = buffer_addr_valid[buffer_select ? 1 : 0] ?
 						buffer_RGB_out[buffer_select ? 1 : 0] :
