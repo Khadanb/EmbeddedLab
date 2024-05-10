@@ -335,8 +335,17 @@ void process_mario_logic(Entity *mario, Game *game) {
             }
         }
     }
-	game->camera_velocity = mario->motion.vx;
 	
+	mario->position.x += mario->motion.vx;
+	
+	if (mario->position.x > (CAMERA_SIZE/2)) {
+		mario->position.x = (CAMERA_SIZE/2) - 1;
+		game->camera_velocity = mario->motion.vx;
+	} else if (mario->position.x < game->camera_pos) {
+		mario->position.x = game->camera_pos + 1;
+		game->camera_velocity = mario->motion.vx; 
+	}
+
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
