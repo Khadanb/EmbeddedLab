@@ -340,7 +340,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     }
 
     // Define the midpoint for the screen relative to the camera position
-    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
+    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2) - 70;
 
     // Update Mario's vertical position
     mario->position.y += mario->motion.vy;
