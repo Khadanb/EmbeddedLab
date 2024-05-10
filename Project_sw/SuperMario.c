@@ -23,7 +23,6 @@
 int vga_ball_fd;
 
 int block_index;
-int coin_index;
 
 int info_001 = 1;
 int info_010 = 2;
@@ -56,7 +55,7 @@ void flush_mario(const Entity *entity, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 
-	printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	// printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -342,6 +341,10 @@ void process_mario_logic(Entity *mario, Game *game) {
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
+
+    for (int i = 1; i < MAX_ENTITIES; i++) { 
+        game->entities[i].position.x -= mario->motion.vx;
+    }
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
