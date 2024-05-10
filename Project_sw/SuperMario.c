@@ -475,6 +475,7 @@ int main() {
 		flush_frame(&game, frame_select);
 		frame_select = !frame_select;
 
+		printf("camera pos = %d\n", game->camera_pos)
 		usleep(16667);
 	}
 
