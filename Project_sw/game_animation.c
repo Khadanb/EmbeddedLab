@@ -87,7 +87,6 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 		}
 
 		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
-		// entity->position.x = entity->position.x - game->camera_pos;
 	}
 }
 
@@ -110,22 +109,12 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 		}
 
 		entity->render.visible = 1;
-		// entity->position.x -= game->camera_pos;
-		// if (entity->position.x < game->camera_pos) {
-		// 	entity->state.active = 0;
-		// 	printf("Cull Goomba\n");
-		// }
 	}
 }
 
 void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
-		// entity->position.x = entity->position.x - game->camera_pos;
-		// if (entity->position.x < game->camera_pos) {
-		// 	entity->state.active = 0;
-		// 	printf("Cull Tube\n");
-		// }
 	}
 }
 

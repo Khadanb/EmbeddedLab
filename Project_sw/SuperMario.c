@@ -424,11 +424,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	}
 
 	goomba->render.visible = 1;
-	goomba->position.x -= game->camera_pos;
-	if (goomba->position.x < game->camera_pos) {
-		goomba->state.active = 0;
-		printf("Cull Block\n");
-	}
 }
 
 int main() {
