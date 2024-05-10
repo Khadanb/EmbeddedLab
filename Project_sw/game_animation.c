@@ -1,4 +1,5 @@
 #include "game_animation.h"
+#include <stdio.h>
 
 void animate_entity(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active && entity->render.visible) {
