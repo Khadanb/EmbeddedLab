@@ -342,17 +342,14 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->position.y += mario->motion.vy;
 
 	game->camera_velocity = 0; 
-	// Check if Mario is within the free movement zone
 	if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
-		mario->position.x += mario->motion.vx;  // Mario moves freely
+		mario->position.x += mario->motion.vx;
 	} else {
-		// If Mario reaches or exceeds the midpoint, update the camera position to keep him at the midpoint
-		if (mario->position.x >= screen_midpoint) {
-			game->camera_velocity = mario->motion.vx;  // Camera follows Mario at his speed
-			game->camera_pos += game->camera_velocity;  // Move the camera
-			mario->position.x = screen_midpoint;  // Keep Mario at the screen midpoint
+		if (mario->position.x == screen_midpoint) {
+			game->camera_velocity = mario->motion.vx;
+			game->camera_pos += mario->position - screen_midpoint;
+			mario->position.x = screen_midpoint;
 		} else if (mario->position.x <= game->camera_pos + 32) {
-			// Prevent Mario from moving past the camera's starting position
 			mario->position.x = game->camera_pos + 32;
 		}
 	}
