@@ -50,10 +50,10 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_S_SHUT;
 				} else {
-					int ani_div = (counter / 6) % 3;
+					int ani_div = (counter / 20) % 3;  // Slow down the frame change
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
-												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
-												  ANI_MARIO_S_WALK3;
+													  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
+													  ANI_MARIO_S_WALK3;
 				}
 				break;
 
@@ -63,7 +63,6 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				if (rel_counter > 20) entity->state.state = STATE_NORMAL;
 				break;
 			case STATE_DEAD:
-				/*Doesn't really animate the death as STATE_DEAD is caught by game loop*/
 				entity->render.pattern_code = ANI_MARIO_S_DEAD;
 				if (rel_counter == 0) entity->motion.vy = dead_v;
 				else if (rel_counter > 30) {
@@ -78,17 +77,18 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_L_SHUT;
 				} else {
-					int ani_div = (counter / 6) % 3;
+					int ani_div = (counter / 20) % 3;  // Slow down the frame change for large Mario as well
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_L_WALK1 :
-												  (ani_div == 1) ? ANI_MARIO_L_WALK2 :
-												  ANI_MARIO_L_WALK3;
+													  (ani_div == 1) ? ANI_MARIO_L_WALK2 :
+													  ANI_MARIO_L_WALK3;
 				}
 				break;
 		}
 
-		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
+		entity->render.visible = entity->state.state == STATE_NORMAL ? 1 : (counter / 30) % 2;
 	}
 }
+
 
 void animate_goomba(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
