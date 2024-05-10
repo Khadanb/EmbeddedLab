@@ -102,7 +102,7 @@ void flush_tube(const Entity *entity, int frame_select) {
 	int x = entity->position.x;
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
-	
+
 	if (frame_counter % 100 == 0)
 		printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
@@ -347,7 +347,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 	int x = mario->position.x;
 	
 	game->camera_pos = (x - 128) > 0 ? x - 128 : 0;
-	printf("cpos=%d\n",game->camera_pos);
+	if (frame_counter % 100 == 0)
+		printf("cpos=%d\n",game->camera_pos);
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
