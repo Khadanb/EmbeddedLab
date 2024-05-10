@@ -266,99 +266,102 @@ void handle_collision_with_ground(Entity *mario, Entity *other, enum contact typ
 }
 
 void process_mario_logic(Entity *mario, Game *game) {
-	enum contact contactType;
-	Entity *other;
+    if (mario == NULL) {
+        printf("Mario entity is NULL\n");
+        return;
+    }
 
-	if (mario == NULL) {
-		printf("Mario entity is NULL\n");
-		return;
-	}
+    // Apply gravity to Mario's vertical motion
+    mario->motion.ay = GRAVITY;
 
-	// Always apply gravity
-	mario->motion.ay = GRAVITY;
-	mario->motion.ax = 0;
+    // Reset horizontal acceleration
+    mario->motion.ax = 0;
 
-	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT && game->camera_pos < mario->position.x) {
-		mario->motion.ax = -WALK_ACC;
-		mario->render.flip = 1;
-	} else if (current_key == KEY_RIGHT) {
-		mario->motion.ax = WALK_ACC;
-		mario->render.flip = 0;
-	} else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-		mario->motion.vy = -JUMP_INIT_V_LARGE;
-	} else if (mario->motion.vy == 0){
- 		if (fabs(mario->motion.vx) > 0.01f ) {
-			mario->motion.ax = -1 * mario->motion.vx * FRICTION;
-		} else {
-			mario->motion.vx = 0;
-		}
-	}
+    // Determine horizontal movement based on current key press
+    if (current_key == KEY_LEFT) {
+        // Only allow Mario to move left if he's not at the camera's left boundary
+        if (mario->position.x > game->camera_pos) {
+            mario->motion.ax = -WALK_ACC;
+        }
+        mario->render.flip = 1; // Mario faces left
+    } else if (current_key == KEY_RIGHT) {
+        mario->motion.ax = WALK_ACC;
+        mario->render.flip = 0; // Mario faces right
+    }
 
-	// Update velocities
-	mario->motion.vx += mario->motion.ax;
-	mario->motion.vy += mario->motion.ay;
+    // Handle jump logic
+    if (current_key == KEY_JUMP && mario->motion.vy == 0) {
+        mario->motion.vy = -JUMP_INIT_V_LARGE; // Apply vertical jump speed
+    }
 
-	// Limit speeds
-	mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
-	mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+    // Apply friction if Mario is not moving vertically
+    if (mario->motion.vy == 0 && fabs(mario->motion.vx) > 0.01f) {
+        mario->motion.ax -= mario->motion.vx * FRICTION; // Apply friction to slow down Mario
+    }
 
-	for (int i = 1; i < MAX_ENTITIES; i++) {
-		other = &game->entities[i];
+    // Update Mario's velocities
+    mario->motion.vx += mario->motion.ax;
+    mario->motion.vy += mario->motion.ay;
 
-		if (other == NULL || !other->state.active) continue;
+    // Limit Mario's velocities to maximum allowed speeds
+    mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
+    mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
-		contactType = hitbox_contact(mario, other);
-		if (contactType != NONE) {
-			switch (other->state.type) {
-				case TYPE_GOOMBA:
-					break;
-				case TYPE_BLOCK_A:
-				case TYPE_BLOCK_B_1:
-				case TYPE_BLOCK_B_2:
-				case TYPE_BLOCK_B_3:
-				case TYPE_BLOCK_B_4:
-				case TYPE_BLOCK_B_16:
-				case TYPE_BLOCK_A_H_8:
-				case TYPE_BLOCK_OBJ_C:
-				case TYPE_BLOCK_OBJ_M:
-					handle_collision_with_block(mario, other, contactType);
-					break;
-				case TYPE_TUBE:
-					handle_collision_with_tube(mario, other, contactType);
-					break;
-				case TYPE_GROUND:
-					handle_collision_with_ground(mario, other, contactType);
-					break;
-				default:
-					break;
-			}
-		}
-	}
+    // Collision detection with other entities
+    for (int i = 1; i < MAX_ENTITIES; i++) {
+        Entity *other = &game->entities[i];
+        if (other == NULL || !other->state.active) continue;
+        enum contact contactType = hitbox_contact(mario, other);
+        if (contactType != NONE) {
+            switch (other->state.type) {
+                case TYPE_GOOMBA:
+                    break; // Add specific logic for Goomba collisions
+                case TYPE_BLOCK_A:
+                case TYPE_BLOCK_B_1:
+                case TYPE_BLOCK_B_2:
+                case TYPE_BLOCK_B_3:
+                case TYPE_BLOCK_B_4:
+                case TYPE_BLOCK_B_16:
+                case TYPE_BLOCK_A_H_8:
+                case TYPE_BLOCK_OBJ_C:
+                case TYPE_BLOCK_OBJ_M:
+                    handle_collision_with_block(mario, other, contactType);
+                    break;
+                case TYPE_TUBE:
+                    handle_collision_with_tube(mario, other, contactType);
+                    break;
+                case TYPE_GROUND:
+                    handle_collision_with_ground(mario, other, contactType);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-	int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
+    // Define the midpoint for the screen relative to the camera position
+    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
 
-	// Update Mario's vertical position
-	mario->position.y += mario->motion.vy;
+    // Update Mario's vertical position
+    mario->position.y += mario->motion.vy;
 
-	game->camera_velocity = 0; 
-	if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
-		mario->position.x += mario->motion.vx;
-	} else {
-		if (mario->position.x > screen_midpoint) {
-			game->camera_velocity = mario->motion.vx;
-			game->camera_pos += mario->motion.vx;
-		} else if (mario->position.x <= game->camera_pos) {
-			mario->position.x = game->camera_pos;
-		}
-	}
+    // Horizontal movement logic
+    if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
+        mario->position.x += mario->motion.vx; // Allow free movement within the defined range
+    } else {
+        // Keep Mario at the midpoint if he tries to exceed it
+        if (mario->position.x >= screen_midpoint) {
+            game->camera_pos += mario->motion.vx; // Scroll camera
+            mario->position.x = screen_midpoint; // Fix Mario at midpoint
+        } else if (mario->position.x <= game->camera_pos) {
+            mario->position.x = game->camera_pos; // Prevent Mario from moving past the camera's left edge
+        }
+    }
 
-	// Ensure Mario does not fall below the ground level
-	if (mario->position.y > GROUND_LEVEL) {
-		mario->state.state = STATE_DEAD;
-	}
-	if (frame_counter % 100 == 0)
-		printf("cpos = %d\n", game->camera_pos);
+    // Check for falling below the ground level
+    if (mario->position.y > GROUND_LEVEL) {
+        mario->state.state = STATE_DEAD;
+    }
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
