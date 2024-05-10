@@ -361,6 +361,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
+	if (frame_counter % 60 == 0)
+		printf("cpos = %d\n", game->camera_pos);
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
