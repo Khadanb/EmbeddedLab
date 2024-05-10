@@ -347,8 +347,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	} else {
 		if (mario->position.x > screen_midpoint) {
 			game->camera_velocity = mario->motion.vx;
-			game->camera_pos += (mario->position.x - screen_midpoint) + game->camera_velocity;
-			mario->position.x = screen_midpoint;
+			game->camera_pos = (mario->position.x - screen_midpoint);
 		} else if (mario->position.x <= game->camera_pos + 32) {
 			mario->position.x = game->camera_pos + 32;
 		}
@@ -358,7 +357,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
-	if (frame_counter % 60 == 0)
+	if (frame_counter % 100 == 0)
 		printf("cpos = %d\n", game->camera_pos);
 }
 
