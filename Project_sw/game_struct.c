@@ -94,7 +94,7 @@ void new_game(Game *game) {
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
-	Entity *tube = &game->entities[4];
+	Entity *tube = &game->entities[6];
 	*tube = (Entity){
 		.position = {200, GROUND_LEVEL - 32, 32, 32},
 		.motion = {0,0,0,0},
