@@ -480,8 +480,8 @@ int main() {
 						break;
 					default:
 						entity->render.visible = 1;
-						entity->position.x -= game->camera_pos;
-						if (entity->position.x < game->camera_pos) {
+						entity->position.x -= &game->camera_pos;
+						if (entity->position.x < &game->camera_pos) {
 							entity->state.active = 0;
 							printf("Cull entity\n");
 						}
