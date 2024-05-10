@@ -341,9 +341,9 @@ void process_mario_logic(Entity *mario, Game *game) {
 		game->camera_pos = 70; 
 	} else {
 		int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);		
-		if (mario->position.x < screen_midpoint && mario->position.x >= game->camera_pos && mario->render.flip == 1) {
+		if (mario->position.x < screen_midpoint && mario->position.x >= game->camera_pos && mario->render.flip == 0) {
 			mario->position.x += mario->motion.vx; 
-		} else if (mario->position.x >= screen_midpoint && mario->render.flip == 0) {
+		} else if (mario->position.x >= screen_midpoint && mario->render.flip == 1) {
 			game->camera_pos += mario->motion.vx;
 			mario->position.x = screen_midpoint;  
 		} else if(mario->position.x < game->camera_pos) {
