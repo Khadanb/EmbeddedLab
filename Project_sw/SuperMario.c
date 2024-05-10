@@ -478,12 +478,16 @@ int main() {
 					case TYPE_GOOMBA:
 						process_goomba_logic(entity, &game);
 						break;
+					case TYPE_GROUND:
+						break;
 					default:
 						entity->render.visible = 1;
-						entity->position.x -= game.camera_pos;
+						
 						if (entity->position.x < game.camera_pos) {
 							entity->state.active = 0;
 							printf("Cull entity\n");
+						} else {
+							entity->position.x -= game.camera_pos;
 						}
 						break;
 				}
