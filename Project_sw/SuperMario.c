@@ -350,6 +350,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 			}
 		}
     }
+	game->camera_pos = mario->position.x;
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
