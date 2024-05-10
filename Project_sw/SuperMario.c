@@ -339,7 +339,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->position.x += mario->motion.vx;
 	game->camera_velocity = 0;
 	if (mario->position.x > ((2*CAMERA_SIZE)/3)) {
-		mario->position.x = ((2*CAMERA_SIZE)/3)) - 1;
+		mario->position.x = ((2*CAMERA_SIZE)/3) - 1;
 		game->camera_velocity = mario->motion.vx;
 	} else if (mario->position.x < game->camera_pos) {
 		mario->position.x = game->camera_pos + 1;
