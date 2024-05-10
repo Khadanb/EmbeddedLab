@@ -341,6 +341,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	// Update Mario's vertical position
 	mario->position.y += mario->motion.vy;
 
+	game->camera_velocity = 0; 
 	// Check if Mario is within the free movement zone
 	if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
 		mario->position.x += mario->motion.vx;  // Mario moves freely
