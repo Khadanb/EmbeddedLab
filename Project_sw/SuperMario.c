@@ -50,63 +50,63 @@ void write_to_hardware(int vga_fd, int register_address, int data) {
 
 void flush_mario(const Entity *entity, int frame_select) {
 
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
 
 	// printf("Flushing MARIO - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
-    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
 void flush_goomba(const Entity *entity, int frame_select) {
 
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
 
-    //printf("Flushing GOOMBA - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	//printf("Flushing GOOMBA - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
-    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
 void flush_block(const Entity *entity, int frame_select) {
 
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
-    int entityTypeCode = entity->state.type; 
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
+	int entityTypeCode = entity->state.type;
 
-    //printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
+	//printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
 
-    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 	block_index += 1;
 }
 
 void flush_tube(const Entity *entity, int frame_select) {
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
 
-    //printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	//printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
-    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_B & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -114,34 +114,34 @@ void flush_tube(const Entity *entity, int frame_select) {
 }
 
 void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
-    if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return; 
-    if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
+	if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return;
+	if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
 
-    switch (entity->state.type) {
-        case TYPE_MARIO_SMALL:
-        case TYPE_MARIO_LARGE:
-            flush_mario(entity, frame_select);
-            break;
-        case TYPE_GOOMBA:
-            flush_goomba(entity, frame_select);
-            break;
-        case TYPE_BLOCK_A:
-        case TYPE_BLOCK_B_1:
-        case TYPE_BLOCK_B_2:
-        case TYPE_BLOCK_B_3:
-        case TYPE_BLOCK_B_4:
-        case TYPE_BLOCK_B_16:
-        case TYPE_BLOCK_A_H_8:
-        case TYPE_BLOCK_OBJ_C:
-        case TYPE_BLOCK_OBJ_M:
-            flush_block(entity, frame_select);
-            break;
-        case TYPE_TUBE:
-            flush_tube(entity, frame_select);
-        default:
+	switch (entity->state.type) {
+		case TYPE_MARIO_SMALL:
+		case TYPE_MARIO_LARGE:
+			flush_mario(entity, frame_select);
+			break;
+		case TYPE_GOOMBA:
+			flush_goomba(entity, frame_select);
+			break;
+		case TYPE_BLOCK_A:
+		case TYPE_BLOCK_B_1:
+		case TYPE_BLOCK_B_2:
+		case TYPE_BLOCK_B_3:
+		case TYPE_BLOCK_B_4:
+		case TYPE_BLOCK_B_16:
+		case TYPE_BLOCK_A_H_8:
+		case TYPE_BLOCK_OBJ_C:
+		case TYPE_BLOCK_OBJ_M:
+			flush_block(entity, frame_select);
+			break;
+		case TYPE_TUBE:
+			flush_tube(entity, frame_select);
+		default:
 			printf("ERROR: Unkown Entity Found!\n");
-            break;
-    }
+			break;
+	}
 }
 
 void flush_ground(int camera_pos, int frame_select) {
@@ -150,7 +150,7 @@ void flush_ground(int camera_pos, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-	
+
 }
 
 void flush_frame(Game *game, int frame_select) {
@@ -264,41 +264,41 @@ void handle_collision_with_ground(Entity *mario, Entity *other, enum contact typ
 
 void process_mario_logic(Entity *mario, Game *game) {
 	enum contact contactType;
-	Entity *other; 
+	Entity *other;
 
 	if (mario == NULL) {
 		printf("Mario entity is NULL\n");
 		return;
 	}
 
-    // Always apply gravity
-    mario->motion.ay = GRAVITY;
+	// Always apply gravity
+	mario->motion.ay = GRAVITY;
 	mario->motion.ax = 0;
 
-    // Horizontal movement based on key press
-    if (current_key == KEY_LEFT) {
-        mario->motion.ax = -WALK_ACC;
-        mario->render.flip = 1;
-    } else if (current_key == KEY_RIGHT) {
-        mario->motion.ax = WALK_ACC;
-        mario->render.flip = 0;
-    } else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-        mario->motion.vy = -JUMP_INIT_V_SMALL;
-    } else if (mario->motion.vy == 0){
+	// Horizontal movement based on key press
+	if (current_key == KEY_LEFT) {
+		mario->motion.ax = -WALK_ACC;
+		mario->render.flip = 1;
+	} else if (current_key == KEY_RIGHT) {
+		mario->motion.ax = WALK_ACC;
+		mario->render.flip = 0;
+	} else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
+		mario->motion.vy = -JUMP_INIT_V_SMALL;
+	} else if (mario->motion.vy == 0){
  		if (fabs(mario->motion.vx) > 0.01f ) {
-            mario->motion.ax = -1 * mario->motion.vx * FRICTION;
-        } else {
-            mario->motion.vx = 0;
-        }
-    }
+			mario->motion.ax = -1 * mario->motion.vx * FRICTION;
+		} else {
+			mario->motion.vx = 0;
+		}
+	}
 
-    // Update velocities
-    mario->motion.vx += mario->motion.ax;
-    mario->motion.vy += mario->motion.ay;
+	// Update velocities
+	mario->motion.vx += mario->motion.ax;
+	mario->motion.vy += mario->motion.ay;
 
-    // Limit speeds
-    mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
-    mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+	// Limit speeds
+	mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
+	mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
 	for (int i = 1; i < MAX_ENTITIES; i++) {
 		other = &game->entities[i];
@@ -334,15 +334,17 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 
 	// Update position
-    mario->position.x += mario->motion.vx;
-    mario->position.y += mario->motion.vy;
+	mario->position.x += mario->motion.vx;
+	mario->position.y += mario->motion.vy;
 
 	if (mario->position.y > GROUND_LEVEL) {
-		mario->state.state = STATE_DEAD; 
+		mario->state.state = STATE_DEAD;
 	}
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
+	enum contact contactType;
+	Entity *other;
 	if (!goomba->state.active)
 		return;
 
@@ -350,9 +352,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 
 	goomba->motion.vx = (goomba->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
 	for (int i = 0; i < MAX_ENTITIES; i++) {
-		enum contact contactType; 
-		Entity *other; 
-
 		other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == goomba) continue;
 
@@ -412,17 +411,21 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	goomba->motion.ay = 0;
 
 	if (goomba->position.y > GROUND_LEVEL) {
-		goomba->state.state = STATE_DEAD; 
+		goomba->state.state = STATE_DEAD;
 	}
 }
 
 void process_block_logic(Entity *block, Game *game) {
+	int entityAdded;
+	enum contact type;
+	Entity *entity;
+
 	for (int i = 0; i < MAX_ENTITIES; i++) {
-		Entity *entity = &game->entities[i];
+		entity = &game->entities[i];
 		if (entity == block || !entity->state.active) continue;
 
 		if (entity->state.type == TYPE_MARIO_SMALL || entity->state.type == TYPE_MARIO_LARGE) {
-			enum contact type = hitbox_contact(entity, block);
+			type = hitbox_contact(entity, block);
 			if (type == UP) {
 
 				if ((block->state.type == TYPE_BLOCK_A || block->state.type == TYPE_BLOCK_OBJ_M) && entity->state.type == TYPE_MARIO_LARGE) {
@@ -431,7 +434,7 @@ void process_block_logic(Entity *block, Game *game) {
 				}
 
 				if (block->state.type == TYPE_BLOCK_OBJ_C || block->state.type == TYPE_BLOCK_OBJ_M) {
-					int entityAdded = 0;
+					entityAdded = 0;
 					for (int j = 0; j < MAX_ENTITIES && !entityAdded; j++) {
 						if (!game->entities[j].state.active) {
 							Entity *newItem = &game->entities[j];
@@ -462,6 +465,8 @@ int main() {
 	Game game;
 	const char *device_path = "/dev/vga_ball";
 	int frame_select = 0;
+	Entity *mario;
+	Entity *entity;
 
 	if ((vga_ball_fd = open(device_path, O_RDWR)) < 0) {
 		fprintf(stderr, "Failed to open hardware device: %s\n", device_path);
@@ -482,14 +487,14 @@ int main() {
 
 	while (1) {
 
-		Entity *mario = &game.entities[0];
+		mario = &game.entities[0];
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
 			continue;
 		}
 
 		for (int i = 0; i < MAX_ENTITIES; i++) {
-			Entity *entity = &game.entities[i];
+			entity = &game.entities[i];
 
 			if (!entity) continue;
 

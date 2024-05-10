@@ -42,46 +42,46 @@ enum contact hitbox_contact(const Entity *A, const Entity *B) {
 }
 
 void new_game(Game *game) {
-    game->camera_pos = 0;
-    game->game_state = GAME_START;
+	game->camera_pos = 0;
+	game->game_state = GAME_START;
 
-    // Initialize all entities to inactive
-    for (int i = 0; i < MAX_ENTITIES; i++) {
-        game->entities[i].state.active = 0;
-    }
+	// Initialize all entities to inactive
+	for (int i = 0; i < MAX_ENTITIES; i++) {
+		game->entities[i].state.active = 0;
+	}
 
-    // Initialize Mario
-    Entity *mario = &game->entities[0];
-    *mario = (Entity){
-        .position = {128, 128, 16, 16},
-        .motion = {0, 0, 0, 0},
-        .render = {ANI_MARIO_S_NORMAL, 1, 0},
-        .state = {1, STATE_NORMAL, 0, TYPE_MARIO_SMALL}
-    };
+	// Initialize Mario
+	Entity *mario = &game->entities[0];
+	*mario = (Entity){
+		.position = {128, 128, 16, 16},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_MARIO_S_NORMAL, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_MARIO_SMALL}
+	};
 
-    // Initialize Goomba
-    Entity *goomba = &game->entities[1];
-    *goomba = (Entity){
-        .position = {300, 300, 16, 16},  
-        .motion = {0, 0, 0, 0},
-        .render = {ANI_GOOMBA_NORMAL, 1, 0},
-        .state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
-    };
+	// Initialize Goomba
+	Entity *goomba = &game->entities[1];
+	*goomba = (Entity){
+		.position = {300, 300, 16, 16},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_GOOMBA_NORMAL, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
+	};
 
-    // Initialize Ground
-    Entity *ground = &game->entities[3];
-    *ground = (Entity){
-        .position = {0, GROUND_LEVEL, 640, 32},  
-        .motion = {0, 0, 0, 0},
-        .render = {0, 1, 0},
-        .state = {1, STATE_NORMAL, 0, TYPE_GROUND}
-    };
+	// Initialize Ground
+	Entity *ground = &game->entities[3];
+	*ground = (Entity){
+		.position = {0, GROUND_LEVEL, 640, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {0, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
+	};
 
-    Entity *tube = &game->entities[4];
-    *tube = (Entity){
-        .position = {200, GROUND_LEVEL - 32, 32, 32},
-        .motion = {0,0,0,0},
-        .render = {ANI_TUBE_B, 1, 0},
-        .state = {1, STATE_NORMAL, 0, TYPE_TUBE}
-    };
+	Entity *tube = &game->entities[4];
+	*tube = (Entity){
+		.position = {200, GROUND_LEVEL - 32, 32, 32},
+		.motion = {0,0,0,0},
+		.render = {ANI_TUBE_B, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
+	};
 }
