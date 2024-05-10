@@ -88,7 +88,7 @@ void new_game(Game *game) {
 
 	Entity *block_right = &game->entities[5];
 	*block_right = (Entity){
-		.position = {320, GROUND_LEVEL - 16, 16, 16},
+		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}

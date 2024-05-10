@@ -237,8 +237,13 @@ void *input_thread_function(void *ignored)
 
 void handle_collision_with_block(Entity *mario, Entity *other, enum contact type) {
 	if (type == UP) {
-		other->state.state = BLOCK_ANIMATE;
 		mario->motion.vy = 0;
+	} else if (type == DONW) {
+		mario->motion.vy = 0;
+	} else if (type == LEFT && mario->render.flip == 1) {
+		mario->motion.vx = 0;
+	} else if (type == RIGHT && mario->render.flip == 0) {
+		mario->motion.vx = 0;
 	}
 }
 
@@ -278,7 +283,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->motion.ax = WALK_ACC;
 		mario->render.flip = 0;
 	} else if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-		mario->motion.vy = -JUMP_INIT_V_SMALL;
+		mario->motion.vy = -JUMP_INIT_V_LARGE;
 	} else if (mario->motion.vy == 0){
  		if (fabs(mario->motion.vx) > 0.01f ) {
 			mario->motion.ax = -1 * mario->motion.vx * FRICTION;
