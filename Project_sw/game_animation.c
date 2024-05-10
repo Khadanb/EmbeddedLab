@@ -87,7 +87,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 		}
 
 		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
-		entity->position.x = entity->position.x - game->camera_pos;
+		// entity->position.x = entity->position.x - game->camera_pos;
 	}
 }
 

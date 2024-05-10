@@ -341,8 +341,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
-
-	game->camera_pos += (int) mario->position.x - 128;
+	
+	// game->camera_pos += (int) mario->position.x - 128;
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
