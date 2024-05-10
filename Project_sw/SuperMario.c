@@ -273,15 +273,17 @@ void process_mario_logic(Entity *mario, Game *game) {
 
     // Apply gravity
     mario->motion.ay = GRAVITY;
+
+    // Reset horizontal acceleration
     mario->motion.ax = 0;
 
     // Handle horizontal input
     if (current_key == KEY_LEFT) {
         mario->motion.ax = -WALK_ACC;
-        mario->render.flip = 1;  // Mario faces left
+        mario->render.flip = 1; // Mario faces left
     } else if (current_key == KEY_RIGHT) {
         mario->motion.ax = WALK_ACC;
-        mario->render.flip = 0;  // Mario faces right
+        mario->render.flip = 0; // Mario faces right
     }
 
     // Handle jump input
@@ -310,7 +312,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         if (contactType != NONE) {
             switch (other->state.type) {
                 case TYPE_GOOMBA:
-                    break; 
+                    break;
                 case TYPE_BLOCK_A:
                 case TYPE_BLOCK_B_1:
                 case TYPE_BLOCK_B_2:
@@ -334,27 +336,25 @@ void process_mario_logic(Entity *mario, Game *game) {
         }
     }
 
-    // Define the midpoint for the screen relative to the camera position
     int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
 
-    // Move Mario within boundaries
-    if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
-        mario->position.x += mario->motion.vx;  // Allow free horizontal movement
-    } else if (mario->position.x >= screen_midpoint) {
-        game->camera_pos += mario->motion.vx;  // Scroll the camera if Mario moves past the midpoint
+    // Only allow the camera to move if Mario is moving to the right and crosses the midpoint
+    if (mario->position.x >= screen_midpoint && mario->motion.ax > 0) {
+        game->camera_pos += mario->motion.vx;
         mario->position.x = screen_midpoint;  // Keep Mario at the midpoint
-    } else if (mario->position.x <= game->camera_pos) {
+    } else if (mario->position.x < game->camera_pos) {
         mario->position.x = game->camera_pos;  // Prevent Mario from moving past the camera's left edge
+    } else {
+        mario->position.x += mario->motion.vx;  // Mario moves freely within the range
     }
 
-    // Update vertical position
+    // Update vertical position and check for ground contact
     mario->position.y += mario->motion.vy;
-
-    // Check for Mario falling below the ground level
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
     }
 }
+
 
 
 void process_goomba_logic(Entity *goomba, Game *game) {
