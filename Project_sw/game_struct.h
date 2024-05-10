@@ -9,7 +9,7 @@
 #define MAX_SPEED_H 1.85f
 #define MAX_SPEED_V 4.6f
 #define LOAD_LIMIT (5*16)
-#define CAMERA_SIZE (30*16)
+#define CAMERA_SIZE 1120
 #define GROUND_LEVEL 368
 
 #define HOLE_0_R 527

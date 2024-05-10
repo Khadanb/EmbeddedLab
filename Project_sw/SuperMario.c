@@ -336,26 +336,30 @@ void process_mario_logic(Entity *mario, Game *game) {
 		}
 	}
 
-	// Update position
-	game->camera_velocity = mario->motion.vx;
-	// if ((game->camera_pos + mario->motion.vx) > 0) {
-	// 	game->camera_pos += mario->motion.vx;
-	// } else {
-	// 	game->camera_pos = 0; 
-	// }
-	mario->position.y += mario->motion.vy;
-	// if ((mario->position.x < game->camera_pos + 128) && mario->position.x > game->camera_pos) {
-	// 	mario->position.x += mario->motion.vx;
-	// } else {
-		mario->position.x = game->camera_pos + 128;
-	// }
+	int screen_midpoint = game->camera_pos + (1120 / 2);
 
+	// Update Mario's vertical position
+	mario->position.y += mario->motion.vy;
+
+	// Check if Mario is within the free movement zone
+	if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
+		mario->position.x += mario->motion.vx;  // Mario moves freely
+	} else {
+		// If Mario reaches or exceeds the midpoint, update the camera position to keep him at the midpoint
+		if (mario->position.x >= screen_midpoint) {
+			game->camera_velocity = mario->motion.vx;  // Camera follows Mario at his speed
+			game->camera_pos += game->camera_velocity;  // Move the camera
+			mario->position.x = screen_midpoint;  // Keep Mario at the screen midpoint
+		} else if (mario->position.x <= game->camera_pos) {
+			// Prevent Mario from moving past the camera's starting position
+			mario->position.x = game->camera_pos;
+		}
+	}
+
+	// Ensure Mario does not fall below the ground level
 	if (mario->position.y > GROUND_LEVEL) {
 		mario->state.state = STATE_DEAD;
 	}
-	
-	if (frame_counter % 100 == 0)
-		printf("cpos=%d\n",game->camera_pos);
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
