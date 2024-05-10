@@ -276,7 +276,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->motion.ax = 0;
 
 	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT) {
+	if (current_key == KEY_LEFT && mario->position >= game->camera_pos) {
 		mario->motion.ax = -WALK_ACC;
 		mario->render.flip = 1;
 	} else if (current_key == KEY_RIGHT) {
@@ -350,6 +350,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	// 		}
 	// 	}
     // }
+
 	game->camera_pos = mario->position.x - 128;
 }
 
@@ -452,7 +453,7 @@ int main() {
 	new_game(&game);
 
 	while (1) {
-
+		
 		mario = &game.entities[0];
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);

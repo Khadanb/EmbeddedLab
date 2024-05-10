@@ -120,6 +120,9 @@ void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
 	}
+	entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 8) % 2;
+	entity->position.x = entity->position.x - game->camera_pos;
+	entity->position.y = entity->position.y;
 }
 
 void animate_block(Game *game, Entity *entity, int f_counter) {
