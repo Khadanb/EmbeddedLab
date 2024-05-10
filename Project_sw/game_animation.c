@@ -122,7 +122,7 @@ void animate_tube(Game *game, Entity *entity, int f_counter) {
 		entity->render.visible = 1;
 		entity->position.x = entity->position.x - game->camera_pos;
 		entity->position.y = entity->position.y;
-		if (entity->position.x < 0) {
+		if (entity->position.x < game->camera_pos) {
 			entity->state.active = 0;
 		}
 	}
