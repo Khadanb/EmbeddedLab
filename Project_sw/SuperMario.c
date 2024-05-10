@@ -271,41 +271,38 @@ void process_mario_logic(Entity *mario, Game *game) {
         return;
     }
 
-    
+    // Apply gravity
     mario->motion.ay = GRAVITY;
-
-    
     mario->motion.ax = 0;
 
-    
+    // Handle horizontal input
     if (current_key == KEY_LEFT) {
-        
         mario->motion.ax = -WALK_ACC;
-        mario->render.flip = 1; 
+        mario->render.flip = 1;  // Mario faces left
     } else if (current_key == KEY_RIGHT) {
         mario->motion.ax = WALK_ACC;
-        mario->render.flip = 0; 
+        mario->render.flip = 0;  // Mario faces right
     }
 
-    
+    // Handle jump input
     if (current_key == KEY_JUMP && mario->motion.vy == 0) {
-        mario->motion.vy = -JUMP_INIT_V_LARGE; 
+        mario->motion.vy = -JUMP_INIT_V_LARGE;
     }
 
-    
+    // Apply friction if Mario is on the ground and moving
     if (mario->motion.vy == 0 && fabs(mario->motion.vx) > 0.01f) {
-        mario->motion.ax -= mario->motion.vx * FRICTION; 
+        mario->motion.ax -= mario->motion.vx * FRICTION;
     }
 
-    
+    // Update velocities
     mario->motion.vx += mario->motion.ax;
     mario->motion.vy += mario->motion.ay;
 
-    
+    // Limit speeds
     mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
-    
+    // Collision detection
     for (int i = 1; i < MAX_ENTITIES; i++) {
         Entity *other = &game->entities[i];
         if (other == NULL || !other->state.active) continue;
@@ -337,25 +334,28 @@ void process_mario_logic(Entity *mario, Game *game) {
         }
     }
 
-    if (game->camera_pos < 70) {
-		game->camera_pos = 70; 
-	} else {
-		int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);		
-		if (mario->position.x < screen_midpoint && mario->position.x >= game->camera_pos && mario->render.flip == 0) {
-			mario->position.x += mario->motion.vx; 
-		} else if (mario->position.x >= screen_midpoint && mario->render.flip == 1) {
-			game->camera_pos += mario->motion.vx;
-			mario->position.x = screen_midpoint;  
-		} else if(mario->position.x < game->camera_pos) {
-			mario->position.x = game->camera_pos;
-		}
-	}
+    // Define the midpoint for the screen relative to the camera position
+    int screen_midpoint = game->camera_pos + (CAMERA_SIZE / 2);
 
-	mario->position.y += mario->motion.vy;
-	if (mario->position.y > GROUND_LEVEL) {
-		mario->state.state = STATE_DEAD;
-	}
+    // Move Mario within boundaries
+    if (mario->position.x < screen_midpoint && mario->position.x > game->camera_pos) {
+        mario->position.x += mario->motion.vx;  // Allow free horizontal movement
+    } else if (mario->position.x >= screen_midpoint) {
+        game->camera_pos += mario->motion.vx;  // Scroll the camera if Mario moves past the midpoint
+        mario->position.x = screen_midpoint;  // Keep Mario at the midpoint
+    } else if (mario->position.x <= game->camera_pos) {
+        mario->position.x = game->camera_pos;  // Prevent Mario from moving past the camera's left edge
+    }
+
+    // Update vertical position
+    mario->position.y += mario->motion.vy;
+
+    // Check for Mario falling below the ground level
+    if (mario->position.y > GROUND_LEVEL) {
+        mario->state.state = STATE_DEAD;
+    }
 }
+
 
 void process_goomba_logic(Entity *goomba, Game *game) {
 	enum contact contactType;
