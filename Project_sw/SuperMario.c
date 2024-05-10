@@ -337,7 +337,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     }
 	if (game->camera_pos + mario->motion.vx > 70) {
 		game->camera_pos += mario->motion.vx;
-		game->camera_veloity = mario->motion.vx;
+		game->camera_velocity = mario->motion.vx;
 	}
 	
     mario->position.y += mario->motion.vy;
