@@ -121,7 +121,7 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
-		entity->position.x = entity->position.x - game->camera_pos;
+		// entity->position.x = entity->position.x - game->camera_pos;
 		// if (entity->position.x < game->camera_pos) {
 		// 	entity->state.active = 0;
 		// 	printf("Cull Tube\n");
