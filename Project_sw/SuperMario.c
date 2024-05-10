@@ -250,6 +250,7 @@ void handle_collision_with_block(Entity *mario, Entity *other, enum contact type
 void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type) {
 	if (type == LEFT || type == RIGHT) {
 		mario->motion.vx = 0;
+		mario->position.x -= 1; 
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
 	}
