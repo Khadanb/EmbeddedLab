@@ -276,7 +276,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->motion.ax = 0;
 
 	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT && mario->position >= *game->camera_pos) {
+	if (current_key == KEY_LEFT && mario->position.x >= game->camera_pos) {
 		mario->motion.ax = -WALK_ACC;
 		mario->render.flip = 1;
 	} else if (current_key == KEY_RIGHT) {
