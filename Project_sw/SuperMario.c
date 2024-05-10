@@ -486,9 +486,9 @@ int main() {
 						if (entity->position.x < game.camera_pos) {
 							entity->state.active = 0;
 							printf("Cull entity\n");
-						} else {
-							entity->position.x -= game.camera_pos;
-						}
+						// } else {
+						// 	// entity->position.x -= game.camera_pos;
+						// }
 						break;
 				}
 			}
