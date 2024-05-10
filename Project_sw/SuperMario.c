@@ -342,7 +342,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->state.state = STATE_DEAD;
 	}
 
-	game->camera_pos += mario->position - 128;
+	game->camera_pos += mario->position.x - 128;
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
