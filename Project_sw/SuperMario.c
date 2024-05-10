@@ -158,13 +158,13 @@ void flush_frame(Game *game, int frame_select) {
 	block_index = 0;
 	Entity *entity;
 
-	flush_ground(game->camera_pos, frame_select);
+	flush_ground(game.camera_pos, frame_select);
 
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		entity = &game->entities[entity_index];
 
 		if (entity->state.active == 1 && entity->render.visible == 1) {
-				flush_entity(entity, frame_select, game->camera_pos);
+				flush_entity(entity, frame_select, game.camera_pos);
 		}
 	}
 
@@ -277,7 +277,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->motion.ax = 0;
 
 	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT && mario->position.x >= game->camera_pos) {
+	if (current_key == KEY_LEFT && mario->position.x >= game.camera_pos) {
 		mario->motion.ax = -WALK_ACC;
 		mario->render.flip = 1;
 	} else if (current_key == KEY_RIGHT) {
@@ -342,7 +342,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->state.state = STATE_DEAD;
 	}
 
-	game->camera_pos += mario->motion.vx;
+	game.camera_pos += mario->motion.vx;
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
