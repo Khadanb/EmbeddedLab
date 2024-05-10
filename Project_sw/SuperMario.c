@@ -340,7 +340,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 
     // Only allow the camera to move if Mario is moving to the right and crosses the midpoint
     if (mario->position.x >= screen_midpoint) {
-		if (motion.vx > 0)
+		if (mario->motion.vx > 0)
         	game->camera_pos += mario->motion.vx;
         mario->position.x = screen_midpoint;  // Keep Mario at the midpoint
     } else if (mario->position.x < game->camera_pos) {
