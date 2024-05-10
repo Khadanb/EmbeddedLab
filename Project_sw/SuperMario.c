@@ -343,7 +343,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 
 	// scroll world frame to move level
     for (int i = 1; i < MAX_ENTITIES; i++) {
-        game->entities[i].position.x -= mario_velocity_x;
+        game->entities[i].position.x -= mario->motion.vx;
 		if(game->entities[i].position.x < 0) {
 			game->entities[i].state.active = 0; 
 		}
