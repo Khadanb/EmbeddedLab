@@ -237,6 +237,7 @@ void *input_thread_function(void *ignored)
 
 void handle_collision_with_block(Entity *mario, Entity *other, enum contact type) {
 	if (type == UP) {
+		if(mario->motion > 0) {}
 		mario->motion.vy = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
@@ -248,9 +249,10 @@ void handle_collision_with_block(Entity *mario, Entity *other, enum contact type
 }
 
 void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type) {
-	if (type == LEFT || type == RIGHT) {
+	if (type == LEFT && mario->render.flip == 1) {
 		mario->motion.vx = 0;
-		mario->position.x -= 1; 
+	} else if(type == RIGHT && mario->render.flip == 0) {
+		mario->motion.vx = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
 	}
