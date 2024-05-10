@@ -70,8 +70,8 @@ void flush_goomba(const Entity *entity, int frame_select) {
 	int x = entity->position.x;
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
-
-	//printf("Flushing GOOMBA - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	if (frame_counter % 100 == 0)
+		printf("Flushing GOOMBA - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -87,7 +87,8 @@ void flush_block(const Entity *entity, int frame_select) {
 	int pattern_code = entity->render.pattern_code;
 	int entityTypeCode = entity->state.type;
 
-	//printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
+	if (frame_counter % 100 == 0)
+		printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -101,8 +102,9 @@ void flush_tube(const Entity *entity, int frame_select) {
 	int x = entity->position.x;
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
-
-	//printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+	
+	if (frame_counter % 100 == 0)
+		printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
