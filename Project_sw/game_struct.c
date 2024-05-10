@@ -80,25 +80,25 @@ void new_game(Game *game) {
 	// Initialize blocks on either side of the Goomba
 	Entity *block_left = &game->entities[4];
 	*block_left = (Entity){
-		.position = {240, GROUND_LEVEL - 16, 16, 16},
+		.position = {280, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_1}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
 	Entity *block_right = &game->entities[5];
 	*block_right = (Entity){
-		.position = {380, GROUND_LEVEL - 16, 16, 16},
+		.position = {320, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
-	Entity *tube = &game->entities[4];
-	*tube = (Entity){
-		.position = {420, GROUND_LEVEL - 32, 32, 32},
-		.motion = {0,0,0,0},
-		.render = {ANI_TUBE_B, 1, 0},
-		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
-	};
+	// Entity *tube = &game->entities[4];
+	// *tube = (Entity){
+	// 	.position = {200, GROUND_LEVEL - 32, 32, 32},
+	// 	.motion = {0,0,0,0},
+	// 	.render = {ANI_TUBE_B, 1, 0},
+	// 	.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
+	// };
 }
