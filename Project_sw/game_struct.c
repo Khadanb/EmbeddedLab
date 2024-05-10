@@ -84,20 +84,4 @@ void new_game(Game *game) {
         .render = {ANI_TUBE_B, 1, 0},
         .state = {1, STATE_NORMAL, 0, TYPE_TUBE}
     };
-
-    Entity *tube2 = &game->entities[5];
-    *tube = (Entity){
-        .position = {400, GROUND_LEVEL - 32, 32, 32},
-        .motion = {0,0,0,0},
-        .render = {ANI_TUBE_B, 1, 0},
-        .state = {1, STATE_NORMAL, 0, TYPE_TUBE}
-    };
-    // // Attempt to add a ceiling 
-    // Entity *ceiling = &game->entities[4];
-    // *ceiling = (Entity){
-    //     .position = {0, 100, 640, 32},  
-    //     .motion = {0, 0, 0, 0},
-    //     .render = {0, 1, 0},
-    //     .state = {1, STATE_NORMAL, 0, TYPE_GROUND}
-    // };
 }

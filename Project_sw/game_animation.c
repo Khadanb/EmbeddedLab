@@ -7,9 +7,6 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 			case TYPE_MARIO_LARGE:
 				animate_mario(game, entity, f_counter);
 				break;
-			case TYPE_MUSHROOM:
-				animate_mushroom(game, entity, f_counter);
-				break;
 			case TYPE_GOOMBA:
 				animate_goomba(game, entity, f_counter);
 				break;
@@ -24,14 +21,8 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 			case TYPE_BLOCK_OBJ_M:
 				animate_block(game, entity, f_counter);
 				break;
-			case TYPE_COIN:
-				animate_coin(game, entity, f_counter);
-				break;
 			case TYPE_TUBE:
 				animate_tube(game, entity, f_counter);
-				break;
-			case TYPE_CLOUD:
-				animate_cloud(game, entity, f_counter);
 				break;
 			case TYPE_GROUND:
 				break;
@@ -70,13 +61,6 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				if (rel_counter == 0) entity->position.y += 3;
 				if (rel_counter > 20) entity->state.state = STATE_NORMAL;
 				break;
-
-			case STATE_ENLARGE:
-				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_M_NORMAL : ANI_MARIO_L_NORMAL;
-				if (rel_counter == 0) entity->position.y -= 20;
-				if (rel_counter > 30) entity->state.state = STATE_LARGE;
-				break;
-
 			case STATE_DEAD:
 				/*Doesn't really animate the death as STATE_DEAD is caught by game loop*/
 				entity->render.pattern_code = ANI_MARIO_S_DEAD;
@@ -87,7 +71,6 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 					if (entity->position.y > 1.01*GROUND_LEVEL) entity->state.state = STATE_DEAD;
 				}
 				break;
-
 			case STATE_LARGE:
 				if (entity->motion.ax == 0) {
 					entity->render.pattern_code = ANI_MARIO_L_NORMAL;
@@ -103,29 +86,6 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 		}
 
 		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 8) % 2;
-		entity->position.x = entity->position.x - game->camera_pos;
-		entity->position.y = entity->position.y;
-	}
-}
-
-void animate_mushroom(Game *game, Entity *entity, int f_counter) {
-	if (entity->state.active) {
-		int frame_count = FRAME_LIMIT;
-
-		int rel_counter = (f_counter - entity->state.animate_frame_counter + frame_count) % frame_count;
-
-		if (entity->state.state == STATE_NORMAL) {
-			entity->render.pattern_code = ANI_MUSH_NORMAL;
-		} else if (entity->state.state == STATE_ANIMATE) {
-			entity->render.pattern_code = ANI_MUSH_NORMAL;
-			if (rel_counter < 40) {
-				entity->position.y -= 0.5;
-			} else {
-				entity->state.state = STATE_NORMAL;
-			}
-		}
-
-		entity->render.visible = 1;
 		entity->position.x = entity->position.x - game->camera_pos;
 		entity->position.y = entity->position.y;
 	}
@@ -159,8 +119,6 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
-		// entity->position.x = entity->position.x - game->camera_pos;
-		// entity->position.y = entity->position.y;
 	}
 }
 
@@ -226,53 +184,3 @@ void animate_block(Game *game, Entity *entity, int f_counter) {
 		entity->position.y = entity->position.y;
 	}
 }
-
-void animate_cloud(Game *game, Entity *entity, int f_counter) {
-	if (entity->state.active) {
-
-		entity->render.visible = 1;
-		entity->position.x = entity->position.x - game->camera_pos;
-		entity->position.y = entity->position.y;
-		entity->render.pattern_code = ANI_CLOUD_NORMAL;
-	}
-}
-
-void animate_coin(Game *game, Entity *entity, int f_counter) {
-	if (entity->state.active) {
-		int frame_count = FRAME_LIMIT;
-		int counter = (f_counter >= entity->state.animate_frame_counter) ?
-					  f_counter : entity->state.animate_frame_counter + frame_count;
-		int rel_counter = counter - entity->state.animate_frame_counter;
-		int ani_div;
-
-		if (entity->state.state == STATE_NORMAL) {
-			ani_div = (counter / 6) % 4;
-		} else {
-			ani_div = (counter / 2) % 4;
-			if (rel_counter <= 20) {
-				entity->position.y += (rel_counter - 20) * 0.17;
-			} else if (rel_counter > 35) {
-				entity->state.active = 0;
-			}
-		}
-
-		switch (ani_div) {
-			case 0:
-				entity->render.pattern_code = ANI_COIN_1;
-				break;
-			case 1:
-				entity->render.pattern_code = ANI_COIN_2;
-				break;
-			case 2:
-				entity->render.pattern_code = ANI_COIN_3;
-				break;
-			default:
-				entity->render.pattern_code = ANI_COIN_4;
-		}
-
-		entity->render.visible = 1;
-		entity->position.x = entity->position.x - game->camera_pos;
-		entity->position.y = entity->position.y;
-	}
-}
-

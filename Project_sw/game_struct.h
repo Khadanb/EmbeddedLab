@@ -5,30 +5,12 @@
 
 #define MAX_ENTITIES 128
 
-
 #define GRAVITY 0.23f
 #define MAX_SPEED_H 1.85f
 #define MAX_SPEED_V 4.6f
 #define LOAD_LIMIT (5*16)
 #define CAMERA_SIZE (30*16)
 #define GROUND_LEVEL 368
-
-// #define BLOCK_NUM 45
-// #define MUSH_NUM 3
-// #define GOOMBA_NUM 10
-// #define CLOUD_NUM 7
-// #define GROUND_NUM 4
-// #define TUBE_NUM 5
-// #define COIN_NUM 25
-
-#define GROUND_0_L 0
-#define GROUND_0_W 448
-#define GROUND_1_L 528
-#define GROUND_1_W 976
-#define GROUND_2_L 1504
-#define GROUND_2_W 640
-#define GROUND_3_L 2176
-#define GROUND_3_W 800
 
 #define HOLE_0_R 527
 #define HOLE_1_L 1504
@@ -48,12 +30,10 @@
 #define TUBE_VIS_LIMIT 1
 #define CLOUD_VIS_LIMIT 1
 
-
 enum EntityState {
 	STATE_NORMAL,
 	STATE_ANIMATE,
 	STATE_HIT,
-	STATE_ENLARGE,
 	STATE_DEAD,
 	STATE_LARGE,
 	BLOCK_NORMAL,
@@ -67,7 +47,6 @@ enum contact {
 enum EntityType {
 	TYPE_MARIO_SMALL,
 	TYPE_MARIO_LARGE,
-	TYPE_MUSHROOM,
 	TYPE_GOOMBA,
 	TYPE_BLOCK_A,
 	TYPE_BLOCK_B_1,
@@ -78,13 +57,10 @@ enum EntityType {
 	TYPE_BLOCK_A_H_8,
 	TYPE_BLOCK_OBJ_C,
 	TYPE_BLOCK_OBJ_M,
-	TYPE_COIN,
 	TYPE_TUBE,
-	TYPE_CLOUD,
 	TYPE_GROUND,
 	TYPE_EMP
 };
-
 
 typedef struct {
 	float x, y;
@@ -123,13 +99,11 @@ typedef struct {
 	Entity entities[MAX_ENTITIES];
 } Game;
 
-
 enum {
 	GAME_START,
 	GAME_NORMAL,
 	GAME_END
 };
-
 
 void new_game(Game *game);
 enum contact hitbox_contact(const Entity *A, const Entity *B);

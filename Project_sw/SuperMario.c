@@ -20,13 +20,6 @@
 #include "game_struct.h"
 #include "game_animation.h"
 
-#define PPU_ADDR 0
-#define SOUND_JUMP 0
-#define SOUND_COIN 0
-#define SOUND_BLOCK 0
-#define SOUND_DEAD 0
-#define SOUND_NONE 5
-
 int vga_ball_fd;
 
 int block_index;
@@ -37,12 +30,7 @@ int info_010 = 2;
 int info_011 = 3;
 int info_100 = 4;
 
-int block_r = 0;
-int block_l = 0;
 int frame_counter = 0;
-
-int sound_new = 0;
-int sound_ind = 0;
 
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
@@ -54,7 +42,6 @@ void write_to_hardware(int vga_fd, int register_address, int data) {
 	vga_ball_arg_t vla;
 	vla.addr = register_address;
 	vla.info = data;
-
 
 	if (ioctl(vga_fd, VGA_BALL_WRITE_BACKGROUND, &vla) < 0) {
 		fprintf(stderr, "Failed to write data to hardware\n");
@@ -76,21 +63,6 @@ void flush_mario(const Entity *entity, int frame_select) {
     write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
-void flush_mush(const Entity *entity, int frame_select) {
-
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
-
-    // printf("Flushing MUSHROOM - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
-
-    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
-}
-
 void flush_goomba(const Entity *entity, int frame_select) {
 
     int visible = entity->render.visible;
@@ -105,24 +77,6 @@ void flush_goomba(const Entity *entity, int frame_select) {
     write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
     write_to_hardware(vga_ball_fd, 0, (int)((5 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
-
-void flush_coin(const Entity *entity, int frame_select) {
-
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
-    int entityTypeCode = entity->state.type; 
-
-    //printf("Flushing COIN - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
-
-    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((3 << 26) + ((coin_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
-	coin_index += 1; 
-}
-
 
 void flush_block(const Entity *entity, int frame_select) {
 
@@ -159,22 +113,6 @@ void flush_tube(const Entity *entity, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
-void flush_cloud(const Entity *entity, int frame_select) {
-
-    int visible = entity->render.visible;
-    int flip = entity->render.flip;
-    int x = entity->position.x;
-    int y = entity->position.y;
-    int pattern_code = entity->render.pattern_code;
-
-    //printf("Flushing CLOUD - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
-
-    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
-    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-    write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
-
-}
-
 void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
     if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return; 
     if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
@@ -183,9 +121,6 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
         case TYPE_MARIO_SMALL:
         case TYPE_MARIO_LARGE:
             flush_mario(entity, frame_select);
-            break;
-        case TYPE_MUSHROOM:
-            flush_mush(entity, frame_select);
             break;
         case TYPE_GOOMBA:
             flush_goomba(entity, frame_select);
@@ -201,17 +136,10 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
         case TYPE_BLOCK_OBJ_M:
             flush_block(entity, frame_select);
             break;
-        case TYPE_COIN:
-            flush_coin(entity, frame_select);
-            break;
         case TYPE_TUBE:
             flush_tube(entity, frame_select);
-            break;
-        case TYPE_CLOUD:
-            flush_cloud(entity, frame_select);
-            break;
         default:
-			// printf("ERROR: Unkown Entity Found!\n");
+			printf("ERROR: Unkown Entity Found!\n");
             break;
     }
 }
@@ -225,16 +153,16 @@ void flush_ground(int camera_pos, int frame_select) {
 	
 }
 
-
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
 	block_index = 0;
 	coin_index = 0;
+	Entity *entity;
 
 	flush_ground(game->camera_pos, frame_select);
 
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
-		Entity *entity = &game->entities[entity_index];
+		entity = &game->entities[entity_index];
 
 		if (entity->state.active && entity->render.visible) {
 
@@ -249,31 +177,6 @@ void flush_frame(Game *game, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((1 << 26) + (0xf << 17) + (frame_select << 13)));
 
 	frame_counter = (frame_counter >= FRAME_LIMIT) ? 0 : frame_counter + 1;
-
-	if (sound_new == 1) {
-		write_to_hardware(vga_ball_fd, 4, (int)(SOUND_NONE));
-		sound_new = 0;
-	} else {
-		write_to_hardware(vga_ball_fd, 4, (int)(sound_ind));
-	}
-}
-
-void entity_activation_update(Game *game, int camera_pos){
-	int entity_index;
-	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
-		Entity *entity = &game->entities[entity_index];
-
-		if (entity->position.x > camera_pos + CAMERA_SIZE + LOAD_LIMIT) {
-
-			entity->state.active = 0;
-		} else if (entity->position.x + entity->position.width + 1 < camera_pos - LOAD_LIMIT) {
-
-			entity->state.active = 0;
-		} else {
-
-			entity->state.active = 1;
-		}
-	}
 }
 
 void *input_thread_function(void *ignored)
@@ -337,17 +240,6 @@ void *input_thread_function(void *ignored)
 	return NULL;
 }
 
-void handle_collision_with_mushroom(Entity *mario, Entity *other, enum contact type) {
-	mario->state.state = STATE_ENLARGE;
-	mario->state.type = TYPE_MARIO_LARGE;
-	// printf("Hit Mushroom\n");
-}
-
-void handle_collision_with_coin(Entity *mario, Entity *other, enum contact type) {
-
-	other->state.active = 0;
-}
-
 void handle_collision_with_block(Entity *mario, Entity *other, enum contact type) {
 	if (type == UP) {
 		other->state.state = BLOCK_ANIMATE;
@@ -371,6 +263,8 @@ void handle_collision_with_ground(Entity *mario, Entity *other, enum contact typ
 }
 
 void process_mario_logic(Entity *mario, Game *game) {
+	enum contact contactType;
+	Entity *other; 
 
 	if (mario == NULL) {
 		printf("Mario entity is NULL\n");
@@ -407,20 +301,14 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
 	for (int i = 1; i < MAX_ENTITIES; i++) {
-		Entity *other = &game->entities[i];
+		other = &game->entities[i];
 
 		if (other == NULL || !other->state.active) continue;
 
-		enum contact contactType = hitbox_contact(mario, other);
+		contactType = hitbox_contact(mario, other);
 		if (contactType != NONE) {
 			switch (other->state.type) {
-				case TYPE_MUSHROOM:
-					handle_collision_with_mushroom(mario, other, contactType);
-					break;
 				case TYPE_GOOMBA:
-					break;
-				case TYPE_COIN:
-					handle_collision_with_coin(mario, other, contactType);
 					break;
 				case TYPE_BLOCK_A:
 				case TYPE_BLOCK_B_1:
@@ -439,8 +327,6 @@ void process_mario_logic(Entity *mario, Game *game) {
 				case TYPE_GROUND:
 					handle_collision_with_ground(mario, other, contactType);
 					break;
-				case TYPE_CLOUD:
-					break;
 				default:
 					break;
 			}
@@ -456,60 +342,6 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 }
 
-void process_mushroom_logic(Entity *mushroom, Game *game) {
-	if (!mushroom->state.active)
-		return;
-
-	mushroom->motion.ay = GRAVITY;
-	mushroom->motion.vx = (mushroom->render.flip == 0) ? MAX_SPEED_H * 0.5 : -MAX_SPEED_H * 0.5;
-
-	for (int i = 0; i < MAX_ENTITIES; i++) {
-		Entity *other = &game->entities[i];
-		if (other == NULL || !other->state.active) continue;
-
-		enum contact contactType = hitbox_contact(mushroom, other);
-		if (contactType != NONE) {
-			switch (other->state.type) {
-				case TYPE_MARIO_SMALL:
-				case TYPE_MARIO_LARGE:
-					mushroom->state.active = 0;
-					break;
-				case TYPE_GROUND:
-					if (contactType == DOWN) {
-						mushroom->motion.vy = 0;
-						mushroom->position.y = other->position.y - mushroom->position.height;
-					}
-					break;
-				case TYPE_TUBE:
-				case TYPE_BLOCK_A:
-				case TYPE_BLOCK_B_1:
-				case TYPE_BLOCK_B_2:
-				case TYPE_BLOCK_B_3:
-				case TYPE_BLOCK_B_4:
-				case TYPE_BLOCK_B_16:
-				case TYPE_BLOCK_A_H_8:
-				case TYPE_BLOCK_OBJ_C:
-				case TYPE_BLOCK_OBJ_M:
-					if (contactType == LEFT || contactType == RIGHT) {
-						mushroom->render.flip = (mushroom->render.flip == 0) ? 1 : 0;
-						mushroom->motion.vx = -mushroom->motion.vx;
-					}
-					break;
-			}
-		}
-	}
-
-	mushroom->motion.vy += mushroom->motion.ay;
-	mushroom->position.x += mushroom->motion.vx;
-	mushroom->position.y += mushroom->motion.vy;
-	mushroom->motion.ax = 0;
-	mushroom->motion.ay = 0;
-
-	if (mushroom->position.x < 0 || mushroom->position.x > game->camera_pos + CAMERA_SIZE || mushroom->position.y > GROUND_LEVEL) {
-		mushroom->state.active = 0;
-	}
-}
-
 void process_goomba_logic(Entity *goomba, Game *game) {
 	if (!goomba->state.active)
 		return;
@@ -518,10 +350,13 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 
 	goomba->motion.vx = (goomba->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
 	for (int i = 0; i < MAX_ENTITIES; i++) {
-		Entity *other = &game->entities[i];
+		enum contact contactType; 
+		Entity *other; 
+
+		other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == goomba) continue;
 
-		enum contact contactType = hitbox_contact(goomba, other);
+		contactType = hitbox_contact(goomba, other);
 		if (contactType != NONE) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
@@ -575,6 +410,10 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	goomba->position.y += goomba->motion.vy;
 	goomba->motion.ax = 0;
 	goomba->motion.ay = 0;
+
+	if (goomba->position.y > GROUND_LEVEL) {
+		goomba->state.state = STATE_DEAD; 
+	}
 }
 
 void process_block_logic(Entity *block, Game *game) {
@@ -618,25 +457,6 @@ void process_block_logic(Entity *block, Game *game) {
 	}
 }
 
-void update_camera_position(Game *game) {
-    Entity *mario = &game->entities[0];
-    int midPoint = game->camera_pos + CAMERA_SIZE / 2;
-
-    // Move camera right if Mario passes the midpoint on the right
-    if (mario->position.x > midPoint) {
-        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
-    }
-    
-    // Move camera left if Mario approaches the left edge of the camera view
-    if (mario->position.x < midPoint) {
-        game->camera_pos = mario->position.x - CAMERA_SIZE / 2;
-    }
-
-    // Ensure the camera position is within the level boundaries
-    game->camera_pos = fmax(0, fmin(game->camera_pos, CAMERA_SIZE));
-}
-
-
 int main() {
 	pthread_t input_thread;
 	Game game;
@@ -668,11 +488,6 @@ int main() {
 			continue;
 		}
 
-
-		// update_camera_position(&game);
-
-		// entity_activation_update(&game, game.camera_pos);
-
 		for (int i = 0; i < MAX_ENTITIES; i++) {
 			Entity *entity = &game.entities[i];
 
@@ -683,9 +498,6 @@ int main() {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
 						process_mario_logic(entity, &game);
-						break;
-					case TYPE_MUSHROOM:
-						process_mushroom_logic(entity, &game);
 						break;
 					case TYPE_GOOMBA:
 						process_goomba_logic(entity, &game);
@@ -700,14 +512,6 @@ int main() {
 					case TYPE_BLOCK_OBJ_C:
 					case TYPE_BLOCK_OBJ_M:
 						process_block_logic(entity, &game);
-						break;
-					case TYPE_COIN:
-						break;
-					case TYPE_TUBE:
-						break;
-					case TYPE_CLOUD:
-						break;
-					case TYPE_GROUND:
 						break;
 					default:
 						break;

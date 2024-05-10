@@ -27,9 +27,6 @@
 #define ANI_MARIO_S_HANG 17
 #define ANI_MARIO_L_HANG 18
 
-// Mush Animation
-#define ANI_MUSH_NORMAL 0
-
 // Goomba Animation
 #define ANI_GOOMBA_NORMAL 0
 #define ANI_GOOMBA_HIT 1
@@ -56,26 +53,14 @@
 #define ANI_BLOCK_B_V4 14
 #define ANI_BLOCK_B_16 15
 
-// Cloud Animation
-#define ANI_CLOUD_NORMAL 0
-
-// Coin Animation
-#define ANI_COIN_1 0
-#define ANI_COIN_2 1
-#define ANI_COIN_3 2
-#define ANI_COIN_4 3
-
 // Function pointer type for entity animation functions
 typedef void (*AnimateFunc)(Game *game, Entity *entity, int f_counter);
 
 // Animation function declarations
 void animate_mario(Game *game, Entity *entity, int f_counter);
-void animate_mushroom(Game *game, Entity *entity, int f_counter);
 void animate_goomba(Game *game, Entity *entity, int f_counter);
 void animate_block(Game *game, Entity *entity, int f_counter);
-void animate_coin(Game *game, Entity *entity, int f_counter);
 void animate_tube(Game *game, Entity *entity, int f_counter);
-void animate_cloud(Game *game, Entity *entity, int f_counter);
 
 // Generic function to animate any entity
 void animate_entity(Game *game, Entity *entity, int f_counter);
