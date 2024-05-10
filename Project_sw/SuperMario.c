@@ -345,7 +345,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     for (int i = 1; i < MAX_ENTITIES; i++) {
         game->entities[i].position.x -= mario->motion.vx;
 		if(game->entities[i].position.x < 0) {
-			if (game->entities[i] != TYPE_GROUND) {
+			if (game->entities[i].state.type != TYPE_GROUND) {
 				game->entities[i].state.active = 0; 
 			}
 		}
