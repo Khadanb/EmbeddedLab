@@ -424,7 +424,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	goomba->position.x -= game->camera_velocity; 
 	if (goomba->position.x < game->camera_pos) {
 		goomba->state.active = 0;
-		print("Cull Goomba");
+		printf("Cull Goomba");
 	}
 
 	goomba->render.visible = 1;
@@ -483,7 +483,7 @@ int main() {
 						entity->position.x -= game.camera_velocity; 
 						if (entity->position.x < game.camera_pos) {
 							entity->state.active = 0;
-							print("Cull Entity");
+							printf("Cull Entity");
 						}
 						break;
 				}
