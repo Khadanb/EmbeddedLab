@@ -237,7 +237,6 @@ void *input_thread_function(void *ignored)
 
 void handle_collision_with_block(Entity *mario, Entity *other, enum contact type) {
 	if (type == UP) {
-		if(mario->motion > 0) {}
 		mario->motion.vy = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
