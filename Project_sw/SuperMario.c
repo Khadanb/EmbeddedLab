@@ -164,7 +164,7 @@ void flush_frame(Game *game, int frame_select) {
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		entity = &game->entities[entity_index];
 
-		if (entity->state.active && entity->render.visible) {
+		if (entity->state.active == 1 && entity->render.visible == 1) {
 				flush_entity(entity, frame_select, game->camera_pos);
 		}
 	}
