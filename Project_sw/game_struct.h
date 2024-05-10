@@ -95,6 +95,7 @@ typedef struct {
 
 typedef struct {
 	int camera_pos;
+	float camera_velocity;
 	int game_state;
 	Entity entities[MAX_ENTITIES];
 } Game;

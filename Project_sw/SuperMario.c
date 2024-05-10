@@ -279,7 +279,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	mario->motion.ax = 0;
 
 	// Horizontal movement based on key press
-	if (current_key == KEY_LEFT && mario->position.x >= game->camera_pos) {
+	if (current_key == KEY_LEFT) {
 		mario->motion.ax = -WALK_ACC;
 		mario->render.flip = 1;
 	} else if (current_key == KEY_RIGHT) {
@@ -421,6 +421,12 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.state = STATE_DEAD;
 	}
 
+	goomba->position.x -= game->camera_velocity; 
+	if (goomba->position.x < game->camera_pos) {
+		goomba->state.active = 0;
+		print("Cull Goomba");
+	}
+
 	goomba->render.visible = 1;
 }
 
@@ -474,11 +480,10 @@ int main() {
 					case TYPE_GROUND:
 						break;
 					default:
-						entity->render.visible = 1;
-						
+						entity->position.x -= game.camera_velocity; 
 						if (entity->position.x < game.camera_pos) {
 							entity->state.active = 0;
-							printf("Cull entity\n");
+							print("Cull Entity");
 						}
 						break;
 				}

@@ -44,6 +44,7 @@ enum contact hitbox_contact(const Entity *A, const Entity *B) {
 void new_game(Game *game) {
 	game->camera_pos = 0;
 	game->game_state = GAME_START;
+	game->camera_velocity = 0;
 
 	// Initialize all entities to inactive
 	for (int i = 0; i < MAX_ENTITIES; i++) {
