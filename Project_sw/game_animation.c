@@ -34,61 +34,62 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 }
 
 void animate_mario(Game *game, Entity *entity, int f_counter) {
-	if (entity->state.active && entity->render.visible) {
-		int frame_count = FRAME_LIMIT;
-		int counter = f_counter % frame_count;
-		int rel_counter = counter - entity->state.animate_frame_counter;
-		entity->state.animate_frame_counter = counter;
+    if (entity->state.active && entity->render.visible) {
+        int counter = f_counter % FRAME_LIMIT;  // Use the existing frame count within the animation cycle limit
+        int rel_counter = counter - entity->state.animate_frame_counter;
+        entity->state.animate_frame_counter = counter;  // Update the last animation frame counter
 
-		float dead_v = -4.7f;
-		float dead_acc = 0.16f;
+        switch (entity->state.state) {
+            case STATE_NORMAL:
+                // Determine the walking animation based on Mario's horizontal acceleration
+                if (entity->motion.ax == 0) {
+                    entity->render.pattern_code = ANI_MARIO_S_NORMAL;  // Standing still
+                } else {
+                    // If Mario is shutting or changing direction abruptly
+                    if (entity->motion.ax * entity->motion.vx < 0) {
+                        entity->render.pattern_code = ANI_MARIO_S_SHUT;
+                    } else {
+                        // Cycle through walking animations based on the frame count
+                        int ani_div = (counter / 20) % 3;  // Use a slower frame update interval
+                        entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
+                                                          (ani_div == 1) ? ANI_MARIO_S_WALK2 :
+                                                          ANI_MARIO_S_WALK3;
+                    }
+                }
+                break;
 
-		switch (entity->state.state) {
-			case STATE_NORMAL:
-				if (entity->motion.ax == 0) {
-					entity->render.pattern_code = ANI_MARIO_S_NORMAL;
-				} else if (entity->motion.ax * entity->motion.vx < 0) {
-					entity->render.pattern_code = ANI_MARIO_S_SHUT;
-				} else {
-					int ani_div = (counter / 6) % 3;
-					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
-												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
-												  ANI_MARIO_S_WALK3;
-				}
-				break;
+            case STATE_HIT:
+                // Flash between hit animations for visual effect
+                entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
+                break;
 
-			case STATE_HIT:
-				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
-				if (rel_counter == 0) entity->position.y += 3;
-				if (rel_counter > 20) entity->state.state = STATE_NORMAL;
-				break;
-			case STATE_DEAD:
-				/*Doesn't really animate the death as STATE_DEAD is caught by game loop*/
-				entity->render.pattern_code = ANI_MARIO_S_DEAD;
-				if (rel_counter == 0) entity->motion.vy = dead_v;
-				else if (rel_counter > 30) {
-					entity->position.y += entity->motion.vy;
-					entity->motion.vy += dead_acc;
-					if (entity->position.y > 1.01*GROUND_LEVEL) entity->state.state = STATE_DEAD;
-				}
-				break;
-			case STATE_LARGE:
-				if (entity->motion.ax == 0) {
-					entity->render.pattern_code = ANI_MARIO_L_NORMAL;
-				} else if (entity->motion.ax * entity->motion.vx < 0) {
-					entity->render.pattern_code = ANI_MARIO_L_SHUT;
-				} else {
-					int ani_div = (counter / 6) % 3;
-					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_L_WALK1 :
-												  (ani_div == 1) ? ANI_MARIO_L_WALK2 :
-												  ANI_MARIO_L_WALK3;
-				}
-				break;
-		}
+            case STATE_DEAD:
+                // Dead animation should not adjust position, just set the appropriate sprite
+                entity->render.pattern_code = ANI_MARIO_S_DEAD;
+                break;
 
-		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
-	}
+            case STATE_LARGE:
+                // Determine the large Mario walking animation based on his horizontal acceleration
+                if (entity->motion.ax == 0) {
+                    entity->render.pattern_code = ANI_MARIO_L_NORMAL;  // Standing still
+                } else {
+                    if (entity->motion.ax * entity->motion.vx < 0) {
+                        entity->render.pattern_code = ANI_MARIO_L_SHUT;
+                    } else {
+                        int ani_div = (counter / 20) % 3;  // Slower frame update interval
+                        entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_L_WALK1 :
+                                                          (ani_div == 1) ? ANI_MARIO_L_WALK2 :
+                                                          ANI_MARIO_L_WALK3;
+                    }
+                }
+                break;
+        }
+
+        // Only toggle visibility for non-normal states for blinking effect
+        entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 30) % 2;
+    }
 }
+
 
 void animate_goomba(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
