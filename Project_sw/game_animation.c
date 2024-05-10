@@ -111,10 +111,10 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 
 		entity->render.visible = 1;
 		entity->position.x -= game->camera_pos;
-		if (entity->position.x < game->camera_pos) {
-			entity->state.active = 0;
-			printf("Cull Goomba\n");
-		}
+		// if (entity->position.x < game->camera_pos) {
+		// 	entity->state.active = 0;
+		// 	printf("Cull Goomba\n");
+		// }
 	}
 }
 
@@ -122,10 +122,10 @@ void animate_tube(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active) {
 		entity->render.visible = 1;
 		entity->position.x = entity->position.x - game->camera_pos;
-		if (entity->position.x < game->camera_pos) {
-			entity->state.active = 0;
-			printf("Cull Tube\n");
-		}
+		// if (entity->position.x < game->camera_pos) {
+		// 	entity->state.active = 0;
+		// 	printf("Cull Tube\n");
+		// }
 	}
 }
 
@@ -184,13 +184,6 @@ void animate_block(Game *game, Entity *entity, int f_counter) {
 			default:
 				entity->render.pattern_code = ANI_BLOCK_ITEM_EMP;
 				break;
-		}
-
-		entity->render.visible = 1;
-		entity->position.x -= game->camera_pos;
-		if (entity->position.x < game->camera_pos) {
-			entity->state.active = 0;
-			printf("Cull Block\n");
 		}
 	}
 }

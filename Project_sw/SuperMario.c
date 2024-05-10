@@ -422,6 +422,13 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	if (goomba->position.y > GROUND_LEVEL) {
 		goomba->state.state = STATE_DEAD;
 	}
+
+	goomba->render.visible = 1;
+	goomba->position.x -= game->camera_pos;
+	if (goomba->position.x < game->camera_pos) {
+		goomba->state.active = 0;
+		printf("Cull Block\n");
+	}
 }
 
 int main() {
@@ -472,6 +479,12 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					default:
+						entity->render.visible = 1;
+						entity->position.x -= game->camera_pos;
+						if (entity->position.x < game->camera_pos) {
+							entity->state.active = 0;
+							printf("Cull entity\n");
+						}
 						break;
 				}
 			}
