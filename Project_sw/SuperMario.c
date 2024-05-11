@@ -298,7 +298,7 @@ void process_mario_logic(Entity *mario, Game *game) {
         mario->motion.ax -= mario->motion.vx * FRICTION;
     } 
 	
-	if (fabs(mario->motion.vx) < 0.01f) {
+	if (fabs(mario->motion.vx) < 0.08f) {
 		mario->motion.vx = 0;
 	}
 
