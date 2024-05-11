@@ -353,8 +353,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 
 	// game->camera_pos += game->camera_velocity;
 	mario_scroll_location += mario->motion.vx;
-	if (mario_scroll_location < camera_pos) {
-		mario_scroll_location = camera_pos; 
+	if (mario_scroll_location < game->camera_pos) {
+		mario_scroll_location = game->camera_pos; 
 	}
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
