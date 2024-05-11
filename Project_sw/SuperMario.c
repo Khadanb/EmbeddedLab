@@ -33,6 +33,8 @@ int frame_counter = 0;
 
 int mario_scroll_location = 128;
 
+int can_jump = 0;
+
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
 enum key_input current_key;
@@ -243,6 +245,7 @@ void handle_collision_with_block(Entity *mario, Entity *other, enum contact type
 		mario->motion.vy = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
+		can_jump = 1;
 	} else if (type == LEFT && mario->render.flip == 1) {
 		mario->motion.vx = 0;
 	} else if (type == RIGHT && mario->render.flip == 0) {
@@ -257,6 +260,7 @@ void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type)
 		mario->motion.vx = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
+		can_jump = 1;
 	}
 }
 
@@ -264,6 +268,7 @@ void handle_collision_with_ground(Entity *mario, Entity *other, enum contact typ
 	if (type == DOWN) {
 		mario->motion.vy = 0;
 		mario->position.y = other->position.y - mario->position.height;
+		can_jump = 1; 
 	}
 }
 
@@ -289,8 +294,9 @@ void process_mario_logic(Entity *mario, Game *game) {
     }
 
     // Handle jump input
-    if (current_key == KEY_JUMP && mario->motion.vy == 0) {
+    if (current_key == KEY_JUMP && can_jump) {
         mario->motion.vy = -JUMP_INIT_V_LARGE;
+		can_jump = 0;
     }
 
     // Apply friction if Mario is on the ground and moving
