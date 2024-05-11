@@ -102,4 +102,12 @@ void new_game(Game *game) {
 		.render = {ANI_TUBE_B, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
+
+	Entity *bowser = &game->entities[7];
+	*bowser = (Entity) {
+		.position = {500, 128, 64,64 }, 
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_BOWSER_NORMAL, },
+		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
+	};
 }

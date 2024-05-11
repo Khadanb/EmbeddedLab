@@ -53,6 +53,8 @@
 #define ANI_BLOCK_B_V4 14
 #define ANI_BLOCK_B_16 15
 
+#define ANI_BOWSER_NORMAL 0
+
 // Function pointer type for entity animation functions
 typedef void (*AnimateFunc)(Game *game, Entity *entity, int f_counter);
 

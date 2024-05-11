@@ -27,6 +27,8 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 				break;
 			case TYPE_GROUND:
 				break;
+			case TYPE_BOWSER:
+				animate_bowser(game, entity, f_counter);
 			default:
 				break;
 		}
@@ -106,6 +108,27 @@ void animate_goomba(Game *game, Entity *entity, int f_counter) {
 				entity->state.active = 0;
 			}
 			entity->render.pattern_code = ANI_GOOMBA_HIT;
+		}
+
+		entity->render.visible = 1;
+	}
+}
+
+void animate_bowser(Game *game, Entity *entity, int f_counter) {
+	if (entity->state.active) {
+		int frame_count = FRAME_LIMIT;
+
+		int rel_counter = (f_counter - entity->state.animate_frame_counter + frame_count) % frame_count;
+
+		if (entity->state.state == STATE_NORMAL) {
+			entity->render.pattern_code = ANI_BOWSER_NORMAL;
+
+		} else if (entity->state.state == STATE_ANIMATE) {
+			if (rel_counter == 0) {
+				entity->position.y += 8;
+			} else if (rel_counter >= 25) {
+				entity->state.active = 0;
+			}
 		}
 
 		entity->render.visible = 1;

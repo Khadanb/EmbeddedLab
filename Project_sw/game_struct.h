@@ -59,6 +59,7 @@ enum EntityType {
 	TYPE_BLOCK_OBJ_M,
 	TYPE_TUBE,
 	TYPE_GROUND,
+	TYPE_BOWSER,
 	TYPE_EMP
 };
 

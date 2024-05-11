@@ -364,8 +364,6 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->position.x = 70 + 1;
 	}
 
-	// game->camera_pos += game->camera_velocity;
-
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
@@ -453,6 +451,86 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	goomba->render.visible = 1;
 }
 
+void process_bowser_logic(Entity *bowser, Game *game) {
+	enum contact contactType;
+	Entity *other;
+	if (!bowser->state.active)
+		return;
+
+	bowser->motion.ay = GRAVITY;
+
+	bowser->motion.vx = (bowser->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
+	for (int i = 0; i < MAX_ENTITIES; i++) {
+		other = &game->entities[i];
+		if (other == NULL || !other->state.active || other == bowser) continue;
+
+		contactType = hitbox_contact(bowser, other);
+		if (contactType != NONE) {
+			switch (other->state.type) {
+				case TYPE_MARIO_SMALL:
+					if (contactType == UP) {
+						bowser->state.state = STATE_DEAD;
+						bowser->state.active = 0;
+						other->motion.vy = -JUMP_INIT_V_SMALL;
+					} else {
+
+						other->state.state = STATE_DEAD;
+					}
+					break;
+				case TYPE_MARIO_LARGE:
+					if (contactType == UP) {
+						bowser->state.state = STATE_DEAD;
+						bowser->state.active = 0;
+						other->motion.vy = -JUMP_INIT_V_SMALL;
+					} else {
+						other->state.type = TYPE_MARIO_SMALL;
+						other->state.state = STATE_HIT;
+					}
+					break;
+				case TYPE_GROUND:
+					if (contactType == DOWN) {
+						bowser->motion.vy = 0;
+						bowser->position.y = other->position.y - bowser->position.height;
+					}
+					break;
+				case TYPE_TUBE:
+				case TYPE_BLOCK_A:
+				case TYPE_BLOCK_B_1:
+				case TYPE_BLOCK_B_2:
+				case TYPE_BLOCK_B_3:
+				case TYPE_BLOCK_B_4:
+				case TYPE_BLOCK_B_16:
+				case TYPE_BLOCK_A_H_8:
+				case TYPE_BLOCK_OBJ_C:
+				case TYPE_BLOCK_OBJ_M:
+					if (contactType == LEFT || contactType == RIGHT) {
+						bowser->render.flip = (bowser->render.flip == 0) ? 1 : 0;
+						bowser->motion.vx = -bowser->motion.vx;
+					}
+					break;
+			}
+		}
+	}
+
+	bowser->motion.vy += bowser->motion.ay;
+	bowser->position.x += bowser->motion.vx;
+	bowser->position.y += bowser->motion.vy;
+	bowser->motion.ax = 0;
+	bowser->motion.ay = 0;
+
+	if (bowser->position.y > GROUND_LEVEL) {
+		bowser->state.state = STATE_DEAD;
+	}
+
+	bowser->position.x -= game->camera_velocity; 
+	if (bowser->position.x < game->camera_pos) {
+		bowser->state.active = 0;
+		printf("Cull Goomba");
+	}
+
+	bowser->render.visible = 1;
+}
+
 int main() {
 	pthread_t input_thread;
 	Game game;
@@ -501,6 +579,9 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
+						break;
+					case TYPE_BOWSER:
+						process_bowser_logic(entity, &game);
 						break;
 					default:
 						entity->position.x -= game.camera_velocity; 
