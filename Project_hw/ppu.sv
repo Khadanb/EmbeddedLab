@@ -26,6 +26,7 @@ module ppu (input logic        clk,
 	Tube_display Tube_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[15]));	
 	Ground_display Ground_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[14]));
 	Goomba_display Goomba_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[5]));
+	Bowser_display Bowser_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[9]))
 	always_comb begin
 
 		RGB_list[0] = 24'h202020;
@@ -37,7 +38,7 @@ module ppu (input logic        clk,
 		RGB_list[6] = 24'h202020;
 		// RGB_list[7] = 24'h202020;	//Block
 		RGB_list[8] = 24'h202020;	
-		RGB_list[9] = 24'h202020;	
+		// RGB_list[9] = 24'h202020; //Bowser
 		RGB_list[10] = 24'h202020;
 		RGB_list[11] = 24'h202020;
 		RGB_list[12] = 24'h202020;	
