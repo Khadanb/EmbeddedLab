@@ -29,99 +29,19 @@ module vga_ball(
 
     logic [10:0] hcount;
     logic [9:0]  vcount;
-    logic [31:0] ppu_info, sound_buff;
-    vga_counters counters(.clk50(clk), .*);
+    logic [31:0] ppu_info;
+    logic [5:0] note_en;
+    wire sound_out;
 
+    vga_counters counters(.clk50(clk), .*);
+    // AudioGenerator audio(.clk(clk), .reset(reset), .note_en(note_en), .sound_out(sound_out));
     always_ff @(posedge clk) begin
         if (reset) begin
             ppu_info <= 32'd_0;
-            sound_buff <= 32'd_0;
         end else if (chipselect && write) begin
             case (address)
                 3'h0: ppu_info <= writedata;
-                3'h1: sound_buff <= writedata;
             endcase
-        end
-    end
-
-    // Sound processing logic
-    reg [13:0] counter;
-    logic flag1, flag2, flag3, flag4;
-    reg [9:0] address1, address2, address3, address4;
-    wire [15:0] sound_output1, sound_output2, sound_output3, sound_output4;
-
-    smb_breakblock_ROM breakblock_audio(.address(address1), .clock(clk), .q(sound_output1));
-    smb_jump_ROM jump_audio(.address(address2), .clock(clk), .q(sound_output2));
-    smb_gameover_ROM gameover_audio(.address(address3), .clock(clk), .q(sound_output3));
-    smb_coin_ROM coin_audio(.address(address4), .clock(clk), .q(sound_output4));
-
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            counter <= 0;
-            sample_valid_l <= 0;
-            sample_valid_r <= 0;
-            address1 <= 0;
-            address2 <= 0;
-            address3 <= 0;
-            address4 <= 0;
-            flag1 <= 0;
-            flag2 <= 0;
-            flag3 <= 0;
-            flag4 <= 0;
-        end else if (left_chan_ready && right_chan_ready) begin
-            if (counter < 6250) begin
-                counter <= counter + 1;
-                sample_valid_l <= 0;
-                sample_valid_r <= 0;
-            end else begin
-                counter <= 0;
-                sample_valid_l <= 1;
-                sample_valid_r <= 1;
-                // Sound channel processing
-                if (sound_buff[2:0] == 3'd3 && !flag3 || flag3 == 1'b0) begin
-                    if (address3 < 10'd1000) begin
-                        address3 <= address3 + 1;
-                    end else begin
-                        address3 <= 0;
-                        flag3 <= 1'b1;
-                    end
-                    sample_data_l <= sound_output3;
-                    sample_data_r <= sound_output3;
-                end
-                if (sound_buff[2:0] == 3'd1 && !flag1 || flag1 == 1'b0) begin
-                    if (address1 < 10'd1000) begin
-                        address1 <= address1 + 1;
-                    end else begin
-                        address1 <= 0;
-                        flag1 <= 1'b1;
-                    end
-                    sample_data_l <= sound_output1;
-                    sample_data_r <= sound_output1;
-                end
-                if (sound_buff[2:0] == 3'd2 && !flag2 || flag2 == 1'b0) begin
-                    if (address2 < 10'd1000) begin
-                        address2 <= address2 + 1;
-                    end else begin
-                        address2 <= 0;
-                        flag2 <= 1'b1;
-                    end
-                    sample_data_l <= sound_output2;
-                    sample_data_r <= sound_output2;
-                end
-                if (sound_buff[2:0] == 3'd4 && !flag4 || flag4 == 1'b0) begin
-                    if (address4 < 10'd1000) begin
-                        address4 <= address4 + 1;
-                    end else begin
-                        address4 <= 0;
-                        flag4 <= 1'b1;
-                    end
-                    sample_data_l <= sound_output4;
-                    sample_data_r <= sound_output4;
-                end
-            end
-        end else begin
-            sample_valid_l <= 0;
-            sample_valid_r <= 0;
         end
     end
 
