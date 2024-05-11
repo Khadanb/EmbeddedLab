@@ -1,29 +1,26 @@
 /*
  * Avalon memory-mapped peripheral that generates VGA
+ *
  * Stephen A. Edwards
  * Columbia University
  */
 
-module Block_display (
-    input logic        clk,
-    input logic        reset,
-    input logic [31:0] writedata,
-    input logic [9:0]  hcount,
-    input logic [9:0]  vcount,
-    output logic [23:0] RGB_output
-);
+module Block_display (input logic        clk,
+	    input logic 	    reset,
+		input logic [31:0]  writedata,
+		input logic [9:0]   hcount,
+		input logic [9:0]   vcount,
 
-    // Configuration parameters
+		output logic [23:0]	RGB_output);
+
     parameter [5:0] COMPONENT_ID = 6'b000010;
-    parameter [4:0] MAX_PATTERN_COUNT = 5'd_17;
-    parameter [15:0] ADDRESS_LIMIT = 16'd_2304;
-    parameter [4:0] MAX_CHILD_COMPONENTS = 5'd_9;
-    logic [3:0] pixel_memory [0:2303];
-    logic [23:0] color_plate [0:9];
+    parameter [4:0] pattern_num = 5'd_17;
+    parameter [15:0] addr_limit = 16'd_2304;
+	parameter [4:0] child_limit = 5'd_9;
+	logic [3:0] mem [0:2303];
+	logic [23:0] color_plate [0:9];
     logic [79:0] pattern_table [0:16]; 
 
-
-    // Define pattern and color data
     assign pattern_table[0] = {16'd_0, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
     assign pattern_table[1] = {16'd_256, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
     assign pattern_table[2] = {16'd_512, 16'd_16, 16'd_16, 16'd_16, 16'd_16};
@@ -53,94 +50,111 @@ module Block_display (
 	assign color_plate[8] = 24'hfce1ce;
 	assign color_plate[9] = 24'hffcdc4;
 
-    // Buffers for rendering logic
-    logic [23:0] buffer_color_output[2][9];
-    logic [15:0] buffer_address_output[2][9];
-    logic        buffer_valid[2][9];
-    logic [111:0] buffer_state[2][9];
+    logic [23:0] buffer_RGB_output[0:1][0:8];
+    logic [15:0] buffer_addr_output[0:1][0:8];
+    logic        buffer_addr_out_valid[0:1][0:8];
+    logic [111:0] buffer_stateholder[0:1][0:8];
     logic        buffer_select = 1'b0;
 
-    // Decode writedata fields
-    logic [5:0] component;
-    logic [4:0] child_component;
-    logic [3:0] action;
-    logic [2:0] action_type;
-    logic [12:0] action_data;
-    logic        buffer_toggle;
+	logic [5:0] sub_comp;
+	logic [4:0] child_comp;
+	logic [3:0] info;
+	logic [2:0] input_type;
+	logic [12:0] input_msg;
+	logic		buffer_select_signal;
 
-    // Decode input writedata
-    assign component = writedata[31:26];
-    assign child_component = writedata[25:21];
-    assign action = writedata[20:17];
-    assign action_type = writedata[16:14];
-    assign buffer_toggle = writedata[13];
-    assign action_data = writedata[12:0];
+	assign sub_comp = writedata[31:26];
+	assign child_comp = writedata[25:21];
+	assign info = writedata[20:17];
+	assign input_type = writedata[16:14];
+	assign buffer_select_signal = writedata[13];
+	assign input_msg = writedata[12:0];
 
-    // Address calculators for each child component in both buffer states
-    genvar i;
-    generate
-        for (i = 0; i < MAX_CHILD_COMPONENTS; i++) begin : gen_addr_cal
-            addr_cal address_calculator_ping(
-                .pattern_info(buffer_state[0][i][111:32]),
-                .sprite_info(buffer_state[0][i][31:0]),
-                .hcount(hcount),
-                .vcount(vcount),
-                .addr_output(buffer_address_output[0][i]),
-                .valid(buffer_valid[0][i])
-            );
-            addr_cal address_calculator_pong(
-                .pattern_info(buffer_state[1][i][111:32]),
-                .sprite_info(buffer_state[1][i][31:0]),
-                .hcount(hcount),
-                .vcount(vcount),
-                .addr_output(buffer_address_output[1][i]),
-                .valid(buffer_valid[1][i])
-            );
-        end
-    endgenerate
+	integer i, j, k;
 
-    // Manage input actions and update state
-    always_ff @(posedge clk) begin
-        case (action)
-            4'b1111: begin  // Reset buffers based on toggle
-                buffer_select = buffer_toggle;
-                for (int j = 0; j < MAX_CHILD_COMPONENTS; j++) begin
-                    buffer_state[~buffer_toggle][j][31] = 1'b0;  // Clear visibility
-                end
+    addr_cal AC_left_buffer_0(.pattern_info(buffer_stateholder[0][0][111:32]), .sprite_info(buffer_stateholder[0][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][0]), .valid(buffer_addr_out_valid[0][0]));
+    addr_cal AC_left_buffer_1(.pattern_info(buffer_stateholder[0][1][111:32]), .sprite_info(buffer_stateholder[0][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][1]), .valid(buffer_addr_out_valid[0][1]));
+    addr_cal AC_left_buffer_2(.pattern_info(buffer_stateholder[0][2][111:32]), .sprite_info(buffer_stateholder[0][2][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][2]), .valid(buffer_addr_out_valid[0][2]));
+    addr_cal AC_left_buffer_3(.pattern_info(buffer_stateholder[0][3][111:32]), .sprite_info(buffer_stateholder[0][3][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][3]), .valid(buffer_addr_out_valid[0][3]));
+    addr_cal AC_left_buffer_4(.pattern_info(buffer_stateholder[0][4][111:32]), .sprite_info(buffer_stateholder[0][4][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][4]), .valid(buffer_addr_out_valid[0][4]));
+    addr_cal AC_left_buffer_5(.pattern_info(buffer_stateholder[0][5][111:32]), .sprite_info(buffer_stateholder[0][5][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][5]), .valid(buffer_addr_out_valid[0][5]));
+    addr_cal AC_left_buffer_6(.pattern_info(buffer_stateholder[0][6][111:32]), .sprite_info(buffer_stateholder[0][6][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][6]), .valid(buffer_addr_out_valid[0][6]));
+    addr_cal AC_left_buffer_7(.pattern_info(buffer_stateholder[0][7][111:32]), .sprite_info(buffer_stateholder[0][7][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][7]), .valid(buffer_addr_out_valid[0][7]));
+    addr_cal AC_left_buffer_8(.pattern_info(buffer_stateholder[0][8][111:32]), .sprite_info(buffer_stateholder[0][8][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0][8]), .valid(buffer_addr_out_valid[0][8]));
+
+    addr_cal AC_right_buffer_0(.pattern_info(buffer_stateholder[1][0][111:32]), .sprite_info(buffer_stateholder[1][0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][0]), .valid(buffer_addr_out_valid[1][0]));
+    addr_cal AC_right_buffer_1(.pattern_info(buffer_stateholder[1][1][111:32]), .sprite_info(buffer_stateholder[1][1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][1]), .valid(buffer_addr_out_valid[1][1]));
+    addr_cal AC_right_buffer_2(.pattern_info(buffer_stateholder[1][2][111:32]), .sprite_info(buffer_stateholder[1][2][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][2]), .valid(buffer_addr_out_valid[1][2]));
+    addr_cal AC_right_buffer_3(.pattern_info(buffer_stateholder[1][3][111:32]), .sprite_info(buffer_stateholder[1][3][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][3]), .valid(buffer_addr_out_valid[1][3]));
+    addr_cal AC_right_buffer_4(.pattern_info(buffer_stateholder[1][4][111:32]), .sprite_info(buffer_stateholder[1][4][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][4]), .valid(buffer_addr_out_valid[1][4]));
+    addr_cal AC_right_buffer_5(.pattern_info(buffer_stateholder[1][5][111:32]), .sprite_info(buffer_stateholder[1][5][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][5]), .valid(buffer_addr_out_valid[1][5]));
+    addr_cal AC_right_buffer_6(.pattern_info(buffer_stateholder[1][6][111:32]), .sprite_info(buffer_stateholder[1][6][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][6]), .valid(buffer_addr_out_valid[1][6]));
+    addr_cal AC_right_buffer_7(.pattern_info(buffer_stateholder[1][7][111:32]), .sprite_info(buffer_stateholder[1][7][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][7]), .valid(buffer_addr_out_valid[1][7]));
+    addr_cal AC_right_buffer_8(.pattern_info(buffer_stateholder[1][8][111:32]), .sprite_info(buffer_stateholder[1][8][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1][8]), .valid(buffer_addr_out_valid[1][8]));
+    
+	always_ff @(posedge clk) begin
+        case (info)
+            
+            4'b1111: begin
+                buffer_select = buffer_select_signal;
+				for (i = 0; i < child_limit; i = i + 1) begin
+					buffer_stateholder[~buffer_select_signal][i][31] = 1'b0;
+				end 
+
             end
-            4'h0001: if (component == COMPONENT_ID && child_component < MAX_CHILD_COMPONENTS) begin
-                // Update specific child component settings
-                case (action_type)
-                    3'b001: begin  // Visibility and pattern
-                        buffer_state[buffer_toggle][child_component][31] = action_data[12];
-                        buffer_state[buffer_toggle][child_component][30] = action_data[11];
-                        if (action_data[4:0] < MAX_PATTERN_COUNT) begin
-                            buffer_state[buffer_toggle][child_component][111:32] = pattern_table[action_data[4:0]];
-                        end
-                    end
-                    3'b010: buffer_state[buffer_toggle][child_component][29:20] = action_data[9:0];  // X position
-                    3'b011: buffer_state[buffer_toggle][child_component][19:10] = action_data[9:0];  // Y position
-                    3'b100: buffer_state[buffer_toggle][child_component][9:0] = action_data[9:0];    // Additional attribute
-                endcase
+
+	        4'h0001 : begin
+                
+            	if (sub_comp == COMPONENT_ID) begin
+					if (child_comp < child_limit) begin
+		                case (input_type)
+		                    3'b001: begin
+		                        // visible
+		                        buffer_stateholder[buffer_select_signal][child_comp][31] = input_msg[12];
+		                        // fliped
+		                        buffer_stateholder[buffer_select_signal][child_comp][30] = input_msg[11];
+		                        // pattern code
+		                        if (input_msg[4:0] < pattern_num)
+		                            buffer_stateholder[buffer_select_signal][child_comp][111:32] = pattern_table[input_msg[4:0]];
+		                    end
+		                    3'b010: begin
+		                        // x_coordinate
+		                        buffer_stateholder[buffer_select_signal][child_comp][29:20] = input_msg[9:0];
+		                    end
+		                    3'b011: begin
+		                        // y_coordinate
+		                        buffer_stateholder[buffer_select_signal][child_comp][19:10] = input_msg[9:0];
+		                    end
+		                    3'b100: begin
+		                        // shift_amount
+		                        buffer_stateholder[buffer_select_signal][child_comp][9:0] = input_msg[9:0];
+		                    end
+		                endcase
+					end
+		        end
             end
-        endcase
-    end
+       endcase
+	end
 
-    // Determine RGB output based on active buffer state and validity
-    always_comb begin
-        RGB_output = 24'h202020;  // Default to background color
-        for (int k = 0; k < MAX_CHILD_COMPONENTS; k++) begin
-            if (buffer_valid[buffer_select][k]) begin
-                RGB_output = color_plate[pixel_memory[buffer_color_output[buffer_select][k]]];
-                break;
-            end
-        end
-    end
+	always_comb begin
+		for (j = 0; j < child_limit; j = j + 1) begin
+			buffer_RGB_output[0][j] =  (buffer_addr_output[0][j] < addr_limit)? color_plate[mem[buffer_addr_output[0][j]]] : color_plate[mem[0]];
 
+			buffer_RGB_output[1][j] =  (buffer_addr_output[1][j] < addr_limit)? color_plate[mem[buffer_addr_output[1][j]]] : color_plate[mem[0]];
+		end
+		
+		RGB_output = 24'h202020;
+		for (k = 0; k < child_limit; k = k + 1) begin
+			if ((buffer_RGB_output[buffer_select][k] != 24'h202020) && buffer_addr_out_valid[buffer_select][k]) begin
+				RGB_output = buffer_RGB_output[buffer_select][k];
+				break;
+			end
+		end
+	end
+		
+initial begin
+	$readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Block.txt", mem);
+end
 
-    // Initialize pixel data from memory
-    initial begin
-        $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Block.txt", pixel_memory);
-    end
-
+   
 endmodule
