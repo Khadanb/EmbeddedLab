@@ -352,7 +352,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 
 	// game->camera_pos += game->camera_velocity;
-	mario_scroll_location += mario->motion.vx
+	mario_scroll_location += mario->motion.vx;
 	if (mario_scroll_location < camera_pos) {
 		mario_scroll_location = camera_pos; 
 	}
