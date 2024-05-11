@@ -14,7 +14,6 @@ module ppu (input logic        clk,
 
 		output logic [23:0]	RGB_output);
 
-	logic [23:0] background = 24'd_0;
 	logic [23:0] RGB_list[0:40];
 
 	// loop ============================
