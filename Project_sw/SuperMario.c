@@ -245,6 +245,7 @@ void handle_collision_with_block(Entity *mario, Entity *other, enum contact type
 		mario->motion.vy = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
+		mario->position.y = other->position.y - mario->position.height;
 		can_jump = 1;
 	} else if (type == LEFT && mario->render.flip == 1) {
 		mario->motion.vx = 0;
@@ -260,6 +261,7 @@ void handle_collision_with_tube(Entity *mario, Entity *other, enum contact type)
 		mario->motion.vx = 0;
 	} else if (type == DOWN) {
 		mario->motion.vy = 0;
+		mario->position.y = other->position.y - mario->position.height;
 		can_jump = 1;
 	}
 }
