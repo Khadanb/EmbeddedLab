@@ -31,6 +31,8 @@ int info_100 = 4;
 
 int frame_counter = 0;
 
+int mario_scroll_location = 128;
+
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
 enum key_input current_key;
@@ -149,7 +151,7 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 void flush_ground(int camera_pos, int frame_select) {
 
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (mario_scroll_location%16)) & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
 
@@ -350,13 +352,15 @@ void process_mario_logic(Entity *mario, Game *game) {
 	}
 
 	// game->camera_pos += game->camera_velocity;
+	mario_scroll_location += mario->motion.vx
+	if (mario_scroll_location < camera_pos) {
+		mario_scroll_location = camera_pos; 
+	}
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
     }
 }
-
-
 
 void process_goomba_logic(Entity *goomba, Game *game) {
 	enum contact contactType;
