@@ -159,6 +159,10 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 			break;
 		case TYPE_TUBE:
 			flush_tube(entity, frame_select);
+			break;
+		case TYPE_BOWSER:
+			flush_bowser(entity,frame_select);
+			break;
 		default:
 			break;
 	}
