@@ -19,11 +19,10 @@ print("Image Size: ", im.size)
 print("Image Mode: ", im.mode)
 
 Color_Plate = [
-    (255, 204, 102),
-    (51, 204, 51),
+    (255, 0, 0),
     (255, 255, 255),
-    (0, 0, 0),
-    (32, 32, 34)
+    (255, 204, 153),
+    (20, 20, 20),
 ]
 
 byte_stream = []
