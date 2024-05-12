@@ -62,7 +62,7 @@ module I2S_Controller(
                         ready <= 1;
                     end
                 end
-            } else {
+            end else begin
                 clk_count <= clk_count + 1;
             end
         end
