@@ -35,6 +35,7 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 	}
 }
 
+float last_v = 0; 
 void animate_mario(Game *game, Entity *entity, int f_counter) {
     if (entity->state.active && entity->render.visible) {
         const int frame_count = 5; // Update sprite every 10 frames
@@ -48,7 +49,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
                 case STATE_NORMAL:
                     if (entity->motion.ax == 0) {
                         entity->render.pattern_code = ANI_MARIO_S_NORMAL;
-                    } else if (entity->motion.ax * entity->motion.vx < 0) {
+                    } else if (fabs(entity->motion.vx) < fabs(last_v)) {
                         entity->render.pattern_code = ANI_MARIO_S_SHUT;
                     } else {
                         int ani_stage = (f_counter / 6) % 3; // Change to walk animation frames
@@ -56,6 +57,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
                                                      (ani_stage == 1) ? ANI_MARIO_S_WALK2 :
                                                      ANI_MARIO_S_WALK3;
                     }
+					last_v = entity->motion.vx; 
                     break;
 			case STATE_HIT:
 				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
