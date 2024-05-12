@@ -137,7 +137,7 @@ void flush_bowser(const Entity *entity, int frame_select) {
 void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 
 		int left_edge = entity->position.width + entity->position.x;
-		int right_edge = left_edge + 32
+		int right_edge = left_edge + 32;
 		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
 		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (mario_scroll_location%16)) & 0x3FF)));
 		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
