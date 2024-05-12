@@ -79,16 +79,8 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
-	// Entity *ground2 = &game->entities[4];
-	// *ground2 = (Entity){
-	// 	.position = {CAMERA_SIZE + GROUND_PIT_WIDTH, GROUND_LEVEL, CAMERA_SIZE, 32},
-	// 	.motion = {0, 0, 0, 0},
-	// 	.render = {0, 1, 0},
-	// 	.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
-	// };
-
 	// Initialize blocks on either side of the Goomba
-	Entity *block_left = &game->entities[5];
+	Entity *block_left = &game->entities[4];
 	*block_left = (Entity){
 		.position = {280, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
@@ -96,7 +88,7 @@ void new_game(Game *game) {
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
 	};
 
-	Entity *block_right = &game->entities[6];
+	Entity *block_right = &game->entities[5];
 	*block_right = (Entity){
 		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
@@ -104,7 +96,7 @@ void new_game(Game *game) {
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
-	Entity *tube = &game->entities[7];
+	Entity *tube = &game->entities[6];
 	*tube = (Entity){
 		.position = {200, GROUND_LEVEL - 32, 32, 32},
 		.motion = {0,0,0,0},
@@ -112,7 +104,7 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
 
-	// Entity *bowser = &game->entities[8];
+	// Entity *bowser = &game->entities[7];
 	// *bowser = (Entity) {
 	// 	.position = {500, 128, 64,64 }, 
 	// 	.motion = {0, 0, 0, 0},
