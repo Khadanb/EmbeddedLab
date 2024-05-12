@@ -710,6 +710,8 @@ int main() {
 
 						if(entity->position.x > game.camera_pos + CAMERA_SIZE) {
 							entity->render.visible = 0; 
+						} else {
+							entity->render.visible = 1;
 						}
 						break;
 				}
