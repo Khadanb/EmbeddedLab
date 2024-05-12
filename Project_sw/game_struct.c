@@ -52,14 +52,17 @@ void new_game(Game *game) {
 		game->entities[i].state.active = 0;
 	}
 
-*mario = (Entity){
+	// Initialize Mario
+	Entity *mario = &game->entities[0];
+	*mario = (Entity){
 		.position = {128, 128, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_MARIO_S_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_MARIO_SMALL}
 	};
 
-	@@ -66,7 +66,7 @@ void new_game(Game *game) {
+	// Initialize Goomba with motion
+	Entity *goomba = &game->entities[1];
 	*goomba = (Entity){
 		.position = {300, GROUND_LEVEL - 16, 16, 16},
 		.motion = {1.0, 0, 0, 0},
@@ -67,7 +70,8 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
 	};
 
-	@@ -75,7 +75,7 @@ void new_game(Game *game) {
+	// Initialize Ground
+	Entity *ground = &game->entities[2];
 	*ground = (Entity){
 		.position = {70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
@@ -75,7 +79,8 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
-	@@ -84,22 +84,22 @@ void new_game(Game *game) {
+	// Initialize blocks on either side of the Goomba
+	Entity *block_left = &game->entities[3];
 	*block_left = (Entity){
 		.position = {280, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
@@ -88,7 +93,7 @@ void new_game(Game *game) {
 		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
 	};
 
 	Entity *tube = &game->entities[5];
@@ -98,7 +103,9 @@ void new_game(Game *game) {
 		.render = {ANI_TUBE_B, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
-	@@ -109,47 +109,47 @@ void new_game(Game *game) {
+
+	// Initialize Ground
+	Entity *ground2 = &game->entities[6];
 	*ground2 = (Entity){
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
@@ -121,15 +128,7 @@ void new_game(Game *game) {
 		.render = {ANI_BOWSER_NORMAL, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
 	};
-
-	Entity *ground3 = &game->entities[9];
-	*ground2 = (Entity){
-		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
-		.motion = {0, 0, 0, 0},
-		.render = {0, 0, 0},
-		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
-	};
-
+	
 	Entity *peach = &game->entities[10];
 	*peach = (Entity) {
 		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
