@@ -732,7 +732,7 @@ int main() {
 							entity->state.active = 0;
 						}
 
-						if(entity->position.x > game.camera_start + CAMERA_SIZE) {
+						if(entity->position.x > mario->position.x) {
 							entity->render.visible = 0; 
 						} else {
 							entity->render.visible = 1;
