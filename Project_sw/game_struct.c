@@ -43,6 +43,7 @@ enum contact hitbox_contact(const Entity *A, const Entity *B) {
 
 void new_game(Game *game) {
 	game->camera_pos = 70;
+	game->camera_start = 70;
 	game->game_state = GAME_START;
 	game->camera_velocity = 0;
 

@@ -95,6 +95,7 @@ typedef struct {
 
 
 typedef struct {
+	int camera_start;
 	int camera_pos;
 	float camera_velocity;
 	int game_state;
