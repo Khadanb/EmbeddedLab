@@ -47,7 +47,7 @@ module vga_ball(
 
     // PPU for video output logic
     logic [23:0] PPU_out;
-    ppu game_ppu(.clk(clk), .reset(reset), .writedata(ppu_info), .address(3'd_0), .hcount(hcount[10:1]),
+    ppu game_ppu(.clk(clk), .reset(reset), .writedata(ppu_info), .hcount(hcount[10:1]),
                  .vcount(vcount), .RGB_output(PPU_out));
 
     // VGA signal generation
