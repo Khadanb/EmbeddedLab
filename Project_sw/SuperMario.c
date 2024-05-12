@@ -655,13 +655,13 @@ int main() {
 						break;
 					default:
 						entity->position.x -= game.camera_velocity;
-						if ((entity->position.x + CAMERA_SIZE + (GROUND_PIT_WIDTH / 2)) < game.camera_pos) {
-							entity->render.visible = 0;
-						} else if( entity->position.x < game.camera_pos + CAMERA_SIZE){
-							entity->render.visible = 0;
-						} else {
-							entity->render.visible = 1;
-						}
+						// if ((entity->position.x + CAMERA_SIZE + (GROUND_PIT_WIDTH / 2)) < game.camera_pos) {
+						// 	entity->render.visible = 0;
+						// } else if(entity->position.x < game.camera_pos + CAMERA_SIZE){
+						// 	entity->render.visible = 0;
+						// } else {
+						// 	entity->render.visible = 1;
+						// }
 						break;
 				}
 			}
