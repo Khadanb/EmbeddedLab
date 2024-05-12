@@ -426,7 +426,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->position.x = ((2*CAMERA_SIZE)/3) - 1;
 		game->camera_velocity = mario->motion.vx;
 
-		if (camera_pos < 360 || bowser_alive == 0)
+		if (game->camera_pos < 360 || bowser_alive == 0)
 			game->camera_pos += mario->motion.vx;
 		if (game->camera_pos < game->camera_start) {
 			game->camera_pos = game->camera_start;
@@ -744,7 +744,7 @@ int main() {
 						process_fireball_logic(entity, &game);
 						break;
 					default:
-						if (game->camera_pos < 360 || bowser_alive == 0) {
+						if (game.camera_pos < 360 || bowser_alive == 0) {
 							entity->position.x -= game.camera_velocity;
 						}
 
