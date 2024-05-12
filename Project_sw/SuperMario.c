@@ -558,7 +558,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 							bowser_alive = 0;
 						} else {
 							lives -= 1;
-							speed += 0.1;
+							speed += 0.15;
 						}
 
 						other->motion.vy = -JUMP_INIT_V_LARGE;
