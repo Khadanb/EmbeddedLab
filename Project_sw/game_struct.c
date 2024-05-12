@@ -98,7 +98,7 @@ void new_game(Game *game) {
 
 	Entity *tube = &game->entities[5];
 	*tube = (Entity){
-		.position = {200, GROUND_LEVEL - 32, 32, 32},
+		.position = {200, GROUND_LEVEL - 50, 32, 32},
 		.motion = {0,0,0,0},
 		.render = {ANI_TUBE_B, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
@@ -112,16 +112,7 @@ void new_game(Game *game) {
 		.render = {0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
-
-	Entity *block_plat = &game->entities[7];
-	*block_plat = (Entity){
-		.position = {CAMERA_SIZE + (GROUND_PIT_WIDTH / 2) + 70, GROUND_LEVEL - 16, 16, 16},
-		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
-	};
-
-	Entity *bowser = &game->entities[8];
+	Entity *bowser = &game->entities[7];
 	*bowser = (Entity) {
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, 128, 32, 32},
 		.motion = {0, 0, 0, 0},
@@ -129,15 +120,15 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
 	};
 	
-	Entity *peach = &game->entities[10];
+	Entity *peach = &game->entities[8];
 	*peach = (Entity) {
-		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
+		.position = {600, GROUND_LEVEL - 40, 32, 40},
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_PEACH_NORMAL, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
 	};
 
-	Entity *fireball = &game->entities[11];
+	Entity *fireball = &game->entities[9];
 	*fireball = (Entity) {
 		.position = {200, GROUND_LEVEL - 48, 14, 15},
 		.motion = {0, 0, 0, 0},
