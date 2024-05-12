@@ -624,10 +624,9 @@ int main() {
 						break;
 					default:
 						entity->position.x -= game.camera_velocity; 
-						if (entity->position.x < game.camera_pos) {
-							entity->state.active = 0;
-							printf("Cull Entity");
-						}
+						if (entity->position.x + CAMERA_SIZE + (GROUND_PIT_WIDTH / 2) < game.camera_pos) {
+							entity->render.visible = 0;
+						} 
 						break;
 				}
 			}
