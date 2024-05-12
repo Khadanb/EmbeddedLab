@@ -177,8 +177,8 @@ void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 
 	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (0 << 11) + (0 & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (left_edge & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (right_edge & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (0 & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (0 & 0x3FF)));
 }
 
 void flush_entity(Entity *entity, int frame_select, int camera_pos) {
@@ -711,13 +711,13 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
-						entity->position.x -= game.camera_velocity;
+						// entity->position.x -= game.camera_velocity;
 
-						if (entity->position.x > game.camera_start + CAMERA_SIZE) {
-							entity->render.visible = 0;
-						} else {
-							entity->render.visible = 1;
-						}
+						// if (entity->position.x > game.camera_start + CAMERA_SIZE) {
+						// 	entity->render.visible = 0;
+						// } else {
+						// 	entity->render.visible = 1;
+						// }
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
