@@ -55,6 +55,10 @@
 
 #define ANI_BOWSER_NORMAL 0
 
+#define ANI_FIREBALL_NORMAL 0
+
+#define ANI_PEACH_NORMAL 0
+
 // Function pointer type for entity animation functions
 typedef void (*AnimateFunc)(Game *game, Entity *entity, int f_counter);
 

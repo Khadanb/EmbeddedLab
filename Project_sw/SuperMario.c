@@ -184,7 +184,7 @@ void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 void flush_entity(Entity *entity, int frame_select, int camera_pos) {
 	if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return;
 	if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
-	if (entity->state.active != 1) return; 
+	if (entity->state.active != 1) return;
 
 	switch (entity->state.type) {
 		case TYPE_MARIO_SMALL:
@@ -213,7 +213,7 @@ void flush_entity(Entity *entity, int frame_select, int camera_pos) {
 			break;
 		case TYPE_GROUND:
 			flush_ground(entity, camera_pos, frame_select);
-			
+
 			break;
 		default:
 			break;
@@ -329,86 +329,86 @@ void handle_collision_with_ground(Entity *mario, Entity *other, enum contact typ
 	if (type == DOWN) {
 		mario->motion.vy = 0;
 		mario->position.y = other->position.y - mario->position.height;
-		can_jump = 1; 
+		can_jump = 1;
 	}
 }
 
 void process_mario_logic(Entity *mario, Game *game) {
-    if (mario == NULL) {
-        printf("Mario entity is NULL\n");
-        return;
-    }
+	if (mario == NULL) {
+		printf("Mario entity is NULL\n");
+		return;
+	}
 
-    // Apply gravity
-    mario->motion.ay = GRAVITY;
+	// Apply gravity
+	mario->motion.ay = GRAVITY;
 
-    // Reset horizontal acceleration
-    mario->motion.ax = 0;
+	// Reset horizontal acceleration
+	mario->motion.ax = 0;
 
-    // Handle horizontal input
-    if (current_key == KEY_LEFT) {
-        mario->motion.ax = -WALK_ACC;
-        mario->render.flip = 1; // Mario faces left
-    } else if (current_key == KEY_RIGHT) {
-        mario->motion.ax = WALK_ACC;
-        mario->render.flip = 0; // Mario faces right
-    }
+	// Handle horizontal input
+	if (current_key == KEY_LEFT) {
+		mario->motion.ax = -WALK_ACC;
+		mario->render.flip = 1; // Mario faces left
+	} else if (current_key == KEY_RIGHT) {
+		mario->motion.ax = WALK_ACC;
+		mario->render.flip = 0; // Mario faces right
+	}
 
-    // Handle jump input
-    if (current_key == KEY_JUMP && can_jump) {
-        mario->motion.vy = -JUMP_INIT_V_LARGE;
+	// Handle jump input
+	if (current_key == KEY_JUMP && can_jump) {
+		mario->motion.vy = -JUMP_INIT_V_LARGE;
 		can_jump = 0;
-    }
+	}
 
-    // Apply friction if Mario is on the ground and moving
-    if (mario->motion.vy == 0 && fabs(mario->motion.vx) > MOTION_MIN) {
-        mario->motion.ax -= mario->motion.vx * FRICTION;
-    } 
-	
+	// Apply friction if Mario is on the ground and moving
+	if (mario->motion.vy == 0 && fabs(mario->motion.vx) > MOTION_MIN) {
+		mario->motion.ax -= mario->motion.vx * FRICTION;
+	}
+
 	if (fabs(mario->motion.vx) < 0.08f) {
 		mario->motion.vx = 0;
 	}
 
-    // Update velocities
-    mario->motion.vx += mario->motion.ax;
-    mario->motion.vy += mario->motion.ay;
+	// Update velocities
+	mario->motion.vx += mario->motion.ax;
+	mario->motion.vy += mario->motion.ay;
 
-    // Limit speeds
-    mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
-    mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
+	// Limit speeds
+	mario->motion.vx = fminf(fmaxf(mario->motion.vx, -MAX_SPEED_H), MAX_SPEED_H);
+	mario->motion.vy = fminf(fmaxf(mario->motion.vy, -MAX_SPEED_V_JUMP), MAX_SPEED_V);
 
-    // Collision detection
-    for (int i = 1; i < MAX_ENTITIES; i++) {
-        Entity *other = &game->entities[i];
-        if (other == NULL || !other->state.active) continue;
-        enum contact contactType = hitbox_contact(mario, other);
-        if (contactType != NONE) {
-            switch (other->state.type) {
-                case TYPE_GOOMBA:
-                    break;
-                case TYPE_BLOCK_A:
-                case TYPE_BLOCK_B_1:
-                case TYPE_BLOCK_B_2:
-                case TYPE_BLOCK_B_3:
-                case TYPE_BLOCK_B_4:
-                case TYPE_BLOCK_B_16:
-                case TYPE_BLOCK_A_H_8:
-                case TYPE_BLOCK_OBJ_C:
-                case TYPE_BLOCK_OBJ_M:
-                    handle_collision_with_block(mario, other, contactType);
-                    break;
-                case TYPE_TUBE:
-                    handle_collision_with_tube(mario, other, contactType);
-                    break;
-                case TYPE_GROUND:
-                    handle_collision_with_ground(mario, other, contactType);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-	
+	// Collision detection
+	for (int i = 1; i < MAX_ENTITIES; i++) {
+		Entity *other = &game->entities[i];
+		if (other == NULL || !other->state.active) continue;
+		enum contact contactType = hitbox_contact(mario, other);
+		if (contactType != NONE) {
+			switch (other->state.type) {
+				case TYPE_GOOMBA:
+					break;
+				case TYPE_BLOCK_A:
+				case TYPE_BLOCK_B_1:
+				case TYPE_BLOCK_B_2:
+				case TYPE_BLOCK_B_3:
+				case TYPE_BLOCK_B_4:
+				case TYPE_BLOCK_B_16:
+				case TYPE_BLOCK_A_H_8:
+				case TYPE_BLOCK_OBJ_C:
+				case TYPE_BLOCK_OBJ_M:
+					handle_collision_with_block(mario, other, contactType);
+					break;
+				case TYPE_TUBE:
+					handle_collision_with_tube(mario, other, contactType);
+					break;
+				case TYPE_GROUND:
+					handle_collision_with_ground(mario, other, contactType);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 	mario->position.x += mario->motion.vx;
 	game->camera_velocity = 0;
 	if (mario->position.x > ((2*CAMERA_SIZE)/3)) {
@@ -417,17 +417,17 @@ void process_mario_logic(Entity *mario, Game *game) {
 
 		game->camera_pos += mario->motion.vx;
 		if (game->camera_pos < game->camera_start) {
-			game->camera_pos = game->camera_start; 
+			game->camera_pos = game->camera_start;
 		}
 	} else if (mario->position.x < 70) {
 		mario->position.x = 70 + 1;
 	}
 
-    mario->position.y += mario->motion.vy;
-    if (mario->position.y > GROUND_LEVEL) {
-        mario->state.state = STATE_DEAD;
+	mario->position.y += mario->motion.vy;
+	if (mario->position.y > GROUND_LEVEL) {
+		mario->state.state = STATE_DEAD;
 		mario->state.active = 0;
-    }
+	}
 }
 
 void process_goomba_logic(Entity *goomba, Game *game) {
@@ -503,7 +503,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.active = 0;
 	}
 
-	goomba->position.x -= game->camera_velocity; 
+	goomba->position.x -= game->camera_velocity;
 	if (goomba->position.x < game->camera_pos) {
 		goomba->state.active = 0;
 		printf("Cull Goomba");
@@ -530,7 +530,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 					if (contactType == UP) {
 						bowser->state.state = STATE_DEAD;
 						bowser->state.active = 0;
-						bowser->render.visible = 0; 
+						bowser->render.visible = 0;
 						other->motion.vy = -JUMP_INIT_V_SMALL;
 					} else {
 
@@ -584,7 +584,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 		bowser->render.visible = 0;
 	}
 
-	bowser->position.x -= game->camera_velocity; 
+	bowser->position.x -= game->camera_velocity;
 	if (bowser->position.x < game->camera_pos) {
 		bowser->state.active = 0;
 		printf("Cull Goomba");
@@ -592,7 +592,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 
 	bowser->render.visible = 1;
 
-	
+
 }
 
 int main() {
@@ -643,21 +643,21 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
-						entity->position.x -= game.camera_velocity;	
+						entity->position.x -= game.camera_velocity;
 
 						if (entity->position.x + CAMERA_SIZE < game.camera_pos) {
 							entity->state.active=0;
-							printf("Cull Ground\n");					
+							printf("Cull Ground\n");
 						}
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
 						break;
 					default:
-						entity->position.x -= game.camera_velocity; 
+						entity->position.x -= game.camera_velocity;
 						if (entity->position.x + CAMERA_SIZE + (GROUND_PIT_WIDTH / 2) < game.camera_pos) {
 							entity->render.visible = 0;
-						} 
+						}
 						break;
 				}
 			}
