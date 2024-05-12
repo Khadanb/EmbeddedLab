@@ -1,4 +1,4 @@
-module Bowser_display (
+module Peach_display (
     input logic        clk,
     input logic        reset,
     input logic [31:0] writedata,
