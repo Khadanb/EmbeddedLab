@@ -138,16 +138,16 @@ void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 	int x = entity->position.x;
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
-	int left_edge = entity->position.width + entity->position.x;
-	int right_edge = left_edge + 32;
+	int left_edge = entity->position.x;
+	int right_edge = entity->position.width + left_edge;
 
 	if (frame_counter % 100 == 0)
 		printf("Flushing Ground - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d, l: %d. r:%d\n", visible, flip, x, y, pattern_code, left_edge, right_edge);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (left_edge & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (right_edge & 0x3FF)));
 }
 
 void flush_entity(Entity *entity, int frame_select, int camera_pos) {
