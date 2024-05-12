@@ -22,7 +22,6 @@
 #define FRICTION (0.08)
 #define MOTION_MIN 0.01f
 
-
 enum EntityState {
 	STATE_NORMAL,
 	STATE_ANIMATE,
