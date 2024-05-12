@@ -131,7 +131,7 @@ void new_game(Game *game) {
 
 	Entity *fireball = &game->entities[10];
 	*fireball = (Entity) {
-		.position = {200, GROUND_LEVEL + 32, 14, 15},
+		.position = {200, GROUND_LEVEL - 32, 14, 15},
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_FIREBALL_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_FIREBALL}

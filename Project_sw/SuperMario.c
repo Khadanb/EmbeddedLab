@@ -638,8 +638,10 @@ void process_fireball_logic(Entity *fireball, Game *game) {
 	fireball->position.x -= game->camera_velocity;
 	if (fireball->position.x < game->camera_pos) {
 		fireball->render.flip = !fireball->render.flip;
+		fireball->position.x = game->camera_pos + 15;
 	} else if(fireball->position.x > game->camera_pos + CAMERA_SIZE) {
-		fireball->render.flip = !fireball->render.flip; 
+		fireball->render.flip = !fireball->render.flip;
+		fireball->position.x = game->camera_pos + CAMERA_SIZE - 30; 
 	}
 
 	fireball->render.visible = 1;
