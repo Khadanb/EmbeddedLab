@@ -645,14 +645,14 @@ int main() {
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;
 
-						if ((entity->position.x + CAMERA_SIZE + GROUND_PIT_WIDTH) < game.camera_pos) {
-							entity->render.visible = 0;
-							entity->state.active = 0;
-						} else if(entity->position.x < game.camera_pos + CAMERA_SIZE){
-							entity->render.visible = 0;
-						} else {
-							entity->render.visible = 1;
-						}
+						// if ((entity->position.x + CAMERA_SIZE + GROUND_PIT_WIDTH) < game.camera_pos) {
+						// 	entity->render.visible = 0;
+						// 	entity->state.active = 0;
+						// } else if(entity->position.x < game.camera_pos + CAMERA_SIZE){
+						// 	entity->render.visible = 0;
+						// } else {
+						// 	entity->render.visible = 1;
+						// }
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
