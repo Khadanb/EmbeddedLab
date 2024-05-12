@@ -616,7 +616,7 @@ int main() {
 
 						if (entity->position.x + CAMERA_SIZE < game.camera_pos) {
 							entity->state.active=0;
-							printf("Cull Ground\n")						
+							printf("Cull Ground\n");					
 						}
 						break;
 					case TYPE_BOWSER:
