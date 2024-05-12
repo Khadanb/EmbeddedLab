@@ -119,6 +119,20 @@ void flush_tube(const Entity *entity, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
+void flush_bowser(const Entity *entity, int frame_select) {
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
+
+	if (frame_counter % 100 == 0)
+		printf("Flushing Bowser - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+	write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
 void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 	if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return;
 	if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;

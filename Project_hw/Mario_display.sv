@@ -48,7 +48,7 @@ module Mario_display (input logic        clk,
 	logic [23:0] buffer_RGB_output[0:1];
 	logic [15:0] buffer_addr_output[0:1];
 	logic        buffer_addr_out_valid[0:1];
-	logic [111:0] buffer_stateholder[0:1];
+	logic [111:0] buffer_state_holder[0:1];
 	logic        buffer = 1'b0;
 
 	logic [5:0] sub_comp;
@@ -65,15 +65,15 @@ module Mario_display (input logic        clk,
 	assign buffer_select = writedata[13];
 	assign input_msg = writedata[12:0];
 
-	addr_cal AC_ping_0(.pattern_info(buffer_stateholder[0][111:32]), .sprite_info(buffer_stateholder[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0]), .valid(buffer_addr_out_valid[0]));
-	addr_cal AC_pong_0(.pattern_info(buffer_stateholder[1][111:32]), .sprite_info(buffer_stateholder[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1]), .valid(buffer_addr_out_valid[1]));
+	addr_cal AC_ping_0(.pattern_info(buffer_state_holder[0][111:32]), .sprite_info(buffer_state_holder[0][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[0]), .valid(buffer_addr_out_valid[0]));
+	addr_cal AC_pong_0(.pattern_info(buffer_state_holder[1][111:32]), .sprite_info(buffer_state_holder[1][31:0]), .hcount(hcount), .vcount(vcount), .addr_output(buffer_addr_output[1]), .valid(buffer_addr_out_valid[1]));
 
 	always_ff @(posedge clk) begin
 		case (info)
 
 			4'b1111: begin
 				buffer = buffer_select;
-				buffer_stateholder[~buffer_select][31] = 1'b0;
+				buffer_state_holder[~buffer_select][31] = 1'b0;
 			end
 
 			4'h0001 : begin
@@ -82,24 +82,24 @@ module Mario_display (input logic        clk,
 					case (input_type)
 						3'b001: begin
 							// visible
-							buffer_stateholder[buffer_select][31] = input_msg[12];
+							buffer_state_holder[buffer_select][31] = input_msg[12];
 							// fliped
-							buffer_stateholder[buffer_select][30] = input_msg[11];
+							buffer_state_holder[buffer_select][30] = input_msg[11];
 							// pattern code
 							if (input_msg[4:0] < pattern_num)
-								buffer_stateholder[buffer_select][111:32] = pattern_table[input_msg[4:0]];
+								buffer_state_holder[buffer_select][111:32] = pattern_table[input_msg[4:0]];
 						end
 						3'b010: begin
 							// x_coordinate
-							buffer_stateholder[buffer_select][29:20] = input_msg[9:0];
+							buffer_state_holder[buffer_select][29:20] = input_msg[9:0];
 						end
 						3'b011: begin
 							// y_coordinate
-							buffer_stateholder[buffer_select][19:10] = input_msg[9:0];
+							buffer_state_holder[buffer_select][19:10] = input_msg[9:0];
 						end
 						3'b100: begin
 							// shift_amount
-							buffer_stateholder[buffer_select][9:0] = input_msg[9:0];
+							buffer_state_holder[buffer_select][9:0] = input_msg[9:0];
 						end
 					endcase
 				end

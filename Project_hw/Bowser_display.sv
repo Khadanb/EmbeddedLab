@@ -7,41 +7,42 @@ module Bowser_display (
     output logic [23:0] RGB_output
 );
 
-    // Configuration parameters
     parameter [5:0] COMPONENT_ID = 6'b001001; // Unique ID for Bowser
-    parameter [4:0] pattern_num = 5'd1;
-    parameter [15:0] addr_limit = 16'd4096; // Adjusted for memory size
-    logic [1:0] mem [0:4095]; // Adjusted memory indexing for 2-bit color
-    logic [23:0] color_plate [0:4];
+    logic [1:0] mem [0:4095]; // Memory for color indices
+    logic [23:0] color_palette [0:4];
+    logic [79:0] pattern_table [0:0]; // Only one pattern in use
 
-    // Color plate assignments
-    assign color_plate[0] = 24'hFFCC66;  // Light Brown
-    assign color_plate[1] = 24'h33CC33;  // Green
-    assign color_plate[2] = 24'hFFFFFF;  // White
-    assign color_plate[3] = 24'h000000;  // Black
-    assign color_plate[4] = 24'h202022;  // Dark Gray
+    // Setup color palette
+    assign color_palette[0] = 24'hFFCC66; // Light Brown
+    assign color_palette[1] = 24'h33CC33; // Green
+    assign color_palette[2] = 24'hFFFFFF; // White
+    assign color_palette[3] = 24'h000000; // Black
+    assign color_palette[4] = 24'h202022; // Dark Gray
 
-    // Buffer state and output
-    logic [23:0] buffer_RGB_output[0:1];
-    logic [15:0] buffer_addr_output[0:1];
-    logic buffer_addr_valid[0:1];
+    // Pattern definition
+    assign pattern_table[0] = {16'd0, 16'd64, 16'd64, 16'd64, 16'd64}; // Append, Res H, Res V, Act H, Act V
+
+    // Buffers for double buffering
+    logic [23:0] buffer_color_output[0:1];
+    logic [15:0] buffer_address_output[0:1];
+    logic buffer_valid[0:1];
     logic [111:0] buffer_state[0:1];
     logic buffer_select = 1'b0;
 
-    // Decode writedata
-    logic [5:0] sub_comp;
-    logic [4:0] child_comp;
-    logic [3:0] info;
-    logic [2:0] input_type;
-    logic [12:0] input_msg;
-    logic select;
+    // Decode writedata fields
+    logic [5:0] component;
+    logic [4:0] child_component;
+    logic [3:0] action;
+    logic [2:0] action_type;
+    logic [12:0] action_data;
+    logic buffer_toggle;
 
-    assign sub_comp = writedata[31:26];
-    assign child_comp = writedata[25:21];
-    assign info = writedata[20:17];
-    assign input_type = writedata[16:14];
-    assign select = writedata[13];
-    assign input_msg = writedata[12:0];
+    assign component = writedata[31:26];
+    assign child_component = writedata[25:21]; // Unused in this case
+    assign action = writedata[20:17];
+    assign action_type = writedata[16:14];
+    assign buffer_toggle = writedata[13];
+    assign action_data = writedata[12:0];
 
     // Address calculators for each buffer
     addr_cal addr_cal_ping(
@@ -49,8 +50,8 @@ module Bowser_display (
         .sprite_info(buffer_state[0][31:0]),
         .hcount(hcount),
         .vcount(vcount),
-        .addr_output(buffer_addr_output[0]),
-        .valid(buffer_addr_valid[0])
+        .addr_output(buffer_address_output[0]),
+        .valid(buffer_valid[0])
     );
 
     addr_cal addr_cal_pong(
@@ -58,43 +59,48 @@ module Bowser_display (
         .sprite_info(buffer_state[1][31:0]),
         .hcount(hcount),
         .vcount(vcount),
-        .addr_output(buffer_addr_output[1]),
-        .valid(buffer_addr_valid[1])
+        .addr_output(buffer_address_output[1]),
+        .valid(buffer_valid[1])
     );
 
-    // Handle writedata inputs and buffer switching
+    // Process input messages to control sprite parameters
     always_ff @(posedge clk) begin
         if (reset) begin
-            buffer_select <= 0;
-            buffer_state[0] <= 0;
-            buffer_state[1] <= 0;
-        end else begin
-            if (sub_comp == COMPONENT_ID) begin
-                case (info)
-                    4'b1111: begin  // Reset and toggle buffer
-                        buffer_select <= select;
-                        buffer_state[~select] <= 0; // Clear inactive buffer
-                    end
-                    4'h0001: begin  // Update buffer state based on input
-                        if (input_type == 3'b001) begin
-                            buffer_state[select][111:0] <= {16'd0, 16'd64, 16'd64, writedata[25:16], writedata[15:6]};
+				buffer_toggle = buffer_select;
+				buffer_state[~buffer_select][31] = 1'b0;
+        end else if (component == COMPONENT_ID) begin
+            case (action)
+                4'b1111: begin  // Reset and toggle buffer
+                    buffer_select <= buffer_toggle;
+                    buffer_state[~buffer_toggle] <= 0; // Clear inactive buffer
+                end
+                4'h0001: begin  // Update buffer state based on input type
+                    case (action_type)
+                        3'b001: begin  // Set visibility and flip state
+                            buffer_state[buffer_toggle][31:30] <= {action_data[12], action_data[11]};
+                            buffer_state[buffer_toggle][111:32] <= pattern_table[0]; // Only one pattern
                         end
-                    end
-                endcase
-            end
+                        3'b010: begin  // Set X position
+                            buffer_state[buffer_toggle][29:20] <= action_data[9:0];
+                        end
+                        3'b011: begin  // Set Y position
+                            buffer_state[buffer_toggle][19:10] <= action_data[9:0];
+                        end
+                        3'b100: begin  // Additional attributes (if any)
+                            buffer_state[buffer_toggle][9:0] <= action_data[9:0];
+                        end
+                    endcase
+                end
+            endcase
         end
     end
 
-    // Select RGB output based on buffer validity
+    // Determine RGB output based on active buffer state and validity
     always_comb begin
-        if (buffer_addr_valid[buffer_select]) begin
-            RGB_output = color_plate[mem[buffer_addr_output[buffer_select]]];
-        end else begin
-            RGB_output = 24'h202020; // Default background color
-        end
+        RGB_output = buffer_valid[buffer_select] ? color_palette[mem[buffer_address_output[buffer_select]]] : 24'h202020; // Default to background color
     end
 
-    // Initialize memory
+    // Initialize pixel data from memory
     initial begin
         $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Bowser.txt", mem);
     end
