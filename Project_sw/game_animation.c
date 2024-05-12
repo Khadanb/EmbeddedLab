@@ -47,7 +47,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 
 		switch (entity->state.state) {
 			case STATE_NORMAL:
-				if (entity->motion.ax == 0) {
+				if (entity->motion.ax * entity->motion.vx > 0) {
 					entity->render.pattern_code = ANI_MARIO_S_NORMAL;
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_S_SHUT;
