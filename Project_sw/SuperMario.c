@@ -610,15 +610,7 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
-						entity->position.x -= game.camera_velocity;
-						if (entity->position.x > game.camera_pos && entity->position.x < CAMERA_SIZE + game.camera_pos) {
-							entity->render.visible = 1;
-						} else if (entity->position.x < game.camera_pos - GROUND_PIT_WIDTH) {
-							entity->state.active = 0;
-						} else {
-							entity->render.visible = 0;
-						}
-							
+						entity->position.x -= game.camera_velocity;							
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
