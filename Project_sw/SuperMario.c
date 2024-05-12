@@ -34,7 +34,8 @@ int frame_counter = 0;
 int can_jump = 0;
 
 int bowser_alive = 1; 
-int lives = 3; 
+int lives = 2; 
+int speed = 0.5; 
 
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
@@ -539,7 +540,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 
 	bowser->motion.ay = GRAVITY;
 
-	bowser->motion.vx = (bowser->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
+	bowser->motion.vx = (bowser->render.flip == 0) ? -MAX_SPEED_H * speed : MAX_SPEED_H * speed;
 	for (int i = 0; i < MAX_ENTITIES; i++) {
 		other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == bowser) continue;
@@ -557,6 +558,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 							bowser_alive = 0;
 						} else {
 							lives -= 1;
+							speed += 0.1
 						}
 
 						other->motion.vy = -JUMP_INIT_V_LARGE;
@@ -711,8 +713,9 @@ int main() {
 		mario = &game.entities[0];
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
-			lives = 3;
+			lives = 2;
 			bowser_alive = 1; 
+			speed = 0.5;
 			continue;
 		}
 
