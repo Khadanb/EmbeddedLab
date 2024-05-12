@@ -79,6 +79,23 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
+		// Initialize Ground
+	Entity *ground = &game->entities[3];
+	*ground = (Entity){
+		.position = {0, GROUND_LEVEL, CAMERA_SIZE, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {0, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
+	};
+
+	Entity *ground = &game->entities[3];
+	*ground = (Entity){
+		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH, GROUND_LEVEL, CAMERA_SIZE, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {0, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
+	};
+
 	// Initialize blocks on either side of the Goomba
 	Entity *block_left = &game->entities[4];
 	*block_left = (Entity){

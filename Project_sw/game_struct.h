@@ -12,9 +12,7 @@
 #define CAMERA_SIZE 558
 #define GROUND_LEVEL 368
 
-#define HOLE_0_R 527
-#define HOLE_1_L 1504
-#define HOLE_2_R 2175
+#define GROUND_PIT_WIDTH 100
 
 #define WALK_ACC (0.09)
 #define SHUT_ACC (0.12)
@@ -23,12 +21,7 @@
 #define MAX_SPEED_V_JUMP (8.1)
 #define FRICTION (0.08)
 
-#define BLOCK_VIS_LIMIT 9
-#define COIN_VIS_LIMIT 4
-#define GOOMBA_VIS_LIMIT 2
-#define MUSH_VIS_LIMIT 1
-#define TUBE_VIS_LIMIT 1
-#define CLOUD_VIS_LIMIT 1
+
 
 enum EntityState {
 	STATE_NORMAL,

@@ -139,7 +139,7 @@ void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 	int y = entity->position.y;
 	int pattern_code = entity->render.pattern_code;
 	int left_edge = entity->position.x + entity->position.width;
-	int right_edge = entity->position.width + 100;
+	int right_edge = entity->position.width + GROUND_PIT_WIDTH;
 
 	if (frame_counter % 100 == 0)
 		printf("Flushing Ground - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d, l: %d. r:%d\n", visible, flip, x, y, pattern_code, left_edge, right_edge);
