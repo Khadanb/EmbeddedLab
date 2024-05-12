@@ -12,7 +12,7 @@
 #define CAMERA_SIZE 558
 #define GROUND_LEVEL 368
 
-#define GROUND_PIT_WIDTH 128
+#define GROUND_PIT_WIDTH 96
 
 #define WALK_ACC (0.09)
 #define SHUT_ACC (0.12)
