@@ -133,6 +133,19 @@ void flush_bowser(const Entity *entity, int frame_select) {
 	write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
 	write_to_hardware(vga_ball_fd, 0, (int)((9 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
+
+void flush_ground(Entity *entity, int camera_pos, int frame_select) {
+
+	if (entity->position.x <= mario_scroll_location) {
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (mario_scroll_location%16)) & 0x3FF)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
+	} else {
+		entity->state.active = 0; 
+	}
+}
+
 void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 	if (entity->render.pattern_code > 6 || entity->render.pattern_code < 0 ) return;
 	if (entity->state.type > TYPE_EMP || entity->state.type < 0) return;
@@ -170,24 +183,10 @@ void flush_entity(const Entity *entity, int frame_select, int camera_pos) {
 	}
 }
 
-void flush_ground(Entity *entity, int camera_pos, int frame_select) {
-
-	if (entity->position.x <= mario_scroll_location) {
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (0 << 11) + (0 & 0x1F)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (mario_scroll_location%16)) & 0x3FF)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-		write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (1 & 0x3FF)));
-	} else {
-		entity->state.active = 0; 
-	}
-}
-
 void flush_frame(Game *game, int frame_select) {
 	int entity_index;
 	block_index = 0;
 	Entity *entity;
-
-	flush_ground(game->camera_pos, frame_select);
 
 	for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++) {
 		entity = &game->entities[entity_index];
