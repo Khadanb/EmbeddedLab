@@ -118,7 +118,7 @@ void new_game(Game *game) {
 		.position = {CAMERA_SIZE + 70, GROUND_LEVEL-16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_3}
 	};
 
 	Entity *bowser = &game->entities[7];
@@ -129,15 +129,15 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
 	};
 	
-	Entity *block_right2 = &game->entities[6];
+	Entity *block_right2 = &game->entities[8];
 	*block_right2 = (Entity){
 		.position = {CAMERA_SIZE + 70 + 400,GROUND_LEVEL-16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_3}
 	};
 
-	Entity *peach = &game->entities[7];
+	Entity *peach = &game->entities[9];
 	*peach = (Entity) {
 		.position = {CAMERA_SIZE + 70 + 600, GROUND_LEVEL - 40,  32, 40},
 		.motion = {0, 0, 0, 0},
@@ -145,7 +145,7 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
 	};
 
-	Entity *fireball = &game->entities[8];
+	Entity *fireball = &game->entities[10];
 	*fireball = (Entity) {
 		.position = {200, GROUND_LEVEL - 48, 14, 15},
 		.motion = {0, 0, 0, 0},
