@@ -33,6 +33,9 @@ int frame_counter = 0;
 
 int can_jump = 0;
 
+int bowser_alive = 1; 
+int lives = 3; 
+
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
 enum key_input current_key;
@@ -423,7 +426,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->position.x = ((2*CAMERA_SIZE)/3) - 1;
 		game->camera_velocity = mario->motion.vx;
 
-		game->camera_pos += mario->motion.vx;
+		if (camera_pos < 360 || bowser_alive == 0)
+			game->camera_pos += mario->motion.vx;
 		if (game->camera_pos < game->camera_start) {
 			game->camera_pos = game->camera_start;
 		}
@@ -511,7 +515,10 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.active = 0;
 	}
 
-	goomba->position.x -= game->camera_velocity;
+	if (game->camera_pos < 360 || bowser_alive == 0) {
+		goomba->position.x -= game->camera_velocity;
+	}
+
 	if (goomba->position.x < game->camera_start) {
 		goomba->state.active = 0;
 		printf("Cull Goomba");
@@ -542,9 +549,16 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 			switch (other->state.type) {
 				case TYPE_MARIO_SMALL:
 					if (contactType == UP) {
-						bowser->state.state = STATE_DEAD;
-						bowser->state.active = 0;
-						bowser->render.visible = 0;
+
+						if (lives > 0) {
+							bowser->state.state = STATE_DEAD;
+							bowser->state.active = 0;
+							bowser->render.visible = 0;
+							bowser_alive = 0;
+						} else {
+							lives -= 1;
+						}
+
 						other->motion.vy = -JUMP_INIT_V_LARGE;
 					} else {
 
@@ -599,7 +613,10 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 		bowser->position.y = GROUND_LEVEL - 32;
 	}
 
-	bowser->position.x -= game->camera_velocity;
+	if (game->camera_pos < 360 || bowser_alive == 0) {
+		bowser->position.x -= game->camera_velocity;
+	}	
+		
 	if (bowser->position.x < game->camera_start) {
 		bowser->state.active = 0;
 		printf("Cull Goomba");
@@ -727,7 +744,9 @@ int main() {
 						process_fireball_logic(entity, &game);
 						break;
 					default:
-						entity->position.x -= game.camera_velocity;
+						if (game->camera_pos < 360 || bowser_alive == 0) {
+							entity->position.x -= game.camera_velocity;
+						}
 
 						if(entity->position.x < game.camera_start) {
 							entity->state.active = 0;
