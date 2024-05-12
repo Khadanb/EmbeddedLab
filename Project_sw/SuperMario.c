@@ -550,6 +550,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 	if (bowser->position.y > GROUND_LEVEL) {
 		bowser->state.state = STATE_DEAD;
 		bowser->state.active = 0;
+		bowser->render.visible = 0;
 	}
 
 	bowser->position.x -= game->camera_velocity; 
@@ -613,8 +614,10 @@ int main() {
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;	
 
-						if (entity->position.x + CAMERA_SIZE < game.camera_pos) 
-							entity->state.active=0;						
+						if (entity->position.x + CAMERA_SIZE < game.camera_pos) {
+							entity->state.active=0;
+							printf("Cull Ground\n")						
+						}
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
