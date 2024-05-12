@@ -99,8 +99,8 @@ void new_game(Game *game) {
 	Entity *tube = &game->entities[5];
 	*tube = (Entity){
 		.position = {200, GROUND_LEVEL - 32, 32, 32},
-		.motion = {0,0,0,0, 0, 0},
-		.render = {ANI_TUBE_B, 1, 0},
+		.motion = {0,0,0,0},
+		.render = {ANI_TUBE_B, 1, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
 
