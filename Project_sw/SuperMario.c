@@ -611,7 +611,10 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
-						entity->position.x -= game.camera_velocity;							
+						entity->position.x -= game.camera_velocity;	
+
+						if (entity->position.x + CAMERA_SIZE < game.camera_pos) 
+							entity->state.active=0;						
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
