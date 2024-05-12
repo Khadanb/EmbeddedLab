@@ -20,7 +20,7 @@ module Fireball_display (
     assign color_palette[4] = 24'h202020; // Dark Gray
 
     // Pattern definition
-    assign pattern_table[0] = {16'd0, 16'd64, 16'd64, 16'd64, 16'd64}; // Append, Res H, Res V, Act H, Act V
+    assign pattern_table[0] = {16'd0, 16'd14, 16'd15, 16'd14, 16'd15}; // Append, Res H, Res V, Act H, Act V
 
     // Buffers for double buffering
     logic [23:0] buffer_color_output[0:1];
