@@ -426,7 +426,7 @@ void process_mario_logic(Entity *mario, Game *game) {
 		mario->position.x = ((2*CAMERA_SIZE)/3) - 1;
 		game->camera_velocity = mario->motion.vx;
 
-		if (game->camera_pos < 360 || bowser_alive == 0)
+		if (game->camera_pos < 400 || bowser_alive == 0)
 			game->camera_pos += mario->motion.vx;
 		if (game->camera_pos < game->camera_start) {
 			game->camera_pos = game->camera_start;
@@ -515,7 +515,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.active = 0;
 	}
 
-	if (game->camera_pos < 360 || bowser_alive == 0) {
+	if (game->camera_pos < 400 || bowser_alive == 0) {
 		goomba->position.x -= game->camera_velocity;
 	}
 
@@ -613,7 +613,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 		bowser->position.y = GROUND_LEVEL - 32;
 	}
 
-	if (game->camera_pos < 360 || bowser_alive == 0) {
+	if (game->camera_pos < 400 || bowser_alive == 0) {
 		bowser->position.x -= game->camera_velocity;
 	}	
 		
@@ -711,6 +711,8 @@ int main() {
 		mario = &game.entities[0];
 		if (mario->state.state == STATE_DEAD || current_key == KEY_NEWGAME) {
 			new_game(&game);
+			lives = 3;
+			bowser_alive = 1; 
 			continue;
 		}
 
@@ -744,7 +746,7 @@ int main() {
 						process_fireball_logic(entity, &game);
 						break;
 					default:
-						if (game.camera_pos < 360 || bowser_alive == 0) {
+						if (game.camera_pos < 400 || bowser_alive == 0) {
 							entity->position.x -= game.camera_velocity;
 						}
 
