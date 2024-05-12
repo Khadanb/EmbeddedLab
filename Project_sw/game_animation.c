@@ -47,11 +47,12 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 
 		switch (entity->state.state) {
 			case STATE_NORMAL:
-				if (entity->motion.ax * entity->motion.vx > 0) {
+				if (entity->motion.ax == 0) {
 					entity->render.pattern_code = ANI_MARIO_S_NORMAL;
-				} else if (entity->motion.ax * entity->motion.vx < 0) {
-					entity->render.pattern_code = ANI_MARIO_S_SHUT;
-				} else {
+				// } else if (entity->motion.ax * entity->motion.vx < 0) {
+					// entity->render.pattern_code = ANI_MARIO_S_SHUT;
+				// }
+				 else {
 					int ani_div = (counter / 6) % 3;
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
 												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
