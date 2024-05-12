@@ -330,7 +330,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     }
 
     // Apply friction if Mario is on the ground and moving
-    if (mario->motion.vy == 0 && fabs(mario->motion.vx) > 0.01f) {
+    if (mario->motion.vy == 0 && fabs(mario->motion.vx) > MOTION_MIN) {
         mario->motion.ax -= mario->motion.vx * FRICTION;
     } 
 	

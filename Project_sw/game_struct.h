@@ -20,7 +20,7 @@
 #define JUMP_INIT_V_LARGE (5.6)
 #define MAX_SPEED_V_JUMP (8.1)
 #define FRICTION (0.08)
-
+#define MOTION_MIN 0.01f
 
 
 enum EntityState {

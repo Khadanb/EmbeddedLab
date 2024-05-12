@@ -50,7 +50,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
                         entity->render.pattern_code = ANI_MARIO_S_NORMAL;
                     // } else if (entity->motion.vx * entity->motion.ax < 0) {
                         // entity->render.pattern_code = ANI_MARIO_S_SHUT;
-                    } else {
+                    } else (entity->motion.vx > 2*MOTION_MIN) {
                         int ani_stage = (f_counter / 6) % 3; // Change to walk animation frames
                         entity->render.pattern_code = (ani_stage == 0) ? ANI_MARIO_S_WALK1 :
                                                      (ani_stage == 1) ? ANI_MARIO_S_WALK2 :
