@@ -57,7 +57,7 @@ void new_game(Game *game) {
 	*mario = (Entity){
 		.position = {128, 128, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_MARIO_S_NORMAL, 1, 0},
+		.render = {ANI_MARIO_S_NORMAL, 1, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_MARIO_SMALL}
 	};
 
@@ -66,7 +66,7 @@ void new_game(Game *game) {
 	*goomba = (Entity){
 		.position = {300, GROUND_LEVEL - 16, 16, 16},
 		.motion = {1.0, 0, 0, 0},
-		.render = {ANI_GOOMBA_NORMAL, 1, 0},
+		.render = {ANI_GOOMBA_NORMAL, 1, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
 	};
 
@@ -75,7 +75,7 @@ void new_game(Game *game) {
 	*ground = (Entity){
 		.position = {70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
+		.render = {0, 1, 0, CAMERA_SIZE - GROUND_PIT_WIDTH*2, CAMERA_SIZE-GROUND_PIT_WIDTH},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
@@ -84,7 +84,7 @@ void new_game(Game *game) {
 	*block_left = (Entity){
 		.position = {280, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
+		.render = {0, 1, 0, 0, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
 	};
 
@@ -92,14 +92,14 @@ void new_game(Game *game) {
 	*block_right = (Entity){
 		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
+		.render = {0, 1, 0, 0, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
 	Entity *tube = &game->entities[5];
 	*tube = (Entity){
 		.position = {200, GROUND_LEVEL - 32, 32, 32},
-		.motion = {0,0,0,0},
+		.motion = {0,0,0,0, 0, 0},
 		.render = {ANI_TUBE_B, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
@@ -109,7 +109,7 @@ void new_game(Game *game) {
 	*ground2 = (Entity){
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 0, 0},
+		.render = {0, 0, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
@@ -117,7 +117,7 @@ void new_game(Game *game) {
 	*block_plat = (Entity){
 		.position = {CAMERA_SIZE + (GROUND_PIT_WIDTH / 2) + 70, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
+		.render = {0, 1, 0, 0, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
@@ -125,7 +125,7 @@ void new_game(Game *game) {
 	*bowser = (Entity) {
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, 128, 32, 32},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_BOWSER_NORMAL, 0, 0},
+		.render = {ANI_BOWSER_NORMAL, 0, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
 	};
 
@@ -133,7 +133,7 @@ void new_game(Game *game) {
 	*ground2 = (Entity){
 		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 0, 0},
+		.render = {0, 0, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
@@ -141,7 +141,7 @@ void new_game(Game *game) {
 	*peach = (Entity) {
 		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_PEACH_NORMAL, 0, 0},
+		.render = {ANI_PEACH_NORMAL, 0, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
 	};
 
@@ -149,7 +149,7 @@ void new_game(Game *game) {
 	*fireball = (Entity) {
 		.position = {200, GROUND_LEVEL - 48, 14, 15},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_FIREBALL_NORMAL, 1, 0},
+		.render = {ANI_FIREBALL_NORMAL, 1, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_FIREBALL}
 	};
 }

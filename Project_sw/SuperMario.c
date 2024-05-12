@@ -409,6 +409,8 @@ void process_mario_logic(Entity *mario, Game *game) {
 				case TYPE_GROUND:
 					handle_collision_with_ground(mario, other, contactType);
 					break;
+				case TYPE_PEACH:
+					mario->state.state = STATE_DEAD; 
 				default:
 					break;
 			}

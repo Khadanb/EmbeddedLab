@@ -72,6 +72,8 @@ typedef struct {
 	uint32_t pattern_code;
 	int visible;
 	int flip;
+	int left;
+	int right;
 } RenderComponent;
 
 typedef struct {
