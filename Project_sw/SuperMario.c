@@ -607,7 +607,7 @@ void process_fireball_logic(Entity *fireball, Game *game) {
 
 	fireball->motion.ay = 0;
 
-	fireball->motion.vx = (fireball->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
+	fireball->motion.vx = (fireball->render.flip == 0) ? -MAX_SPEED_H : MAX_SPEED_H;
 	for (int i = 0; i < MAX_ENTITIES; i++) {
 		other = &game->entities[i];
 		if (other == NULL || !other->state.active || other == fireball) continue;
