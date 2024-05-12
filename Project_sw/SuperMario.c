@@ -645,10 +645,10 @@ int main() {
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;
 
-						if (entity->position.x + CAMERA_SIZE < game.camera_pos) {
-							entity->state.active=0;
-							printf("Cull Ground\n");
-						}
+						// if (entity->position.x + CAMERA_SIZE < game.camera_pos) {
+						// 	entity->state.active=0;
+						// 	printf("Cull Ground\n");
+						// }
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
