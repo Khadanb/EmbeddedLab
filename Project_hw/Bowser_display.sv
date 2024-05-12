@@ -16,8 +16,8 @@ module Bowser_display (
     assign color_palette[0] = 24'hFFCC66; // Light Brown
     assign color_palette[1] = 24'h33CC33; // Green
     assign color_palette[2] = 24'hFFFFFF; // White
-    assign color_palette[3] = 24'h000000; // Black
-    assign color_palette[4] = 24'h202022; // Dark Gray
+    assign color_palette[3] = 24'h202020; // Black
+    assign color_palette[4] = 24'h202020; // Dark Gray
 
     // Pattern definition
     assign pattern_table[0] = {16'd0, 16'd64, 16'd64, 16'd64, 16'd64}; // Append, Res H, Res V, Act H, Act V
