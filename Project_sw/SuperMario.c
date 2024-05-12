@@ -193,7 +193,7 @@ void flush_frame(Game *game, int frame_select) {
 		entity = &game->entities[entity_index];
 
 		if (entity->state.active == 1 && entity->render.visible == 1) {
-				flush_entity(entity, frame_select, game->camera_pos);
+			flush_entity(entity, frame_select, game->camera_pos);
 		}
 	}
 
