@@ -514,6 +514,12 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.active = 0;
 		printf("Cull Goomba");
 	}
+
+	if(goomba->position.x > game->camera_start + CAMERA_SIZE) {
+		goomba->render.visible = 0; 
+	} else {
+		goomba->render.visible = 1;
+	}
 }
 
 void process_bowser_logic(Entity *bowser, Game *game) {
@@ -596,7 +602,11 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 		printf("Cull Goomba");
 	}
 
-	bowser->render.visible = 1;
+	if(bowser->position.x > game->camera_start + CAMERA_SIZE) {
+		bowser->render.visible = 0; 
+	} else {
+		bowser->render.visible = 1;
+	}
 }
 
 void process_fireball_logic(Entity *fireball, Game *game) {
@@ -644,7 +654,11 @@ void process_fireball_logic(Entity *fireball, Game *game) {
 		fireball->position.x = game->camera_start + CAMERA_SIZE - 30; 
 	}
 
-	fireball->render.visible = 1;
+	if(fireball->position.x > game->camera_start + CAMERA_SIZE) {
+		fireball->render.visible = 0; 
+	} else {
+		fireball->render.visible = 1;
+	}
 }
 
 int main() {
@@ -709,13 +723,13 @@ int main() {
 						if(entity->position.x < game.camera_start) {
 							entity->state.active = 0;
 						}
-						break;
-				}
 
-				if(entity->position.x > game.camera_start + CAMERA_SIZE) {
-					entity->render.visible = 0; 
-				} else {
-					entity->render.visible = 1;
+						if(entity->position.x > game.camera_start + CAMERA_SIZE) {
+							entity->render.visible = 0; 
+						} else {
+							entity->render.visible = 1;
+						}
+						break;
 				}
 			}
 
