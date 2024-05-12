@@ -614,7 +614,7 @@ int main() {
 						entity->position.x -= game.camera_velocity;
 						if (entity->position.x > game.camera_pos && entity->position.x < CAMERA_SIZE + game.camera_pos) {
 							entity->render.visible = 1;
-						} else if (entity->position.x < game.camera_pos - CAMERA_SIZE) {
+						} else if (entity->position.x < game.camera_pos - GROUND_PIT_WIDTH) {
 							entity->state.active = 0;
 						}
 							
