@@ -713,7 +713,7 @@ int main() {
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;
 
-						if (entity->position.x + entity->position.width < mario->position.x + GROUND_PIT_WIDTH) {
+						if (entity->position.x > game.camera_start + CAMERA_SIZE) {
 							entity->render.visible = 0;
 						} else {
 							entity->render.visible = 1;
@@ -732,7 +732,7 @@ int main() {
 							entity->state.active = 0;
 						}
 
-						if(entity->position.x > mario->position.x) {
+						if(entity->position.x > game.camera_start + CAMERA_SIZE) {
 							entity->render.visible = 0; 
 						} else {
 							entity->render.visible = 1;
