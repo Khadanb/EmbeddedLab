@@ -115,7 +115,7 @@ void new_game(Game *game) {
 
 	Entity *block_left2 = &game->entities[6];
 	*block_left2 = (Entity){
-		.position = {CAMERA_SIZE + 70, 16, 16},
+		.position = {CAMERA_SIZE + 70, GROUND_LEVEL-16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
@@ -131,7 +131,7 @@ void new_game(Game *game) {
 	
 	Entity *block_right2 = &game->entities[6];
 	*block_right2 = (Entity){
-		.position = {CAMERA_SIZE + 70 + 400, 16, 16},
+		.position = {CAMERA_SIZE + 70 + 400,GROUND_LEVEL-16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
@@ -139,7 +139,7 @@ void new_game(Game *game) {
 
 	Entity *peach = &game->entities[7];
 	*peach = (Entity) {
-		.position = {CAMERA_SIZE + 70 + 450, 32, 40},
+		.position = {CAMERA_SIZE + 70 + 600, GROUND_LEVEL - 40,  32, 40},
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_PEACH_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}

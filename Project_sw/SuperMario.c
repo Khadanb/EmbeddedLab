@@ -517,11 +517,11 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		printf("Cull Goomba");
 	}
 
-	if(goomba->position.x > game->camera_start + CAMERA_SIZE) {
-		goomba->render.visible = 0; 
-	} else {
-		goomba->render.visible = 1;
-	}
+	// if(goomba->position.x > game->camera_start + CAMERA_SIZE) {
+	// 	goomba->render.visible = 0; 
+	// } else {
+	// 	goomba->render.visible = 1;
+	// }
 }
 
 void process_bowser_logic(Entity *bowser, Game *game) {
@@ -604,11 +604,11 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 		printf("Cull Goomba");
 	}
 
-	if(bowser->position.x > game->camera_start + CAMERA_SIZE) {
-		bowser->render.visible = 0; 
-	} else {
-		bowser->render.visible = 1;
-	}
+	// if(bowser->position.x > game->camera_start + CAMERA_SIZE) {
+	// 	bowser->render.visible = 0; 
+	// } else {
+	// 	bowser->render.visible = 1;
+	// }
 }
 
 void process_fireball_logic(Entity *fireball, Game *game) {
