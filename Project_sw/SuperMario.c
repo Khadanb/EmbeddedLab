@@ -182,7 +182,7 @@ void flush_entity(Entity *entity, int frame_select, int camera_pos) {
 			flush_bowser(entity,frame_select);
 			break;
 		case TYPE_GROUND:
-			if (entity->position.width < mario_scroll_location) {
+			if (entity->position.width > mario_scroll_location) {
 				flush_ground(entity, mario_scroll_location, frame_select);
 				} else {
 				entity->state.active = 0; 
