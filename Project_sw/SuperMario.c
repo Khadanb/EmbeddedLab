@@ -616,6 +616,8 @@ int main() {
 							entity->render.visible = 1;
 						} else if (entity->position.x < game.camera_pos - GROUND_PIT_WIDTH) {
 							entity->state.active = 0;
+						} else {
+							entity->render.visible = 0;
 						}
 							
 						break;
