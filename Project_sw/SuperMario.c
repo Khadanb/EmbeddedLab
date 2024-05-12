@@ -499,6 +499,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 					if (contactType == UP) {
 						bowser->state.state = STATE_DEAD;
 						bowser->state.active = 0;
+						bowser->render.visible = 0; 
 						other->motion.vy = -JUMP_INIT_V_SMALL;
 					} else {
 
