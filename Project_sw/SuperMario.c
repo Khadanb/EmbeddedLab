@@ -709,13 +709,13 @@ int main() {
 						if(entity->position.x < game.camera_start) {
 							entity->state.active = 0;
 						}
-
-						if(entity->position.x > game.camera_start + CAMERA_SIZE) {
-							entity->render.visible = 0; 
-						} else {
-							entity->render.visible = 1;
-						}
 						break;
+				}
+
+				if(entity->position.x > game.camera_start + CAMERA_SIZE) {
+					entity->render.visible = 0; 
+				} else {
+					entity->render.visible = 1;
 				}
 			}
 
