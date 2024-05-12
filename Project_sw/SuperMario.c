@@ -611,6 +611,7 @@ int main() {
 						process_goomba_logic(entity, &game);
 						break;
 					case TYPE_GROUND:
+						entity->position.x -= game.camera_velocity;
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
