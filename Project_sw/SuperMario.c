@@ -35,7 +35,7 @@ int can_jump = 0;
 
 int bowser_alive = 1; 
 int lives = 2; 
-int speed = 0.5; 
+float speed = 0.5; 
 
 struct libusb_device_handle *keyboard;
 enum key_input{KEY_NONE, KEY_JUMP, KEY_LEFT, KEY_RIGHT, KEY_NEWGAME, KEY_END};
@@ -558,7 +558,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 							bowser_alive = 0;
 						} else {
 							lives -= 1;
-							speed += 0.1
+							speed += 0.1;
 						}
 
 						other->motion.vy = -JUMP_INIT_V_LARGE;
