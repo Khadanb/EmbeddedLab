@@ -710,6 +710,12 @@ int main() {
 						break;
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;
+
+						if (entity->position.x + entity->position.width < game.camera_start) {
+							entity->render.visible = 0;
+						} else {
+							entity->render.visible = 1;
+						}
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
