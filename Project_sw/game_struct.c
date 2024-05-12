@@ -104,18 +104,18 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
 
-	// Entity *bowser = &game->entities[7];
-	// *bowser = (Entity) {
-	// 	.position = {500, 128, 32, 32},
-	// 	.motion = {0, 0, 0, 0},
-	// 	.render = {ANI_BOWSER_NORMAL, 1, 0},
-	// 	.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
-	// };
+	Entity *bowser = &game->entities[7];
+	*bowser = (Entity) {
+		.position = {500, 128, 32, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_BOWSER_NORMAL, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
+	};
 
 	// Initialize Ground
 	Entity *ground2 = &game->entities[8];
 	*ground2 = (Entity){
-		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH, GROUND_LEVEL, CAMERA_SIZE, 32},
+		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
