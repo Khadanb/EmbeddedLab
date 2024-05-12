@@ -123,7 +123,7 @@ void new_game(Game *game) {
 
 	Entity *peach = &game->entities[9];
 	*peach = (Entity) {
-		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL, 32, 40},
+		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_PEACH_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
