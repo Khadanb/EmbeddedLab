@@ -550,7 +550,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 				case TYPE_MARIO_SMALL:
 					if (contactType == UP) {
 
-						if (lives > 0) {
+						if (lives == 0) {
 							bowser->state.state = STATE_DEAD;
 							bowser->state.active = 0;
 							bowser->render.visible = 0;
