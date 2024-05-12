@@ -106,7 +106,7 @@ void flush_peach(const Entity *entity, int frame_select) {
 	int pattern_code = entity->render.pattern_code;
 
 	if (frame_counter % 100 == 0)
-		printf("Flushing Bowser - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+		printf("Flushing Peach - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -121,7 +121,7 @@ void flush_fireball(const Entity *entity, int frame_select) {
 	int pattern_code = entity->render.pattern_code;
 
 	if (frame_counter % 100 == 0)
-		printf("Flushing Bowser - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+		printf("Flushing Fireball - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
 	write_to_hardware(vga_ball_fd, 0, (int)((8 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
 	write_to_hardware(vga_ball_fd, 0, (int)((8 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
@@ -215,6 +215,12 @@ void flush_entity(Entity *entity, int frame_select, int camera_pos) {
 			flush_ground(entity, camera_pos, frame_select);
 
 			break;
+		case TYPE_PEACH:
+			flush_peach(entity, frame_select);
+			break;
+		case TYPE_FIREBALL:
+			flush_fireball(entity, frame_select);
+			break; 
 		default:
 			break;
 	}
@@ -531,7 +537,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 						bowser->state.state = STATE_DEAD;
 						bowser->state.active = 0;
 						bowser->render.visible = 0;
-						other->motion.vy = -JUMP_INIT_V_SMALL;
+						other->motion.vy = -JUMP_INIT_V_LARGE;
 					} else {
 
 						other->state.state = STATE_DEAD;
@@ -591,8 +597,52 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 	}
 
 	bowser->render.visible = 1;
+}
 
+void process_fireball_logic(Entity *fireball, Game *game) {
+	enum contact contactType;
+	Entity *other;
+	if (!fireball->state.active)
+		return;
 
+	fireball->motion.ay = 0;
+
+	fireball->motion.vx = (fireball->render.flip == 0) ? -MAX_SPEED_H * 0.5 : MAX_SPEED_H * 0.5;
+	for (int i = 0; i < MAX_ENTITIES; i++) {
+		other = &game->entities[i];
+		if (other == NULL || !other->state.active || other == fireball) continue;
+
+		contactType = hitbox_contact(fireball, other);
+		if (contactType != NONE) {
+			switch (other->state.type) {
+				case TYPE_MARIO_SMALL:
+				case TYPE_MARIO_LARGE:
+					other->state.state = STATE_DEAD;
+					break;
+			}
+		}
+	}
+
+	fireball->motion.vy += fireball->motion.ay;
+	fireball->position.x += fireball->motion.vx;
+	fireball->position.y += fireball->motion.vy;
+	fireball->motion.ax = 0;
+	fireball->motion.ay = 0;
+
+	if (fireball->position.y > GROUND_LEVEL) {
+		fireball->state.state = STATE_DEAD;
+		fireball->state.active = 0;
+		fireball->render.visible = 0;
+	}
+
+	fireball->position.x -= game->camera_velocity;
+	if (fireball->position.x < game->camera_pos) {
+		fireball->render.flip = !fireball->render.flip;
+	} else if(fireball->position.x > game->camera_pos + CAMERA_SIZE) {
+		fireball->render.flip = !fireball->render.flip; 
+	}
+
+	fireball->render.visible = 1;
 }
 
 int main() {
@@ -644,18 +694,12 @@ int main() {
 						break;
 					case TYPE_GROUND:
 						entity->position.x -= game.camera_velocity;
-
-						// if ((entity->position.x + CAMERA_SIZE + GROUND_PIT_WIDTH) < game.camera_pos) {
-						// 	entity->render.visible = 0;
-						// 	entity->state.active = 0;
-						// } else if(entity->position.x < game.camera_pos + CAMERA_SIZE){
-						// 	entity->render.visible = 0;
-						// } else {
-						// 	entity->render.visible = 1;
-						// }
 						break;
 					case TYPE_BOWSER:
 						process_bowser_logic(entity, &game);
+						break;
+					case TYPE_FIREBALL:
+						process_fireball_logic(entity, &game);
 						break;
 					default:
 						entity->position.x -= game.camera_velocity;
@@ -664,6 +708,9 @@ int main() {
 							entity->state.active = 0;
 						}
 
+						if(entity->position.x > game.camera_pos + CAMERA_SIZE) {
+							entity->render.visible = 0; 
+						}
 						break;
 				}
 			}

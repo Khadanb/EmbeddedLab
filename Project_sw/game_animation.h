@@ -68,7 +68,8 @@ void animate_goomba(Game *game, Entity *entity, int f_counter);
 void animate_block(Game *game, Entity *entity, int f_counter);
 void animate_tube(Game *game, Entity *entity, int f_counter);
 void animate_bowser(Game *game, Entity *entity, int f_counter);
-
+void animate_fireball(Game *game, Entity *entity, int f_counter);
+void animate_peach(Game *game, Entity *entity, int f_counter);
 // Generic function to animate any entity
 void animate_entity(Game *game, Entity *entity, int f_counter);
 

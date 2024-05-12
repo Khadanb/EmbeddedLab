@@ -120,4 +120,20 @@ void new_game(Game *game) {
 		.render = {0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
+
+	Entity *peach = &game->entities[9];
+	*peach = (Entity) {
+		.position = {500, GROUND_LEVEL, 32, 40},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_PEACH_NORMAL, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
+	};
+
+	Entity *fireball = &game->entities[10];
+	*fireball = (Entity) {
+		.position = {200, 128, 14, 15},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_FIREBALL_NORMAL, 1, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_FIREBALL}
+	};
 }
