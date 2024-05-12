@@ -117,7 +117,7 @@ void new_game(Game *game) {
 	*block_plat = (Entity){
 		.position = {CAMERA_SIZE + (GROUND_PIT_WIDTH / 2) + 70, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 0, 0},
+		.render = {0, 1, 0},
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
