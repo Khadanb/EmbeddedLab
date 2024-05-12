@@ -389,6 +389,7 @@ void process_mario_logic(Entity *mario, Game *game) {
     mario->position.y += mario->motion.vy;
     if (mario->position.y > GROUND_LEVEL) {
         mario->state.state = STATE_DEAD;
+		mario->state.active = 0;
     }
 }
 
@@ -462,6 +463,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 
 	if (goomba->position.y > GROUND_LEVEL) {
 		goomba->state.state = STATE_DEAD;
+		goomba->state.active = 0;
 	}
 
 	goomba->position.x -= game->camera_velocity; 
@@ -469,8 +471,6 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 		goomba->state.active = 0;
 		printf("Cull Goomba");
 	}
-
-	goomba->render.visible = 1;
 }
 
 void process_bowser_logic(Entity *bowser, Game *game) {
@@ -542,6 +542,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 
 	if (bowser->position.y > GROUND_LEVEL) {
 		bowser->state.state = STATE_DEAD;
+		bowser->state.active = 0;
 	}
 
 	bowser->position.x -= game->camera_velocity; 
@@ -551,6 +552,8 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 	}
 
 	bowser->render.visible = 1;
+
+	
 }
 
 int main() {
