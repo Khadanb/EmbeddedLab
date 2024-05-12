@@ -66,8 +66,8 @@ module Bowser_display (
     // Process input messages to control sprite parameters
     always_ff @(posedge clk) begin
         if (reset) begin
-				buffer_toggle = buffer_select;
-				buffer_state[~buffer_select][31] = 1'b0;
+				buffer_select = buffer_toggle;
+				buffer_state[~buffer_toggle][31] = 1'b0;
         end else if (component == COMPONENT_ID) begin
             case (action)
                 4'b1111: begin  // Reset and toggle buffer
