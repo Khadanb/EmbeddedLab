@@ -1,5 +1,6 @@
 #include "game_animation.h"
 #include <stdio.h>
+#include <math.h>
 
 void animate_entity(Game *game, Entity *entity, int f_counter) {
 	if (entity->state.active && entity->render.visible) {
@@ -49,7 +50,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
                 case STATE_NORMAL:
                     if (entity->motion.ax == 0) {
                         entity->render.pattern_code = ANI_MARIO_S_NORMAL;
-                    } else if (abs(entity->motion.vx) < abs(last_v)) {
+                    } else if (fabs(entity->motion.vx) < fabs(last_v)) {
                         entity->render.pattern_code = ANI_MARIO_S_SHUT;
                     } else {
                         int ani_stage = (f_counter / 6) % 3; // Change to walk animation frames
