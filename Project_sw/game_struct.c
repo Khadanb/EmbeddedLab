@@ -65,13 +65,13 @@ void new_game(Game *game) {
 	Entity *goomba = &game->entities[1];
 	*goomba = (Entity){
 		.position = {300, GROUND_LEVEL - 16, 16, 16},
-		.motion = {1.0, 0, 0, 0}, // Starts moving right initially
+		.motion = {1.0, 0, 0, 0},
 		.render = {ANI_GOOMBA_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GOOMBA}
 	};
 
 	// Initialize Ground
-	Entity *ground = &game->entities[3];
+	Entity *ground = &game->entities[2];
 	*ground = (Entity){
 		.position = {70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
@@ -80,7 +80,7 @@ void new_game(Game *game) {
 	};
 
 	// Initialize blocks on either side of the Goomba
-	Entity *block_left = &game->entities[4];
+	Entity *block_left = &game->entities[3];
 	*block_left = (Entity){
 		.position = {280, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
@@ -88,7 +88,7 @@ void new_game(Game *game) {
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
 	};
 
-	Entity *block_right = &game->entities[5];
+	Entity *block_right = &game->entities[4];
 	*block_right = (Entity){
 		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
@@ -96,7 +96,7 @@ void new_game(Game *game) {
 		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
 	};
 
-	Entity *tube = &game->entities[6];
+	Entity *tube = &game->entities[5];
 	*tube = (Entity){
 		.position = {200, GROUND_LEVEL - 32, 32, 32},
 		.motion = {0,0,0,0},
@@ -104,16 +104,8 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_TUBE}
 	};
 
-	Entity *bowser = &game->entities[7];
-	*bowser = (Entity) {
-		.position = {500, 128, 32, 32},
-		.motion = {0, 0, 0, 0},
-		.render = {ANI_BOWSER_NORMAL, 1, 0},
-		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
-	};
-
 	// Initialize Ground
-	Entity *ground2 = &game->entities[8];
+	Entity *ground2 = &game->entities[6];
 	*ground2 = (Entity){
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
@@ -121,11 +113,27 @@ void new_game(Game *game) {
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
+	Entity *bowser = &game->entities[7];
+	*bowser = (Entity) {
+		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, 128, 32, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_BOWSER_NORMAL, 0, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
+	};
+
+	Entity *ground3 = &game->entities[8];
+	*ground2 = (Entity){
+		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {0, 0, 0},
+		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
+	};
+
 	Entity *peach = &game->entities[9];
 	*peach = (Entity) {
-		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
+		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70 + 200, GROUND_LEVEL - 40, 32, 40},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_PEACH_NORMAL, 1, 0},
+		.render = {ANI_PEACH_NORMAL, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
 	};
 

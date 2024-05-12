@@ -699,7 +699,7 @@ int main() {
 
 			if (!entity) continue;
 
-			if (entity->state.active == 1) {
+			if (entity->state.active == 1 && entity->render.visible == 1) {
 				switch (entity->state.type) {
 					case TYPE_MARIO_SMALL:
 					case TYPE_MARIO_LARGE:
