@@ -181,7 +181,7 @@ void flush_entity(Entity *entity, int frame_select, int camera_pos) {
 			flush_bowser(entity,frame_select);
 			break;
 		case TYPE_GROUND:
-			if (entity->position.width + entity->position.x > game->camera_pos) {
+			if (entity->position.width + entity->position.x > camera_pos) {
 				flush_ground(entity, camera_pos, frame_select);
 				} else {
 				entity->state.active = 0; 
