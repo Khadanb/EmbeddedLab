@@ -27,7 +27,7 @@ module ppu (input logic        clk,
 	Goomba_display Goomba_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[5]));
 	Bowser_display Bowser_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[9]));
 	Peach_display Peach_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[10]));
-	Fireball_display Peach_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[8]));
+	Fireball_display Fireball_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[8]));
 	always_comb begin
 
 		RGB_list[0] = 24'h202020;
