@@ -593,9 +593,10 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 	bowser->motion.ay = 0;
 
 	if (bowser->position.y > GROUND_LEVEL) {
-		bowser->state.state = STATE_DEAD;
-		bowser->state.active = 0;
-		bowser->render.visible = 0;
+		// bowser->state.state = STATE_DEAD;
+		// bowser->state.active = 0;
+		// bowser->render.visible = 0;
+		bowser->position.y = GROUND_LEVEL - 32;
 	}
 
 	bowser->position.x -= game->camera_velocity;
