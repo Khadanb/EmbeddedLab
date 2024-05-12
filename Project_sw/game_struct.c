@@ -93,7 +93,7 @@ void new_game(Game *game) {
 		.position = {400, GROUND_LEVEL - 16, 16, 16},
 		.motion = {0, 0, 0, 0},
 		.render = {0, 1, 0, 0, 0},
-		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_A}
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
 	};
 
 	Entity *tube = &game->entities[5];
@@ -127,14 +127,6 @@ void new_game(Game *game) {
 		.motion = {0, 0, 0, 0},
 		.render = {ANI_BOWSER_NORMAL, 0, 0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
-	};
-
-	Entity *ground3 = &game->entities[9];
-	*ground2 = (Entity){
-		.position = {CAMERA_SIZE*2 + GROUND_PIT_WIDTH + 70, GROUND_LEVEL, CAMERA_SIZE, 32},
-		.motion = {0, 0, 0, 0},
-		.render = {0, 0, 0, 0, 0},
-		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
 	Entity *peach = &game->entities[10];
