@@ -83,7 +83,7 @@ void new_game(Game *game) {
 	*ground2 = (Entity){
 		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH, GROUND_LEVEL, CAMERA_SIZE, 32},
 		.motion = {0, 0, 0, 0},
-		.render = {0, 1, 0},
+		.render = {0, 0, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	};
 
