@@ -8,7 +8,7 @@ module Fireball_display (
 );
 
     parameter [5:0] COMPONENT_ID = 6'b001000; // 8
-    parameter [15:0] addr_limit = 16'512;
+    parameter [15:0] addr_limit = 16'd512;
     logic [3:0] mem [0:511]; // Memory for color indices
     logic [23:0] color_palette [0:4];
     logic [79:0] pattern_table [0:0]; // Only one pattern in use
