@@ -11,5 +11,3 @@ cp "soc_system.rbf" /mnt
 cp "soc_system.dtb" /mnt
 
 # echo "Transfer initiated for micro${ComputerNumber}."
-cd mnt
-ll
