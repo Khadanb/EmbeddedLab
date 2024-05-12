@@ -22,9 +22,6 @@ module Fireball_display (
     // Pattern definition
     assign pattern_table[0] = {16'd0, 16'd14, 16'd15, 16'd14, 16'd15}; // Append, Res H, Res V, Act H, Act V
 
-    // Pattern definition
-    assign pattern_table[0] = {16'd0, 16'd32, 16'd32, 16'd32, 16'd32}; // Append, Res H, Res V, Act H, Act V
-
     // Buffers for double buffering
     logic [23:0] buffer_color_output[0:1];
     logic [15:0] buffer_address_output[0:1];
