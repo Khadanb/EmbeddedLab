@@ -97,6 +97,7 @@ module Bowser_display (
 
     // Determine RGB output based on active buffer state and validity
     always_comb begin
+        RGB_output = 24'h202020; 
         RGB_output = buffer_valid[buffer_select] ? color_palette[mem[buffer_address_output[buffer_select]]] : 24'h202020; // Default to background color
     end
 
