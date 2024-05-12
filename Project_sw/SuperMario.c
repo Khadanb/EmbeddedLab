@@ -92,11 +92,42 @@ void flush_block(const Entity *entity, int frame_select) {
 	if (frame_counter % 100 == 0)
 		printf("Flushing BLOCK - Type: %d, Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", entityTypeCode, visible, flip, x, y, pattern_code);
 
-	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (0 << 11) + (pattern_code & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((2 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((7 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (0 << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((7 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((7 << 26) + ((block_index & 0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 	block_index += 1;
 }
+
+void flush_peach(const Entity *entity, int frame_select) {
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
+
+	if (frame_counter % 100 == 0)
+		printf("Flushing Bowser - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
+
+void flush_fireball(const Entity *entity, int frame_select) {
+	int visible = entity->render.visible;
+	int flip = entity->render.flip;
+	int x = entity->position.x;
+	int y = entity->position.y;
+	int pattern_code = entity->render.pattern_code;
+
+	if (frame_counter % 100 == 0)
+		printf("Flushing Bowser - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
+
+	write_to_hardware(vga_ball_fd, 0, (int)((8 << 26) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (flip << 11) + (pattern_code & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((8 << 26) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((8 << 26) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+}
+
 
 void flush_tube(const Entity *entity, int frame_select) {
 	int visible = entity->render.visible;
@@ -108,13 +139,13 @@ void flush_tube(const Entity *entity, int frame_select) {
 	if (frame_counter % 100 == 0)
 		printf("Flushing TUBE - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d\n", visible, flip, x, y, pattern_code);
 
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_H & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_B & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((10 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (1 << 12) + (flip << 11) + (ANI_TUBE_B & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + (x & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((1&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (y & 0x3FF)));
 }
 
 void flush_bowser(const Entity *entity, int frame_select) {
@@ -144,10 +175,10 @@ void flush_ground(Entity *entity, int camera_pos, int frame_select) {
 	if (frame_counter % 100 == 0)
 		printf("Flushing Ground - Visible: %d, Flip: %d, X: %d, Y: %d, Pattern: %d, l: %d. r:%d\n", visible, flip, x, y, pattern_code, left_edge, right_edge);
 
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (0 << 11) + (0 & 0x1F)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (left_edge & 0x3FF)));
-	write_to_hardware(vga_ball_fd, 0, (int)((15 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (right_edge & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_001 << 14) + (frame_select << 13) + (visible << 12) + (0 << 11) + (0 & 0x1F)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_010 << 14) + (frame_select << 13) + ((15 - (camera_pos%16)) & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_011 << 14) + (frame_select << 13) + (left_edge & 0x3FF)));
+	write_to_hardware(vga_ball_fd, 0, (int)((14 << 26) + ((0&0x1F) << 21) + (1 << 17) + (info_100 << 14) + (frame_select << 13) + (right_edge & 0x3FF)));
 }
 
 void flush_entity(Entity *entity, int frame_select, int camera_pos) {

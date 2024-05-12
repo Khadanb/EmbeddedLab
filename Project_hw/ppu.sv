@@ -20,7 +20,7 @@ module ppu (input logic        clk,
 	integer i;
 	// ================================  
 	
-	Mario_display Mario_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[3]));
+	Mario_display Mario_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[1]));
 	Block_display Block_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[7]));
 	Tube_display Tube_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[15]));	
 	Ground_display Ground_0(.clk(clk), .reset(reset), .writedata(writedata), .hcount(hcount), .vcount(vcount), .RGB_output(RGB_list[14]));
@@ -31,9 +31,9 @@ module ppu (input logic        clk,
 	always_comb begin
 
 		RGB_list[0] = 24'h202020;
-		RGB_list[1] = 24'h202020;
+		// RGB_list[1] = 24'h202020;//Mario
 		RGB_list[2] = 24'h202020;
-		// RGB_list[3] = 24'h202020;	//Mario
+		RGB_list[3] = 24'h202020;	
 		RGB_list[4] = 24'h202020;
 		// RGB_list[5] = 24'h202020;	//Goomba
 		RGB_list[6] = 24'h202020;

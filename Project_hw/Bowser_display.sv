@@ -7,7 +7,7 @@ module Bowser_display (
     output logic [23:0] RGB_output
 );
 
-    parameter [5:0] COMPONENT_ID = 6'b001001; // Unique ID for Bowser
+    parameter [5:0] COMPONENT_ID = 6'b001001; // 9
     logic [3:0] mem [0:2047]; // Memory for color indices
     logic [23:0] color_palette [0:4];
     logic [79:0] pattern_table [0:0]; // Only one pattern in use
@@ -96,8 +96,8 @@ module Bowser_display (
     end
 
     // Determine RGB output based on active buffer state and validity
+    RGB_output = 24'h202020; 
     always_comb begin
-        RGB_output = 24'h202020; 
         RGB_output = buffer_valid[buffer_select] ? color_palette[mem[buffer_address_output[buffer_select]]] : 24'h202020; // Default to background color
     end
 

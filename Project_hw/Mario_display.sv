@@ -13,7 +13,7 @@ module Mario_display (input logic        clk,
 
 		output logic [23:0]	RGB_output);
 
-	parameter [5:0] COMPONENT_ID = 6'b000001;
+	parameter [5:0] COMPONENT_ID = 6'b000001; // 1
 	parameter [4:0] pattern_num = 5'd_19;
 	parameter [15:0] addr_limit = 16'd_7168;
 	logic [3:0] mem [0:3583];

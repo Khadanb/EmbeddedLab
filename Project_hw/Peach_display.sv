@@ -7,7 +7,7 @@ module Peach_display (
     output logic [23:0] RGB_output
 );
 
-    parameter [5:0] COMPONENT_ID = 6'b001010; // Unique ID for Bowser
+    parameter [5:0] COMPONENT_ID = 6'b001010; // 10
     logic [3:0] mem [0:3000]; // Memory for color indices
     logic [23:0] color_palette [0:4];
     logic [79:0] pattern_table [0:0]; // Only one pattern in use

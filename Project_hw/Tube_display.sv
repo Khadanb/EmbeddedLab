@@ -13,7 +13,7 @@ module Tube_display (input logic        clk,
 
 		output logic [23:0]	RGB_output);
   
-    parameter [5:0] COMPONENT_ID = 6'b001010; 
+    parameter [5:0] COMPONENT_ID = 6'b001111; //15
     parameter [4:0] pattern_num = 5'd_2;
     parameter [15:0] addr_limit = 16'd_576;  
 	parameter [4:0] child_limit = 5'd_2;

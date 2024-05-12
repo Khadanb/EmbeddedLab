@@ -15,7 +15,7 @@ module Goomba_display (
 );
 
     // Constants for configuration
-    parameter [5:0] COMPONENT_ID = 6'b000101;  // ID for this component
+    parameter [5:0] COMPONENT_ID = 6'b000101;  // 5
     parameter [4:0] MAX_PATTERN_COUNT = 5'd_2;  // Number of patterns supported
     parameter [15:0] ADDRESS_LIMIT = 16'd_384;  // Memory address limit
     parameter [4:0] CHILD_COMPONENT_LIMIT = 5'd_2;  // Limit for child components
