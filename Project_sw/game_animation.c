@@ -36,30 +36,27 @@ void animate_entity(Game *game, Entity *entity, int f_counter) {
 }
 
 void animate_mario(Game *game, Entity *entity, int f_counter) {
-	if (entity->state.active && entity->render.visible) {
-		int frame_count = FRAME_LIMIT;
-		int counter = f_counter % frame_count;
-		int rel_counter = counter - entity->state.animate_frame_counter;
-		entity->state.animate_frame_counter = counter;
+    if (entity->state.active && entity->render.visible) {
+        const int frame_count = 10; // Update sprite every 10 frames
+        int rel_counter = f_counter % frame_count; // Calculate frame counter relative to the frame_count
 
-		float dead_v = -4.7f;
-		float dead_acc = 0.16f;
+        float dead_v = -4.7f;
+        float dead_acc = 0.16f;
 
-		switch (entity->state.state) {
-			case STATE_NORMAL:
-				if (entity->motion.ax == 0) {
-					entity->render.pattern_code = ANI_MARIO_S_NORMAL;
-				// } else if (entity->motion.ax * entity->motion.vx < 0) {
-					// entity->render.pattern_code = ANI_MARIO_S_SHUT;
-				}
-				 else {
-					int ani_div = (counter / 6) % 3;
-					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_S_WALK1 :
-												  (ani_div == 1) ? ANI_MARIO_S_WALK2 :
-												  ANI_MARIO_S_WALK3;
-				}
-				break;
-
+        if (rel_counter == 0) { // Only update sprite state every 10 frames
+            switch (entity->state.state) {
+                case STATE_NORMAL:
+                    if (entity->motion.ax == 0) {
+                        entity->render.pattern_code = ANI_MARIO_S_NORMAL;
+                    } else if (entity->motion.ax * entity->motion.vx < 0) {
+                        entity->render.pattern_code = ANI_MARIO_S_SHUT;
+                    } else {
+                        int ani_stage = (f_counter / 3) % 3; // Change to walk animation frames
+                        entity->render.pattern_code = (ani_stage == 0) ? ANI_MARIO_S_WALK1 :
+                                                     (ani_stage == 1) ? ANI_MARIO_S_WALK2 :
+                                                     ANI_MARIO_S_WALK3;
+                    }
+                    break;
 			case STATE_HIT:
 				entity->render.pattern_code = (rel_counter / 3) % 2 ? ANI_MARIO_L_HIT : ANI_MARIO_S_HIT;
 				if (rel_counter == 0) entity->position.y += 3;
@@ -81,7 +78,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 				} else if (entity->motion.ax * entity->motion.vx < 0) {
 					entity->render.pattern_code = ANI_MARIO_L_SHUT;
 				} else {
-					int ani_div = (counter / 6) % 3;
+					int ani_div = (rel_counter / 6) % 3;
 					entity->render.pattern_code = (ani_div == 0) ? ANI_MARIO_L_WALK1 :
 												  (ani_div == 1) ? ANI_MARIO_L_WALK2 :
 												  ANI_MARIO_L_WALK3;
@@ -90,6 +87,7 @@ void animate_mario(Game *game, Entity *entity, int f_counter) {
 		}
 
 		entity->render.visible = (entity->state.state == STATE_NORMAL || entity->state.state == STATE_LARGE) ? 1 : (counter / 15) % 2;
+		}
 	}
 }
 
