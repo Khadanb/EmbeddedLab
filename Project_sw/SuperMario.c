@@ -510,7 +510,7 @@ void process_goomba_logic(Entity *goomba, Game *game) {
 	}
 
 	goomba->position.x -= game->camera_velocity;
-	if (goomba->position.x < game->camera_pos) {
+	if (goomba->position.x < game->camera_start) {
 		goomba->state.active = 0;
 		printf("Cull Goomba");
 	}
@@ -591,7 +591,7 @@ void process_bowser_logic(Entity *bowser, Game *game) {
 	}
 
 	bowser->position.x -= game->camera_velocity;
-	if (bowser->position.x < game->camera_pos) {
+	if (bowser->position.x < game->camera_start) {
 		bowser->state.active = 0;
 		printf("Cull Goomba");
 	}
@@ -636,12 +636,12 @@ void process_fireball_logic(Entity *fireball, Game *game) {
 	}
 
 	fireball->position.x -= game->camera_velocity;
-	if (fireball->position.x < game->camera_pos) {
+	if (fireball->position.x < game->camera_start) {
 		fireball->render.flip = !fireball->render.flip;
-		fireball->position.x = game->camera_pos + 15;
-	} else if(fireball->position.x > game->camera_pos + CAMERA_SIZE) {
+		fireball->position.x = game->camera_start + 15;
+	} else if(fireball->position.x > game->camera_start + CAMERA_SIZE) {
 		fireball->render.flip = !fireball->render.flip;
-		fireball->position.x = game->camera_pos + CAMERA_SIZE - 30; 
+		fireball->position.x = game->camera_start + CAMERA_SIZE - 30; 
 	}
 
 	fireball->render.visible = 1;
@@ -706,11 +706,11 @@ int main() {
 					default:
 						entity->position.x -= game.camera_velocity;
 
-						if(entity->position.x < game.camera_pos) {
+						if(entity->position.x < game.camera_start) {
 							entity->state.active = 0;
 						}
 
-						if(entity->position.x > game.camera_pos + CAMERA_SIZE) {
+						if(entity->position.x > game.camera_start + CAMERA_SIZE) {
 							entity->render.visible = 0; 
 						} else {
 							entity->render.visible = 1;
