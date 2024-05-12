@@ -112,19 +112,36 @@ void new_game(Game *game) {
 	// 	.render = {0, 0, 0},
 	// 	.state = {1, STATE_NORMAL, 0, TYPE_GROUND}
 	// };
-	Entity *bowser = &game->entities[6];
-	*bowser = (Entity) {
-		.position = {CAMERA_SIZE + GROUND_PIT_WIDTH + 70, 128, 32, 32},
+
+	Entity *block_left2 = &game->entities[6];
+	*block_left2 = (Entity){
+		.position = {CAMERA_SIZE + 70, 16, 16},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_BOWSER_NORMAL, 0, 0},
+		.render = {0, 1, 0},
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
+	};
+
+	Entity *bowser = &game->entities[7];
+	*bowser = (Entity) {
+		.position = {CAMERA_SIZE + 70 + 100, 128, 32, 32},
+		.motion = {0, 0, 0, 0},
+		.render = {ANI_BOWSER_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_BOWSER}
 	};
 	
+	Entity *block_right2 = &game->entities[6];
+	*block_right2 = (Entity){
+		.position = {CAMERA_SIZE + 70 + 400, 16, 16},
+		.motion = {0, 0, 0, 0},
+		.render = {0, 1, 0},
+		.state = {1, BLOCK_NORMAL, 0, TYPE_BLOCK_B_2}
+	};
+
 	Entity *peach = &game->entities[7];
 	*peach = (Entity) {
-		.position = {600, GROUND_LEVEL - 40, 32, 40},
+		.position = {CAMERA_SIZE + 70 + 450, 32, 40},
 		.motion = {0, 0, 0, 0},
-		.render = {ANI_PEACH_NORMAL, 0, 0},
+		.render = {ANI_PEACH_NORMAL, 1, 0},
 		.state = {1, STATE_NORMAL, 0, TYPE_PEACH}
 	};
 
