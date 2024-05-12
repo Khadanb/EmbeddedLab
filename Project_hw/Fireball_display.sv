@@ -13,11 +13,10 @@ module Fireball_display (
     logic [79:0] pattern_table [0:0]; // Only one pattern in use
 
     // Setup color palette
-    assign color_palette[0] = 24'hFFCC66; // Light Brown
-    assign color_palette[1] = 24'h33CC33; // Green
-    assign color_palette[2] = 24'hFFFFFF; // White
-    assign color_palette[3] = 24'h202020; // Black
-    assign color_palette[4] = 24'h202020; // Dark Gray
+    assign color_palette[0] = 24'hFF0000; 
+    assign color_palette[1] = 24'hFF3300; 
+    assign color_palette[2] = 24'hFFFF00; 
+    assign color_palette[3] = 24'h202020;
 
     // Pattern definition
     assign pattern_table[0] = {16'd0, 16'd14, 16'd15, 16'd14, 16'd15}; // Append, Res H, Res V, Act H, Act V
@@ -67,7 +66,7 @@ module Fireball_display (
     always_ff @(posedge clk) begin
         if (reset) begin
 				buffer_select = buffer_toggle;
-				buffer_state[~buffer_toggle][31] = 1'b0;
+				buffer_state[~buffer_toggle] = 1'b0;
         end else if (component == COMPONENT_ID) begin
             case (action)
                 4'b1111: begin  // Reset and toggle buffer
@@ -78,7 +77,7 @@ module Fireball_display (
                     case (action_type)
                         3'b001: begin  // Set visibility and flip state
                             buffer_state[buffer_toggle][31:30] <= {action_data[12], action_data[11]};
-                            buffer_state[buffer_toggle][111:32] <= pattern_table[0]; // Only one pattern
+                            buffer_state[buffer_toggle][111:32] <= pattern_table[action_data[4:0]]; // Only one pattern
                         end
                         3'b010: begin  // Set X position
                             buffer_state[buffer_toggle][29:20] <= action_data[9:0];
@@ -98,7 +97,6 @@ module Fireball_display (
     // Determine RGB output based on active buffer state and validity
     
     always_comb begin
-        RGB_output = 24'h202020;
         RGB_output = buffer_valid[buffer_select] ? color_palette[mem[buffer_address_output[buffer_select]]] : 24'h202020; 
     end
 

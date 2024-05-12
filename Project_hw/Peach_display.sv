@@ -7,44 +7,42 @@ module Peach_display (
     output logic [23:0] RGB_output
 );
 
-    parameter [5:0] COMPONENT_ID = 6'b001010; // 10
-    logic [3:0] mem [0:3000]; // Memory for color indices
+    parameter [5:0] COMPONENT_ID = 6'b001010; 
+    parameter [15:0] addr_limit = 16'd3001;
+    logic [3:0] mem [0:3000]; 
     logic [23:0] color_palette [0:4];
-    logic [79:0] pattern_table [0:0]; // Only one pattern in use
+    logic [79:0] pattern_table [0:0]; 
 
-    // Setup color palette
-    assign color_palette[0] = 24'hFFCC66; // Light Brown
-    assign color_palette[1] = 24'h33CC33; // Green
-    assign color_palette[2] = 24'hFFFFFF; // White
-    assign color_palette[3] = 24'h202020; // Black
-    assign color_palette[4] = 24'h202020; // Dark Gray
+    
+    assign color_palette[0] = 24'hFF0000; 
+    assign color_palette[1] = 24'hFFCC66; 
+    assign color_palette[2] = 24'hFFFFFF; 
+    assign color_palette[3] = 24'h202020; 
 
-    // Pattern definition
-    assign pattern_table[0] = {16'd0, 16'd32, 16'd40, 16'd32, 16'd40}; // Append, Res H, Res V, Act H, Act V
+    
+    assign pattern_table[0] = {16'd0, 16'd32, 16'd40, 16'd32, 16'd40}; 
 
-    // Buffers for double buffering
+    
     logic [23:0] buffer_color_output[0:1];
     logic [15:0] buffer_address_output[0:1];
     logic buffer_valid[0:1];
     logic [111:0] buffer_state[0:1];
     logic buffer_select = 1'b0;
 
-    // Decode writedata fields
+    
     logic [5:0] component;
-    logic [4:0] child_component;
     logic [3:0] action;
     logic [2:0] action_type;
     logic [12:0] action_data;
     logic buffer_toggle;
 
     assign component = writedata[31:26];
-    assign child_component = writedata[25:21]; // Unused in this case
     assign action = writedata[20:17];
     assign action_type = writedata[16:14];
     assign buffer_toggle = writedata[13];
     assign action_data = writedata[12:0];
 
-    // Address calculators for each buffer
+    
     addr_cal addr_cal_ping(
         .pattern_info(buffer_state[0][111:32]),
         .sprite_info(buffer_state[0][31:0]),
@@ -63,45 +61,45 @@ module Peach_display (
         .valid(buffer_valid[1])
     );
 
-    // Process input messages to control sprite parameters
+    
     always_ff @(posedge clk) begin
         if (reset) begin
-				buffer_select = buffer_toggle;
-				buffer_state[~buffer_toggle][31] = 1'b0;
-        end else if (component == COMPONENT_ID) begin
+            buffer_select <= 0;
+            buffer_state[0] <= 0;
+            buffer_state[1] <= 0;
+        end else begin
             case (action)
-                4'b1111: begin  // Reset and toggle buffer
+                4'b1111: begin  
                     buffer_select <= buffer_toggle;
-                    buffer_state[~buffer_toggle] <= 0; // Clear inactive buffer
+                    buffer_state[~buffer_toggle] <= 1'b0; 
                 end
-                4'h0001: begin  // Update buffer state based on input type
+                4'h0001: if (component == COMPONENT_ID) begin
+                    
                     case (action_type)
-                        3'b001: begin  // Set visibility and flip state
+                        3'b001: begin  
                             buffer_state[buffer_toggle][31:30] <= {action_data[12], action_data[11]};
-                            buffer_state[buffer_toggle][111:32] <= pattern_table[0]; // Only one pattern
+                            if (action_data[4:0] == 0) 
+                                buffer_state[buffer_toggle][111:32] <= pattern_table[action_data[4:0]];;
                         end
-                        3'b010: begin  // Set X position
-                            buffer_state[buffer_toggle][29:20] <= action_data[9:0];
-                        end
-                        3'b011: begin  // Set Y position
-                            buffer_state[buffer_toggle][19:10] <= action_data[9:0];
-                        end
-                        3'b100: begin  // Additional attributes (if any)
-                            buffer_state[buffer_toggle][9:0] <= action_data[9:0];
-                        end
+                        3'b010: buffer_state[buffer_toggle][29:20] <= action_data[9:0]; 
+                        3'b011: buffer_state[buffer_toggle][19:10] <= action_data[9:0]; 
+                        3'b100: buffer_state[buffer_toggle][9:0] <= action_data[9:0]; 
                     endcase
                 end
             endcase
         end
     end
 
-    // Determine RGB output based on active buffer state and validity
+    
     always_comb begin
-        RGB_output = 24'h202020; 
-        RGB_output = buffer_valid[buffer_select] ? color_palette[mem[buffer_address_output[buffer_select]]] : 24'h202020; 
+        if (buffer_valid[buffer_select] && buffer_address_output[buffer_select] < addr_limit) begin
+            RGB_output = color_palette[mem[buffer_address_output[buffer_select]]]; 
+        end else begin
+            RGB_output = 24'h202020; 
+        end
     end
 
-    // Initialize pixel data from memory
+    
     initial begin
         $readmemh("/user/stud/fall21/bk2746/Projects/EmbeddedLab/Project_hw/on_chip_mem/Peach.txt", mem);
     end
